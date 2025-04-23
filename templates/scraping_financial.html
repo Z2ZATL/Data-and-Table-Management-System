@@ -237,21 +237,7 @@
             </div>
             {% endif %}
             
-            {% if content is defined and content and not chart_data %}
-            <div class="card shadow-lg mt-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>ผลการวิเคราะห์ข้อมูล
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info mb-0">
-                        <i class="fas fa-table me-2"></i>
-                        ไม่พบข้อมูลตัวเลขที่สำคัญในเนื้อหานี้ ไม่สามารถสร้างตารางข้อมูลได้
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+
             
             <!-- แสดงข้อความข้อผิดพลาด (ถ้ามี) -->
             {% if error %}
