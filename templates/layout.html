@@ -6,38 +6,107 @@
     <title>{% block title %}ระบบจัดการข้อมูลผู้ใช้{% endblock %}</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #8a55e8;
+            --primary-hover: #7544d4;
+            --hero-gradient-start: #7a4adf;
+            --hero-gradient-end: #c06cfc;
+            --card-bg: #2b3035;
+            --card-text: #e9ecef;
+            --card-header-bg: #343a40;
+            --card-border: #444;
+            --dark-bg: #212529;
+        }
+        
+        /* ปรับสีพื้นหลังและข้อความให้มีความแตกต่างชัดเจน */
+        body {
+            background-color: var(--dark-bg);
+            color: #f8f9fa;
+        }
+        
         .hero-section {
-            background: linear-gradient(135deg, #7a4adf, #c06cfc);
+            background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
             padding: 100px 0;
             margin-bottom: 30px;
         }
         
+        /* ปรับสีของการ์ด */
         .card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--card-bg);
+            border-color: var(--card-border);
+            color: var(--card-text);
+        }
+        
+        .card-header {
+            background-color: var(--card-header-bg);
+            border-bottom-color: var(--card-border);
+        }
+        
+        .card-footer {
+            background-color: var(--card-header-bg);
+            border-top-color: var(--card-border);
         }
         
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
         
+        /* ปรับสีตาราง */
+        .table {
+            color: var(--card-text);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.075);
+        }
+        
+        /* สีของปุ่มและฟอร์ม */
         .navbar-brand {
             font-weight: bold;
         }
         
-        .form-control:focus {
-            border-color: #7a4adf;
-            box-shadow: 0 0 0 0.25rem rgba(122, 74, 223, 0.25);
+        .form-control, .form-select {
+            background-color: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(138, 85, 232, 0.25);
+            background-color: #3a4147;
+            color: #f8f9fa;
         }
         
         .btn-primary {
-            background-color: #7a4adf;
-            border-color: #7a4adf;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
         }
         
         .btn-primary:hover {
-            background-color: #6039c8;
-            border-color: #6039c8;
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        
+        /* ปรับสีของ pagination */
+        .pagination .page-link {
+            background-color: #343a40;
+            border-color: #495057;
+            color: #f8f9fa;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .pagination .page-link:hover {
+            background-color: #495057;
+            border-color: #6c757d;
+            color: white;
         }
     </style>
 </head>
