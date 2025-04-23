@@ -102,6 +102,54 @@
             </div>
             {% endif %}
             
+            {% if chart_data %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>วิเคราะห์ข้อมูลตัวเลขจากเนื้อหา
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="chart-container" style="position: relative; height: 400px;">
+                                <canvas id="contentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="chart-info mt-3 mt-lg-0">
+                                <h6 class="mb-3">ข้อมูลที่น่าสนใจ</h6>
+                                <ul class="list-group chart-data-list">
+                                    {% for sentence in chart_data.data.sentences %}
+                                    <li class="list-group-item bg-transparent">{{ sentence }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">* ข้อมูลถูกวิเคราะห์จากตัวเลขที่พบในเนื้อหา</small>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if content and not chart_data %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>ผลการวิเคราะห์ข้อมูล
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        ไม่พบข้อมูลตัวเลขที่สำคัญในเนื้อหานี้ ไม่สามารถสร้างกราฟได้
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             <!-- แสดงข้อความข้อผิดพลาด (ถ้ามี) -->
             {% if error %}
             <div class="alert alert-danger mt-4" role="alert">
@@ -185,6 +233,12 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<!-- เพิ่ม Chart.js สำหรับสร้างกราฟ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 {% endblock %}
 
 {% block scripts %}
@@ -325,6 +379,150 @@
                 }
             });
         });
+        
+        // สร้างกราฟข้อมูลตัวเลขจากเนื้อหา (ถ้ามี)
+        {% if chart_data %}
+        const ctx = document.getElementById('contentChart').getContext('2d');
+        
+        // กำหนดสีแบบไล่ระดับตามธีม
+        const getGradient = (ctx) => {
+            const theme = document.documentElement.getAttribute('data-bs-theme');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            
+            if (theme === 'dark') {
+                gradient.addColorStop(0, 'rgba(53, 162, 235, 0.8)');
+                gradient.addColorStop(1, 'rgba(53, 162, 235, 0.2)');
+            } else {
+                gradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
+                gradient.addColorStop(1, 'rgba(54, 162, 235, 0.2)');
+            }
+            
+            return gradient;
+        };
+        
+        // กำหนดสีพื้นหลังสำหรับกราฟวงกลม
+        const getColors = (count) => {
+            const baseColors = [
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(255, 159, 64, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ];
+            
+            // ถ้าข้อมูลมีมากกว่าสีพื้นฐาน ให้สร้างสีเพิ่ม
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(baseColors[i % baseColors.length]);
+            }
+            
+            return colors;
+        };
+        
+        // สร้าง config ตามประเภทของกราฟ
+        const labels = {{ chart_data.data.labels|tojson }};
+        const values = {{ chart_data.data.values|tojson }};
+        
+        let chartConfig = {};
+        const chartType = "{{ chart_data.type }}";
+        
+        if (chartType === 'bar') {
+            chartConfig = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ค่าข้อมูล',
+                        data: values,
+                        backgroundColor: getGradient(ctx),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '{{ chart_data.title }}'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+        } else if (chartType === 'pie') {
+            chartConfig = {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ค่าข้อมูล',
+                        data: values,
+                        backgroundColor: getColors(values.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '{{ chart_data.title }}'
+                        }
+                    }
+                }
+            };
+        } else if (chartType === 'line') {
+            chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ค่าข้อมูล',
+                        data: values,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '{{ chart_data.title }}'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+        }
+        
+        // สร้างกราฟ
+        new Chart(ctx, chartConfig);
+        {% endif %}
     });
 </script>
 {% endblock %}

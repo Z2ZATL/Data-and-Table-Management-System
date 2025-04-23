@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 import sqlite3  # นำเข้า sqlite3 สำหรับเชื่อมต่อกับฐานข้อมูล
 import os  # นำเข้า os เพื่อใช้งานตัวแปรสิ่งแวดล้อม
 import scraping  # นำเข้าโมดูล scraping ที่สร้างไว้
+import json  # นำเข้า json สำหรับการแปลงข้อมูล
 
 app = Flask(__name__)  # สร้างแอป Flask
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ตั้งค่า secret key สำหรับความปลอดภัย
@@ -322,16 +323,32 @@ def scrape_website():
             return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
         # ดึงข้อมูลจากเว็บไซต์
-        content = scraping.get_data_from_website(url)
+        result = scraping.get_data_from_website(url)
+        
+        # ตรวจสอบประเภทของข้อมูลที่ได้รับ
+        if isinstance(result, str):
+            # กรณีที่ได้ข้อความแจ้งเตือนเป็น string
+            content = result
+            chart_data = None
+        elif isinstance(result, dict) and 'content' in result:
+            # กรณีที่ได้ข้อมูลเป็น dict ที่มีคีย์ content
+            content = result['content']
+            chart_data = result.get('chart_data')
+        else:
+            # กรณีที่ได้ข้อมูลอื่นๆ
+            content = result
+            chart_data = None
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(
             "scraping_new.html", 
-            content=content, 
+            content=content,
+            chart_data=chart_data,
             searched_url=url, 
             isinstance=isinstance, 
             dict=dict,
             list=list,
+            json=json,
             theme=get_theme_from_cookie(request)
         )
     except Exception as e:

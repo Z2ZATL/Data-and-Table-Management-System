@@ -1,5 +1,8 @@
 import trafilatura
 import requests
+import re
+from bs4 import BeautifulSoup
+import json
 
 def get_website_text_content(url):
     """
@@ -187,8 +190,17 @@ def get_data_from_website(url):
                 text = text[:cutoff+1] + "..."
             else:
                 text = text[:1997] + "..."
+        
+        # วิเคราะห์หาข้อมูลตัวเลขในเนื้อหา
+        numerical_data = extract_numerical_data(text)
+        
+        # สร้างการตอบกลับที่มีทั้งเนื้อหาและข้อมูลกราฟ
+        result = {
+            'content': text,
+            'chart_data': numerical_data
+        }
             
-        return text
+        return result
         
     except requests.exceptions.Timeout:
         return "การเชื่อมต่อกับเว็บไซต์หมดเวลา"
@@ -196,6 +208,124 @@ def get_data_from_website(url):
         return "ไม่สามารถเชื่อมต่อกับเว็บไซต์"
     except Exception as e:
         return f"เกิดข้อผิดพลาด: {str(e)}"
+
+def extract_numerical_data(text):
+    """
+    ฟังก์ชันสำหรับสกัดข้อมูลตัวเลขจากเนื้อหา
+    
+    Args:
+        text (str): เนื้อหาที่ต้องการวิเคราะห์
+        
+    Returns:
+        dict: ข้อมูลสำหรับนำไปแสดงเป็นกราฟ หรือ None ถ้าไม่พบข้อมูลตัวเลข
+    """
+    if not text:
+        return None
+        
+    # แบ่งเนื้อหาเป็นประโยค
+    sentences = re.split(r'[.!?]\s', text)
+    
+    # เก็บข้อมูลตัวเลขและบริบท
+    numerical_data = []
+    
+    # กำหนดคำสำคัญที่มักจะเกี่ยวข้องกับตัวเลข
+    important_keywords = ['เพิ่มขึ้น', 'ลดลง', 'ร้อยละ', 'เปอร์เซ็นต์', 'จำนวน', 'มูลค่า', 'บาท',
+                          'ปี', 'เดือน', 'วัน', 'คน', 'ล้าน', 'พัน', 'สิบ', 'พันล้าน', 'แสน',
+                          'สถิติ', 'อัตรา', 'ระดับ', 'คะแนน', 'คิดเป็น', 'ราคา', 'ดอลลาร์', 'ดัชนี']
+    
+    for sentence in sentences:
+        # ค้นหาตัวเลขในประโยค
+        # 1. ค้นหาตัวเลขทั่วไป (เช่น 12, 3.45, 67,890)
+        numbers = re.findall(r'(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)', sentence)
+        
+        # 2. ค้นหาเปอร์เซ็นต์ (เช่น 10%, 3.5%)
+        percentages = re.findall(r'(\d+(?:\.\d+)?)\s*(?:เปอร์เซ็นต์|%|ร้อยละ)', sentence)
+        
+        # ถ้าพบตัวเลขในประโยคนี้
+        if numbers or percentages:
+            # เช็คว่ามีคำสำคัญในประโยคหรือไม่
+            has_keyword = any(keyword in sentence for keyword in important_keywords)
+            
+            # นับคำสำคัญที่พบในประโยค
+            keyword_count = sum(1 for keyword in important_keywords if keyword in sentence)
+            
+            # เพิ่มคะแนนความสำคัญถ้ามีคำสำคัญหลายคำในประโยคเดียวกัน
+            importance = keyword_count if has_keyword else 0
+            
+            # เพิ่มคะแนนถ้าพบเปอร์เซ็นต์
+            if percentages:
+                importance += 1
+                
+            # เก็บข้อมูลประโยคที่มีความสำคัญ
+            if importance > 0:
+                data = {
+                    'sentence': sentence.strip(),
+                    'numbers': numbers,
+                    'percentages': percentages,
+                    'importance': importance
+                }
+                numerical_data.append(data)
+    
+    # ถ้าไม่พบข้อมูลตัวเลขสำคัญ
+    if not numerical_data:
+        return None
+    
+    # เรียงข้อมูลตามความสำคัญ
+    numerical_data.sort(key=lambda x: x['importance'], reverse=True)
+    
+    # เลือกข้อมูลสำคัญสูงสุด 5 รายการ
+    top_data = numerical_data[:5]
+    
+    # เตรียมข้อมูลสำหรับแสดงผลเป็นกราฟ
+    chart_data = {
+        'type': 'bar',  # ค่าเริ่มต้นเป็นกราฟแท่ง
+        'title': 'ข้อมูลตัวเลขจากบทความ',
+        'data': []
+    }
+    
+    # ตรวจสอบจำนวนข้อมูลที่เก็บมาได้ แล้วกำหนดชนิดของกราฟตามความเหมาะสม
+    num_items = len(top_data)
+    
+    # กำหนดชนิดกราฟตามจำนวนข้อมูล
+    if num_items <= 2:
+        chart_data['type'] = 'pie'  # ใช้กราฟวงกลมถ้ามีข้อมูลน้อย
+    elif any('เพิ่มขึ้น' in item['sentence'] or 'ลดลง' in item['sentence'] or 'เปลี่ยนแปลง' in item['sentence'] for item in top_data):
+        chart_data['type'] = 'line'  # ใช้กราฟเส้นถ้าเกี่ยวข้องกับการเปลี่ยนแปลง
+    
+    # แปลงข้อมูลให้เหมาะสมกับการแสดงผลเป็นกราฟ
+    labels = []
+    values = []
+    
+    for item in top_data:
+        # ใช้ประโยคที่สั้นลงเป็นป้ายชื่อ
+        label = item['sentence']
+        if len(label) > 50:
+            label = label[:47] + '...'
+        
+        # ดึงตัวเลขที่สำคัญที่สุดในประโยค (เลือกตัวเลขแรก)
+        value = 0
+        if item['percentages']:
+            value = float(item['percentages'][0])
+        elif item['numbers']:
+            # ลบเครื่องหมายคอมม่าและแปลงเป็นตัวเลข
+            value_str = item['numbers'][0].replace(',', '')
+            try:
+                value = float(value_str)
+            except ValueError:
+                continue
+        
+        # เพิ่มข้อมูลลงในกราฟ
+        labels.append(label)
+        values.append(value)
+    
+    # เก็บข้อมูลสำหรับกราฟ
+    chart_data['data'] = {
+        'labels': labels,
+        'values': values,
+        'sentences': [item['sentence'] for item in top_data]
+    }
+    
+    return chart_data
 
 # ฟังก์ชันสำหรับดึงข้อมูลข่าวจาก RSS Feed
 def get_news_from_rss(rss_url, limit=5):
