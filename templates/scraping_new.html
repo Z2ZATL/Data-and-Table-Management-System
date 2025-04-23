@@ -40,8 +40,14 @@
                             <i class="fas fa-chart-line me-1"></i> กรองเฉพาะข่าวเกี่ยวกับข้อมูลตัวเลข (ราคาหุ้น, อัตราแลกเปลี่ยน, สถิติ, ฯลฯ)
                         </label>
                     </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="use-ai" checked>
+                        <label class="form-check-label" for="use-ai">
+                            <i class="fas fa-robot me-1"></i> ใช้ AI วิเคราะห์และสรุปเนื้อหา
+                        </label>
+                    </div>
                     <div class="badge bg-info p-2 mb-3">
-                        <i class="fas fa-robot me-1"></i> ใช้ Deepseek AI ช่วยวิเคราะห์และกรองข่าวที่เกี่ยวกับข้อมูลตัวเลข
+                        <i class="fas fa-robot me-1"></i> ใช้ Deepseek AI ช่วยวิเคราะห์ข้อมูลจากเนื้อหาบทความ
                     </div>
                     <form id="headlines-form" action="{{ url_for('scrape_headlines') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="headlines-url">
@@ -49,6 +55,7 @@
                     </form>
                     <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="content-url">
+                        <input type="hidden" name="use_ai" id="use-ai-input" value="on">
                     </form>
                 </div>
             </div>
@@ -128,7 +135,7 @@
             </div>
             {% endif %}
             
-            {% if content.ai_table %}
+            {% if content is defined and content is mapping and content.ai_table %}
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
@@ -209,7 +216,7 @@
             </div>
             {% endif %}
             
-            {% if content and not chart_data %}
+            {% if content is defined and content and not chart_data %}
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
@@ -233,7 +240,7 @@
             {% endif %}
             
             <!-- เว็บไซต์ที่แนะนำ -->
-            {% if not content and not headlines and not error %}
+            {% if (content is not defined or not content) and (headlines is not defined or not headlines) and (error is not defined or not error) %}
             <div class="card shadow-lg mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>เว็บไซต์ที่แนะนำ</h5>
@@ -437,6 +444,11 @@
             button.addEventListener('click', function() {
                 const url = this.getAttribute('data-url');
                 document.getElementById('content-url').value = url;
+                
+                // อัปเดตค่า use_ai ตามการตั้งค่าของ checkbox
+                const useAi = document.getElementById('use-ai').checked;
+                document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                
                 document.getElementById('content-form').submit();
             });
         });
@@ -464,6 +476,11 @@
                 } else {
                     // ส่งฟอร์มดึงเนื้อหา
                     document.getElementById('content-url').value = url;
+                    
+                    // อัปเดตค่า use_ai ตามการตั้งค่าของ checkbox
+                    const useAi = document.getElementById('use-ai').checked;
+                    document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                    
                     document.getElementById('content-form').submit();
                 }
             });
