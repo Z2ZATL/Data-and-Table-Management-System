@@ -1,0 +1,21 @@
+/* ธีมสว่าง */
+html[data-bs-theme="light"] .menu-link {
+    color: #333333 !important;
+}
+
+html[data-bs-theme="light"] .menu-link:hover,
+html[data-bs-theme="light"] .menu-link.active {
+    color: var(--primary-color) !important;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ธีมมืด */
+html[data-bs-theme="dark"] .menu-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-bs-theme="dark"] .menu-link:hover,
+html[data-bs-theme="dark"] .menu-link.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
