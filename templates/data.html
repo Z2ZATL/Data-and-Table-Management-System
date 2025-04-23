@@ -48,7 +48,7 @@
                                             <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-edit me-1"></i> แก้ไข
                                             </a>
-                                            <button type="button" onclick="confirmDelete({{ user.id }})" class="btn btn-sm btn-outline-danger">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="prepareDelete({{ user.id }})">
                                                 <i class="fas fa-trash-alt me-1"></i> ลบ
                                             </button>
                                         </div>
@@ -104,4 +104,33 @@
         </div>
     </div>
 </div>
+
+<!-- Modal สำหรับยืนยันการลบข้อมูล -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">ยืนยันการลบข้อมูล</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">คุณต้องการลบข้อมูลนี้หรือไม่? การลบจะไม่สามารถยกเลิกได้</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">ลบข้อมูล</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // ฟังก์ชันเตรียมข้อมูลสำหรับการลบ
+    function prepareDelete(userId) {
+        // กำหนด URL สำหรับการลบให้กับปุ่มยืนยันการลบ
+        document.getElementById('confirmDeleteBtn').href = `/delete/${userId}`;
+    }
+</script>
 {% endblock %}
