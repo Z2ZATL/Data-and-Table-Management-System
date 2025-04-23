@@ -456,57 +456,64 @@
         `;
         document.head.appendChild(styleElement);
         
-        // สำหรับจัดการกับปุ่มดึงหัวข้อข่าว
-        document.getElementById('get-headlines-btn').addEventListener('click', function() {
-            const url = document.getElementById('url').value;
-            if (url) {
-                // ส่ง URL ไปยังฟอร์ม
-                document.getElementById('headlines-url').value = url;
-                
-                // ส่งค่าตัวเลือกการกรองข่าว
-                const filterNumerical = document.getElementById('filter-numerical').checked;
-                console.log("FilterNumerical checked: ", filterNumerical);
-                document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
-                console.log("FilterNumerical input value: ", document.getElementById('filter-numerical-input').value);
-                
-                // ส่งฟอร์ม
-                document.getElementById('headlines-form').submit();
-            }
-        });
+        // ตรวจเช็คปุ่มก่อนเพิ่ม event listener
+        const headlinesBtn = document.getElementById('get-headlines-btn');
+        if (headlinesBtn) {
+            headlinesBtn.addEventListener('click', function() {
+                const url = document.getElementById('url').value;
+                if (url) {
+                    // ส่ง URL ไปยังฟอร์ม
+                    document.getElementById('headlines-url').value = url;
+                    
+                    // ส่งค่าตัวเลือกการกรองข่าว
+                    const filterNumerical = document.getElementById('filter-numerical').checked;
+                    document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
+                    
+                    // ส่งฟอร์ม
+                    document.getElementById('headlines-form').submit();
+                }
+            });
+        }
         
-        // สำหรับปุ่มดึงเนื้อหาโดยตรง
-        document.getElementById('get-content-direct-btn').addEventListener('click', function() {
-            const url = document.getElementById('url').value;
-            if (url) {
-                // ส่ง URL ไปยังฟอร์ม
-                document.getElementById('content-url').value = url;
-                
-                // ส่งค่าตัวเลือกการใช้ AI
-                const useAI = document.getElementById('use-ai').checked;
-                document.getElementById('use-ai-input').value = useAI ? "on" : "off";
-                
-                // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
-                document.getElementById('extract-mode-input').value = "general";
-                
-                // ส่งฟอร์ม
-                document.getElementById('content-form').submit();
-            }
-        });
+        // ตรวจเช็คปุ่มก่อนเพิ่ม event listener
+        const contentDirectBtn = document.getElementById('get-content-direct-btn');
+        if (contentDirectBtn) {
+            contentDirectBtn.addEventListener('click', function() {
+                const url = document.getElementById('url').value;
+                if (url) {
+                    // ส่ง URL ไปยังฟอร์ม
+                    document.getElementById('content-url').value = url;
+                    
+                    // ส่งค่าตัวเลือกการใช้ AI
+                    const useAI = document.getElementById('use-ai').checked;
+                    document.getElementById('use-ai-input').value = useAI ? "on" : "off";
+                    
+                    // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
+                    document.getElementById('extract-mode-input').value = "general";
+                    
+                    // ส่งฟอร์ม
+                    document.getElementById('content-form').submit();
+                }
+            });
+        }
         
         // สำหรับปุ่มดึงตารางหุ้น/ราคา
-        document.getElementById('get-table-btn').addEventListener('click', function() {
-            const url = document.getElementById('url').value;
-            if (url) {
-                // ส่ง URL ไปยังฟอร์ม
-                document.getElementById('content-url').value = url;
-                
-                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
-                document.getElementById('extract-mode-input').value = "table";
-                
-                // ส่งฟอร์ม
-                document.getElementById('content-form').submit();
-            }
-        });
+        const tableBtn = document.getElementById('get-table-btn');
+        if (tableBtn) {
+            tableBtn.addEventListener('click', function() {
+                const url = document.getElementById('url').value;
+                if (url) {
+                    // ส่ง URL ไปยังฟอร์ม
+                    document.getElementById('content-url').value = url;
+                    
+                    // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                    document.getElementById('extract-mode-input').value = "table";
+                    
+                    // ส่งฟอร์ม
+                    document.getElementById('content-form').submit();
+                }
+            });
+        }
         
         // สำหรับปุ่มดึงเนื้อหาจากหัวข้อข่าว
         const fetchArticleButtons = document.querySelectorAll('.fetch-article');
