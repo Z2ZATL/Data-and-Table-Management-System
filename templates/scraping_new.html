@@ -31,11 +31,8 @@
                             <button type="submit" class="btn btn-primary" id="get-headlines-btn" form="headlines-form">
                                 <i class="fas fa-list me-2"></i>ดึงหัวข้อข่าว
                             </button>
-                            <button type="submit" class="btn btn-secondary" id="get-content-btn" form="content-form">
-                                <i class="fas fa-search me-2"></i>ดึงเนื้อหา
-                            </button>
                         </div>
-                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล</div>
+                        <div class="form-text">ป้อน URL ของเว็บไซต์ข่าวที่ต้องการดึงหัวข้อข่าว เช่น thairath.co.th หรือ matichon.co.th</div>
                     </div>
                     <form id="headlines-form" action="{{ url_for('scrape_headlines') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="headlines-url">
@@ -289,20 +286,12 @@
         `;
         document.head.appendChild(styleElement);
         
-        // สำหรับจัดการกับปุ่มดึงหัวข้อข่าวและดึงเนื้อหา
+        // สำหรับจัดการกับปุ่มดึงหัวข้อข่าว
         document.getElementById('get-headlines-btn').addEventListener('click', function() {
             const url = document.getElementById('url').value;
             if (url) {
                 document.getElementById('headlines-url').value = url;
                 document.getElementById('headlines-form').submit();
-            }
-        });
-        
-        document.getElementById('get-content-btn').addEventListener('click', function() {
-            const url = document.getElementById('url').value;
-            if (url) {
-                document.getElementById('content-url').value = url;
-                document.getElementById('content-form').submit();
             }
         });
         
