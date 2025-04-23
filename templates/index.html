@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฟอร์มลงทะเบียน</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #7a4adf, #c06cfc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            transform: translateY(-100px);
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: #7a4adf;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        label {
+            font-size: 1.1rem;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #7a4adf;
+            box-shadow: 0 0 10px rgba(122, 74, 223, 0.2);
+        }
+
+        input[type="submit"] {
+            background-color: #7a4adf;
+            color: white;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #5f33b0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>ฟอร์มลงทะเบียน</h2>
+        <form action="/submit" method="post">
+            <label for="first_name">ชื่อ:</label>
+            <input type="text" id="first_name" name="first_name" required placeholder="กรุณากรอกชื่อ">
+
+            <label for="last_name">นามสกุล:</label>
+            <input type="text" id="last_name" name="last_name" required placeholder="กรุณากรอกนามสกุล">
+
+            <label for="gender">เพศ:</label>
+            <select name="gender" id="gender" required>
+                <option value="ชาย">ชาย</option>
+                <option value="หญิง">หญิง</option>
+            </select>
+
+            <label for="age">อายุ:</label>
+            <input type="number" id="age" name="age" required placeholder="กรุณากรอกอายุ">
+
+            <label for="province">จังหวัด:</label>
+            <input type="text" id="province" name="province" required placeholder="กรุณากรอกจังหวัด">
+
+            <input type="submit" value="ส่งข้อมูล">
+        </form>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>วิเคราะห์ข้อมูล</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>วิเคราะห์ข้อมูลเพศและอายุ</h2>
+    <canvas id="genderChart" width="400" height="200"></canvas>
+    <script>
+        const users = {{ users|tojson }};
+        const genderCount = {"ชาย": 0, "หญิง": 0};
+        users.forEach(user => {
+            genderCount[user.gender]++;
+        });
+
+        const ctx = document.getElementById('genderChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['ชาย', 'หญิง'],
+                datasets: [{
+                    label: 'จำนวนผู้ใช้ตามเพศ',
+                    data: [genderCount["ชาย"], genderCount["หญิง"]],
+                    backgroundColor: ['#36A2EB', '#FF6384']
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

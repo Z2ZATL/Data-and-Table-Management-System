@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- นำเข้า Chart.js สำหรับสร้างกราฟ -->
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f3f4f7;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #7a4adf;
+      margin-bottom: 40px;
+    }
+
+    label {
+      font-size: 1.1rem;
+      color: #333;
+      margin-right: 10px;
+    }
+
+    select {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-bottom: 30px;
+      width: 200px;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 500px;
+      height: 400px;
+      margin-top: 30px;
+    }
+
+    select, label {
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Data Analysis</h1>
+
+    <div>
+      <label>Filter by Gender:</label>
+      <select id="genderFilter">
+        <option value="All">All</option>
+        <option value="ชาย">ชาย</option>
+        <option value="หญิง">หญิง</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Filter by Age Range:</label>
+      <select id="ageFilter">
+        <option value="All">All</option>
+        <option value="0-20">0-20</option>
+        <option value="21-40">21-40</option>
+        <option value="41+">41+</option>
+      </select>
+    </div>
+
+    <canvas id="provinceChart" width="400" height="400"></canvas>
+  </div>
+
+  <script>
+    // นำข้อมูลผู้ใช้จาก Flask มาที่ JavaScript
+    const users = {{ users|tojson }};  // แปลงข้อมูล Python เป็น JSON
+
+    const genderSelect = document.getElementById("genderFilter");
+    const ageSelect = document.getElementById("ageFilter");
+
+    function filterData(gender, ageRange) {
+      return users.filter(user => {
+        const passGender = gender === "All" || user.gender === gender;
+        const age = parseInt(user.age);
+        let passAge = true;
+        if (ageRange === "0-20") passAge = age >= 0 && age <= 20;
+        else if (ageRange === "21-40") passAge = age >= 21 && age <= 40;
+        else if (ageRange === "41+") passAge = age > 40;
+        return passGender && passAge;
+      });
+    }
+
+    function countByProvince(data) {
+      const counts = {};
+      data.forEach(user => {
+        counts[user.province] = (counts[user.province] || 0) + 1;
+      });
+      return counts;
+    }
+
+    function updateChart(chart, data) {
+      const provinceCounts = countByProvince(data);
+      chart.data.labels = Object.keys(provinceCounts);
+      chart.data.datasets[0].data = Object.values(provinceCounts);
+      chart.update();
+    }
+
+    const ctx = document.getElementById('provinceChart').getContext('2d');
+    const provinceChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'จำนวนคนในแต่ละจังหวัด',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(201, 203, 207, 0.6)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: {
+          animateScale: true,
+          animateRotate: true
+        }
+      }
+    });
+
+    function handleFilterChange() {
+      const selectedGender = genderSelect.value;
+      const selectedAge = ageSelect.value;
+      const filtered = filterData(selectedGender, selectedAge);
+      updateChart(provinceChart, filtered);
+    }
+
+    genderSelect.addEventListener("change", handleFilterChange);
+    ageSelect.addEventListener("change", handleFilterChange);
+
+    handleFilterChange();  // แสดงกราฟครั้งแรก
+  </script>
+
+</body>
+</html>
