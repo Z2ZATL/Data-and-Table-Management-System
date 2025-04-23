@@ -43,8 +43,16 @@ def submit():
         conn.execute("INSERT INTO users (first_name, last_name, gender, age, province, pet) VALUES (?, ?, ?, ?, ?, ?)",
                     (first_name, last_name, gender, age, province, pet))  # บันทึกข้อมูลลงในฐานข้อมูล พร้อมสัตว์เลี้ยง
         conn.commit()  # ยืนยันการบันทึกข้อมูล
+        
+        # นับจำนวนผู้ใช้ทั้งหมดเพื่อคำนวณหน้าสุดท้าย
+        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        items_per_page = 50  # จำนวนรายการต่อหน้า
+        last_page = (total_users + items_per_page - 1) // items_per_page  # คำนวณหน้าสุดท้าย
+        
         conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
-        return redirect(url_for('data'))  # เปลี่ยนเส้นทางไปที่หน้า /data เพื่อแสดงข้อมูล
+        
+        # เปลี่ยนเส้นทางไปที่หน้าสุดท้ายของข้อมูล
+        return redirect(url_for('data', page=last_page))
     except Exception as e:
         return f"เกิดข้อผิดพลาด: {str(e)}", 500
 
@@ -170,9 +178,16 @@ def edit(user_id):
                 (first_name, last_name, gender, age, province, pet, user_id)
             )
             conn.commit()
+            
+            # ค้นหาว่าข้อมูลผู้ใช้นี้อยู่ในหน้าไหน
+            items_per_page = 50  # จำนวนรายการต่อหน้า
+            user_position = conn.execute("SELECT COUNT(*) FROM users WHERE id <= ?", (user_id,)).fetchone()[0]
+            user_page = (user_position + items_per_page - 1) // items_per_page
+            
             conn.close()
             
-            return redirect(url_for('data'))  # กลับไปที่หน้าแสดงข้อมูล
+            # กลับไปที่หน้าที่ข้อมูลผู้ใช้นี้อยู่
+            return redirect(url_for('data', page=user_page))
         
         # ดึงข้อมูลของผู้ใช้ที่ต้องการแก้ไข
         user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
@@ -191,12 +206,29 @@ def delete(user_id):
     try:
         conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
         
+        # ค้นหาว่าข้อมูลผู้ใช้นี้อยู่ในหน้าไหนก่อนลบ
+        items_per_page = 50  # จำนวนรายการต่อหน้า
+        user_position = conn.execute("SELECT COUNT(*) FROM users WHERE id <= ?", (user_id,)).fetchone()[0]
+        current_page = (user_position + items_per_page - 1) // items_per_page
+        
+        # นับจำนวนผู้ใช้ทั้งหมด
+        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        
         # ลบข้อมูลผู้ใช้จากฐานข้อมูล
         conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
         conn.commit()
+        
+        # คำนวณจำนวนหน้าทั้งหมดหลังจากลบ
+        total_pages = ((total_users - 1) + items_per_page - 1) // items_per_page
+        
+        # ถ้าหน้าปัจจุบันมากกว่าจำนวนหน้าทั้งหมดหลังลบ ให้ไปหน้าสุดท้าย
+        if current_page > total_pages and total_pages > 0:
+            current_page = total_pages
+        
         conn.close()
         
-        return redirect(url_for('data'))  # กลับไปที่หน้าแสดงข้อมูล
+        # กลับไปที่หน้าเดิม หรือหน้าสุดท้ายถ้าหน้าเดิมไม่มีแล้ว
+        return redirect(url_for('data', page=current_page))
     
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการลบข้อมูล: {str(e)}", 500

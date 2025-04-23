@@ -329,6 +329,9 @@
     <script>
         // ฟังก์ชันสำหรับยืนยันการลบข้อมูล
         function confirmDelete(userId) {
+            // ป้องกันการเลื่อนขึ้นบนสุดของหน้า
+            event.preventDefault();
+            
             if (confirm("ต้องการลบข้อมูลนี้หรือไม่? การลบจะไม่สามารถยกเลิกได้")) {
                 window.location.href = `/delete/${userId}`;
             }
