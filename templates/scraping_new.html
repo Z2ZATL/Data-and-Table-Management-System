@@ -36,7 +36,7 @@
                         </div>
                         <div class="form-text">ป้อน URL ของเว็บไซต์ที่เกี่ยวกับการเงินและราคา เช่น set.or.th, goldtraders.or.th หรือ bot.or.th</div>
                         <div class="alert alert-info p-2 mt-2" role="alert">
-                            <i class="fas fa-info-circle me-1"></i> <small>เครื่องมือนี้เหมาะสำหรับเว็บไซต์ที่มีข้อมูลตารางการเงินเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน โดยใช้ปุ่ม "<b>ดึงตารางหุ้น/ราคา</b>" เพื่อดึงข้อมูลตารางโดยตรง</small>
+                            <i class="fas fa-info-circle me-1"></i> <small>เครื่องมือนี้เหมาะสำหรับเว็บไซต์ที่มีข้อมูลตารางการเงินเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน</small>
                         </div>
                     </div>
                     <div class="form-check form-switch mb-3">
@@ -54,10 +54,6 @@
                     <div class="badge bg-info p-2 mb-3">
                         <i class="fas fa-robot me-1"></i> ใช้ Gemini AI ช่วยวิเคราะห์ข้อมูลจากเนื้อหาบทความ
                     </div>
-                    <form id="headlines-form" action="{{ url_for('scrape_headlines') }}" method="post" style="display: none;">
-                        <input type="hidden" name="url" id="headlines-url">
-                        <input type="hidden" name="filter_numerical" id="filter-numerical-input">
-                    </form>
                     <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="content-url">
                         <input type="hidden" name="use_ai" id="use-ai-input" value="on">
@@ -456,47 +452,6 @@
         `;
         document.head.appendChild(styleElement);
         
-        // ตรวจเช็คปุ่มก่อนเพิ่ม event listener
-        const headlinesBtn = document.getElementById('get-headlines-btn');
-        if (headlinesBtn) {
-            headlinesBtn.addEventListener('click', function() {
-                const url = document.getElementById('url').value;
-                if (url) {
-                    // ส่ง URL ไปยังฟอร์ม
-                    document.getElementById('headlines-url').value = url;
-                    
-                    // ส่งค่าตัวเลือกการกรองข่าว
-                    const filterNumerical = document.getElementById('filter-numerical').checked;
-                    document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
-                    
-                    // ส่งฟอร์ม
-                    document.getElementById('headlines-form').submit();
-                }
-            });
-        }
-        
-        // ตรวจเช็คปุ่มก่อนเพิ่ม event listener
-        const contentDirectBtn = document.getElementById('get-content-direct-btn');
-        if (contentDirectBtn) {
-            contentDirectBtn.addEventListener('click', function() {
-                const url = document.getElementById('url').value;
-                if (url) {
-                    // ส่ง URL ไปยังฟอร์ม
-                    document.getElementById('content-url').value = url;
-                    
-                    // ส่งค่าตัวเลือกการใช้ AI
-                    const useAI = document.getElementById('use-ai').checked;
-                    document.getElementById('use-ai-input').value = useAI ? "on" : "off";
-                    
-                    // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
-                    document.getElementById('extract-mode-input').value = "general";
-                    
-                    // ส่งฟอร์ม
-                    document.getElementById('content-form').submit();
-                }
-            });
-        }
-        
         // สำหรับปุ่มดึงตารางหุ้น/ราคา
         const tableBtn = document.getElementById('get-table-btn');
         if (tableBtn) {
@@ -708,19 +663,7 @@
                 const url = this.getAttribute('data-url');
                 document.getElementById('url').value = url;
                 
-                // ตรวจสอบว่าเป็นเว็บไซต์ข่าวหรือไม่
-                if (this.classList.contains('headline-site')) {
-                    // ส่งฟอร์มดึงหัวข้อข่าว
-                    document.getElementById('headlines-url').value = url;
-                    
-                    // ส่งค่าตัวเลือกการกรองข่าว
-                    const filterNumerical = document.getElementById('filter-numerical').checked;
-                    console.log("FilterNumerical checked: ", filterNumerical);
-                    document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
-                    console.log("FilterNumerical input value: ", document.getElementById('filter-numerical-input').value);
-                    
-                    document.getElementById('headlines-form').submit();
-                } else if (this.classList.contains('table-site')) {
+                if (this.classList.contains('table-site')) {
                     // ส่งฟอร์มดึงตารางข้อมูล
                     document.getElementById('content-url').value = url;
                     
