@@ -58,9 +58,14 @@
                                 <thead class="table-light">
                                     <tr id="header_row">
                                         {% for header in table_data.headers %}
-                                        <th>
+                                        <th class="position-relative">
                                             <input type="text" class="form-control form-control-sm header-cell" 
                                                   value="{{ header }}" placeholder="ชื่อคอลัมน์" required>
+                                            {% if not loop.first or table_data.headers|length > 2 %}
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1" style="font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            {% endif %}
                                         </th>
                                         {% endfor %}
                                         <th style="width: 100px;">
@@ -182,6 +187,55 @@
         
         // เรียกใช้ฟังก์ชันเพื่อเพิ่ม event listener แรกเริ่ม
         attachRemoveRowEvents();
+        
+        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบคอลัมน์
+        function attachRemoveColumnEvents() {
+            const removeColumnButtons = document.querySelectorAll('.remove-column');
+            removeColumnButtons.forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    // ตรวจสอบว่ามีมากกว่า 2 คอลัมน์หรือไม่
+                    const headerCells = headerRow.querySelectorAll('th');
+                    if (headerCells.length <= 3) { // รวมคอลัมน์ปุ่มด้วย
+                        alert('ต้องมีอย่างน้อย 2 คอลัมน์ในตาราง');
+                        return;
+                    }
+                    
+                    // หาลำดับของคอลัมน์
+                    const columnIndex = Array.from(headerRow.children).indexOf(this.closest('th'));
+                    
+                    // ลบ header
+                    headerRow.children[columnIndex].remove();
+                    
+                    // ลบข้อมูลในแต่ละแถว
+                    const rows = document.querySelectorAll('#editable_table tbody tr');
+                    rows.forEach(row => {
+                        row.children[columnIndex].remove();
+                    });
+                });
+            });
+        }
+        
+        // เรียกใช้ฟังก์ชันลบคอลัมน์
+        attachRemoveColumnEvents();
+        
+        // เพิ่ม event listener สำหรับคอลัมน์ใหม่
+        addColumnBtn.addEventListener('click', function() {
+            // หลังจากเพิ่มคอลัมน์ใหม่
+            setTimeout(() => {
+                const newColumnButton = document.createElement('button');
+                newColumnButton.className = 'btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1';
+                newColumnButton.style.cssText = 'font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;';
+                newColumnButton.innerHTML = '<i class="fas fa-times"></i>';
+                
+                // เพิ่มปุ่มลบในคอลัมน์ที่เพิ่มใหม่
+                const newColumn = headerRow.children[headerRow.children.length - 2]; // ก่อนคอลัมน์ปุ่มสุดท้าย
+                newColumn.classList.add('position-relative');
+                newColumn.appendChild(newColumnButton);
+                
+                // เพิ่ม event listener
+                attachRemoveColumnEvents();
+            }, 100);
+        });
         
         // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
         const form = document.getElementById('tableForm');
