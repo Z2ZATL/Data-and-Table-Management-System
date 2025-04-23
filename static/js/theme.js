@@ -46,15 +46,15 @@ function applyTheme(theme) {
             navbar.classList.remove('navbar-light');
             
             // สำหรับธีมมืด กำหนดสีข้อความเป็นสีขาว
-            const navLinks = document.querySelectorAll('.nav-link');
+            const navLinks = document.querySelectorAll('.menu-link');
             navLinks.forEach(link => {
                 link.style.color = 'rgba(255, 255, 255, 0.85)';
             });
             
             // CSS สำหรับธีมมืด
             cssContent = `
-                .navbar-dark .nav-link:hover, 
-                .navbar-dark .nav-link.active {
+                .navbar-dark .menu-link:hover, 
+                .navbar-dark .menu-link.active {
                     color: white !important;
                     background-color: rgba(255, 255, 255, 0.1);
                 }
@@ -64,15 +64,15 @@ function applyTheme(theme) {
             navbar.classList.remove('navbar-dark');
             
             // สำหรับธีมสว่าง กำหนดสีข้อความเป็นสีดำ
-            const navLinks = document.querySelectorAll('.nav-link');
+            const navLinks = document.querySelectorAll('.menu-link');
             navLinks.forEach(link => {
                 link.style.color = '#333333';
             });
             
             // CSS สำหรับธีมสว่าง
             cssContent = `
-                .navbar-light .nav-link:hover, 
-                .navbar-light .nav-link.active {
+                .navbar-light .menu-link:hover, 
+                .navbar-light .menu-link.active {
                     color: var(--primary-color) !important;
                     background-color: rgba(0, 0, 0, 0.05);
                 }
