@@ -1,0 +1,313 @@
+<div class="mb-4" style="min-height: 400px"><div><div class="table-simple-customfield table-custom-field--cnc table-responsive-md"><table id="tableSimple-h8sw19jbt8" role="table" class="table b-table table-hover-underline b-table-selectable b-table-no-border-collapse"><thead role="rowgroup" class=""> <tr class="header"><th role="rowheader" scope="col" class="px-4 text-nowrap text-start bg-th fw-normal tableSimple-h8sw19jbt8-thParent-0 b-table-sticky-column table-b-table-default column-sticky" style="left: 0px;">
+              กลุ่มอุตสาหกรรม/หมวดธุรกิจ
+             <span class="aria-sort-highlight-dot"></span></th><th role="rowheader" scope="col" class="text-nowrap text-end bg-th fw-normal tableSimple-h8sw19jbt8-thParent-1">
+              ล่าสุด
+             <span class="aria-sort-highlight-dot"></span></th><th role="rowheader" scope="col" class="text-nowrap text-end bg-th fw-normal tableSimple-h8sw19jbt8-thParent-2">
+              เปลี่ยนแปลง
+             <span class="aria-sort-highlight-dot"></span></th><th role="rowheader" scope="col" class="text-nowrap text-end bg-th fw-normal tableSimple-h8sw19jbt8-thParent-3">
+              % เปลี่ยนแปลง
+             <span class="aria-sort-highlight-dot"></span></th><th role="rowheader" scope="col" class="text-nowrap text-end bg-th fw-normal tableSimple-h8sw19jbt8-thParent-4">
+              ปริมาณ (หุ้น)
+             <span class="aria-sort-highlight-dot"></span></th><th role="rowheader" scope="col" class="px-4 text-nowrap text-end bg-th fw-normal tableSimple-h8sw19jbt8-thParent-5">
+              มูลค่า ('000 บาท)
+             <span class="aria-sort-highlight-dot"></span></th></tr> <tr role="row" class="header"></tr></thead> <tbody role="rowgroup"><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-0 tableSimple-h8sw19jbt8-body-tr-selected-ugf15g90yh-0 tableSimple-h8sw19jbt8-tr-filter-parent-0"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-0-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-0" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-0" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-0" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/agro" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">AGRO</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เกษตรและอุตสาหกรรมอาหาร</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          328.36
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.77</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.24</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          205,526,000
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          1,423,080.75
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-0" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-0-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-0-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/agro/agri" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">AGRI</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ธุรกิจการเกษตร</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-0-1" class="bg-td-child text-end bg-td">
+          176.09
+        </td><td id="tableSimple-h8sw19jbt8-accordion-0-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+1.01</span></td><td id="tableSimple-h8sw19jbt8-accordion-0-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.58</span></td><td id="tableSimple-h8sw19jbt8-accordion-0-4" class="bg-td-child text-end bg-td">
+          31,934,200
+        </td><td id="tableSimple-h8sw19jbt8-accordion-0-5" class="bg-td-child px-4 text-end bg-td">
+          108,343.74
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-0" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-0-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-0-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/agro/food" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">FOOD</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  อาหารและเครื่องดื่ม</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-0-1" class="bg-td-child text-end bg-td">
+          9,309.19
+        </td><td id="tableSimple-h8sw19jbt8-accordion-0-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+20.35</span></td><td id="tableSimple-h8sw19jbt8-accordion-0-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.22</span></td><td id="tableSimple-h8sw19jbt8-accordion-0-4" class="bg-td-child text-end bg-td">
+          173,597,200
+        </td><td id="tableSimple-h8sw19jbt8-accordion-0-5" class="bg-td-child px-4 text-end bg-td">
+          1,314,781.22
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-1 tableSimple-h8sw19jbt8-body-tr-selected-jq66upurb6-1 tableSimple-h8sw19jbt8-tr-filter-parent-1"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-1-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-1" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-1" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-1" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/consump" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">CONSUMP</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  สินค้าอุปโภคบริโภค</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          45.30
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.08</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.18</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          39,973,500
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          55,255.28
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-1" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-1-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-1-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/consump/fashion" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">FASHION</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  แฟชั่น</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-1-1" class="bg-td-child text-end bg-td">
+          569.11
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-2.37</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.41</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-4" class="bg-td-child text-end bg-td">
+          1,724,400
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-5" class="bg-td-child px-4 text-end bg-td">
+          21,982.77
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-1" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-1-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-1-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/consump/home" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">HOME</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ของใช้ในครัวเรือนและสำนักงาน</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-1-1" class="bg-td-child text-end bg-td">
+          16.04
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.30</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+1.91</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-4" class="bg-td-child text-end bg-td">
+          33,892,300
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-5" class="bg-td-child px-4 text-end bg-td">
+          4,233.55
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-1" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-1-2 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-1-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/consump/person" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PERSON</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ของใช้ส่วนตัวและเวชภัณฑ์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-1-1" class="bg-td-child text-end bg-td">
+          70.07
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.28</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.40</span></td><td id="tableSimple-h8sw19jbt8-accordion-1-4" class="bg-td-child text-end bg-td">
+          4,356,800
+        </td><td id="tableSimple-h8sw19jbt8-accordion-1-5" class="bg-td-child px-4 text-end bg-td">
+          29,038.96
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-2 tableSimple-h8sw19jbt8-body-tr-selected-li9lqqx7x9-2 tableSimple-h8sw19jbt8-tr-filter-parent-2"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-2-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-2" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-2" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-2" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/fincial" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">FINCIAL</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ธุรกิจการเงิน</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          132.93
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.39</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.29</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          596,874,500
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          6,623,532.81
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-2" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-2-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-2-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/fincial/bank" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">BANK</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ธนาคาร</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-2-1" class="bg-td-child text-end bg-td">
+          383.48
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.73</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.19</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-4" class="bg-td-child text-end bg-td">
+          460,590,700
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-5" class="bg-td-child px-4 text-end bg-td">
+          5,640,423.14
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-2" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-2-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-2-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/fincial/fin" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">FIN</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เงินทุนและหลักทรัพย์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-2-1" class="bg-td-child text-end bg-td">
+          2,532.54
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+23.77</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.95</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-4" class="bg-td-child text-end bg-td">
+          128,644,600
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-5" class="bg-td-child px-4 text-end bg-td">
+          896,447.95
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-2" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-2-2 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-2-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/fincial/insur" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">INSUR</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ประกันภัยและประกันชีวิต</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-2-1" class="bg-td-child text-end bg-td">
+          8,871.03
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-14.29</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.16</span></td><td id="tableSimple-h8sw19jbt8-accordion-2-4" class="bg-td-child text-end bg-td">
+          7,659,200
+        </td><td id="tableSimple-h8sw19jbt8-accordion-2-5" class="bg-td-child px-4 text-end bg-td">
+          86,674.33
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-3 tableSimple-h8sw19jbt8-body-tr-selected-c5fdvrgreu-3 tableSimple-h8sw19jbt8-tr-filter-parent-3"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-3-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-3" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-3" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-3" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/indus" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">INDUS</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  สินค้าอุตสาหกรรม</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          47.70
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-danger"><!----> <span class="theme-danger">-0.22</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-danger"><!----> <span class="theme-danger">-0.46</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          72,244,700
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          841,003.00
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/auto" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">AUTO</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ยานยนต์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          276.89
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-0.73</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-0.26</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          5,976,700
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          14,422.23
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/imm" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">IMM</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  วัสดุอุตสาหกรรมและเครื่องจักร</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          17.83
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-success">+0.09</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-success">+0.51</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          3,970,500
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          6,839.53
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-2 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/paper" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PAPER</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  กระดาษและวัสดุการพิมพ์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          2,166.11
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-normal">0.00</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-normal">0.00</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          66,100
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          509.08
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-3 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/petro" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PETRO</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ปิโตรเคมีและเคมีภัณฑ์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          437.62
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-4.30</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-0.97</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          35,209,900
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          628,405.53
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-4 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/pkg" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PKG</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  บรรจุภัณฑ์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          1,791.73
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-success">+0.36</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-success">+0.02</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          17,034,600
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          184,750.83
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-3" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-3-5 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-3-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/indus/steel" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">STEEL</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เหล็ก และ ผลิตภัณฑ์โลหะ</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-3-1" class="bg-td-child text-end bg-td">
+          18.71
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-2" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-0.20</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-3" class="bg-td-child text-end bg-td  theme-danger"><span class="theme-danger">-1.06</span></td><td id="tableSimple-h8sw19jbt8-accordion-3-4" class="bg-td-child text-end bg-td">
+          9,977,300
+        </td><td id="tableSimple-h8sw19jbt8-accordion-3-5" class="bg-td-child px-4 text-end bg-td">
+          5,954.54
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-4 tableSimple-h8sw19jbt8-body-tr-selected-7g3u6j7k8l-4 tableSimple-h8sw19jbt8-tr-filter-parent-4"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-4-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-4" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-4" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-4" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/propcon" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">PROPCON</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  อสังหาริมทรัพย์และก่อสร้าง</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          65.59
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.21</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.32</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          389,778,700
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          1,506,891.49
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-4" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-4-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-4-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/propcon/conmat" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">CONMAT</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  วัสดุก่อสร้าง</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-4-1" class="bg-td-child text-end bg-td">
+          4,438.70
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-14.55</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.33</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-4" class="bg-td-child text-end bg-td">
+          11,788,300
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-5" class="bg-td-child px-4 text-end bg-td">
+          338,668.77
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-4" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-4-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-4-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/propcon/prop" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PROP</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  พัฒนาอสังหาริมทรัพย์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-4-1" class="bg-td-child text-end bg-td">
+          150.93
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.43</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.29</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-4" class="bg-td-child text-end bg-td">
+          288,701,100
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-5" class="bg-td-child px-4 text-end bg-td">
+          1,054,878.08
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-4" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-4-2 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-4-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/propcon/pf&amp;reit" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PF&amp;REIT</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  กองทุนรวมอสังหาริมทรัพย์และกองทรัสต์เพื่อการลงทุนในอสังหาริมทรัพย์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-4-1" class="bg-td-child text-end bg-td">
+          121.73
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+1.08</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.90</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-4" class="bg-td-child text-end bg-td">
+          5,822,000
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-5" class="bg-td-child px-4 text-end bg-td">
+          49,475.21
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-4" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-4-3 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-4-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/propcon/cons" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">CONS</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  บริการรับเหมาก่อสร้าง</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-4-1" class="bg-td-child text-end bg-td">
+          31.67
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.54</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+1.73</span></td><td id="tableSimple-h8sw19jbt8-accordion-4-4" class="bg-td-child text-end bg-td">
+          83,471,000
+        </td><td id="tableSimple-h8sw19jbt8-accordion-4-5" class="bg-td-child px-4 text-end bg-td">
+          63,920.18
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-5 tableSimple-h8sw19jbt8-body-tr-selected-7kghcduw3l-5 tableSimple-h8sw19jbt8-tr-filter-parent-5"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-5-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-5" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-5" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-5" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/resourc" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">RESOURC</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ทรัพยากร</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          134.30
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.35</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.26</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          289,017,800
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          4,089,279.76
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-5" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-5-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-5-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/resourc/energ" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">ENERG</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  พลังงานและสาธารณูปโภค</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-5-1" class="bg-td-child text-end bg-td">
+          15,318.51
+        </td><td id="tableSimple-h8sw19jbt8-accordion-5-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+40.73</span></td><td id="tableSimple-h8sw19jbt8-accordion-5-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.27</span></td><td id="tableSimple-h8sw19jbt8-accordion-5-4" class="bg-td-child text-end bg-td">
+          289,017,800
+        </td><td id="tableSimple-h8sw19jbt8-accordion-5-5" class="bg-td-child px-4 text-end bg-td">
+          4,089,279.76
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-5" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-5-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-5-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/resourc/mine" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">MINE</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เหมืองแร่</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-5-1" class="bg-td-child text-end bg-td">
+          4.78
+        </td><td id="tableSimple-h8sw19jbt8-accordion-5-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-normal">-</span></td><td id="tableSimple-h8sw19jbt8-accordion-5-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-normal">-</span></td><td id="tableSimple-h8sw19jbt8-accordion-5-4" class="bg-td-child text-end bg-td">
+          -
+        </td><td id="tableSimple-h8sw19jbt8-accordion-5-5" class="bg-td-child px-4 text-end bg-td">
+          -
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-6 tableSimple-h8sw19jbt8-body-tr-selected-vctif3wy4j-6 tableSimple-h8sw19jbt8-tr-filter-parent-6"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-6-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-6" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-6" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-6" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/service" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">SERVICE</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  บริการ</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          313.90
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.58</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+0.19</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          655,006,700
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          5,367,142.85
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/comm" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">COMM</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  พาณิชย์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          24,120.89
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-110.91</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.46</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          157,694,000
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          1,739,808.93
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/helth" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">HELTH</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  การแพทย์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          4,954.53
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-52.43</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-1.05</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          52,570,500
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          920,779.03
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-2 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/media" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">MEDIA</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  สื่อและสิ่งพิมพ์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          23.48
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.22</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-0.93</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          134,940,200
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          297,042.95
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-3 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/prof" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">PROF</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  บริการเฉพาะกิจ</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          192.75
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-3.09</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-danger">-1.58</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          72,468,700
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          48,975.16
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-4 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/tourism" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">TOURISM</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  การท่องเที่ยวและสันทนาการ</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          441.82
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.59</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.13</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          22,052,700
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          226,289.89
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-6" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-6-5 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-6-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/service/trans" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">TRANS</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ขนส่งและโลจิสติกส์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-6-1" class="bg-td-child text-end bg-td">
+          207.88
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+4.68</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+2.30</span></td><td id="tableSimple-h8sw19jbt8-accordion-6-4" class="bg-td-child text-end bg-td">
+          215,292,900
+        </td><td id="tableSimple-h8sw19jbt8-accordion-6-5" class="bg-td-child px-4 text-end bg-td">
+          2,134,395.57
+        </td></tr><tr role="row" data-itemselected="false" class="tableSimple-h8sw19jbt8-body-tr-7 tableSimple-h8sw19jbt8-body-tr-selected-kjf3erj736-7 tableSimple-h8sw19jbt8-tr-filter-parent-7"><td role="cell" data-key="symbol" class="tableSimple-h8sw19jbt8-td-simple-column-0 tableSimple-h8sw19jbt8-tdParent-0 text-start bg-td  b-table-sticky-column table-b-table-default column-sticky p-0" style="left: 0px;"><!----> <button id="symbolID-7-0" type="button" data-parent="tableSimple-h8sw19jbt8-body-tr-7" data-index="0" data-bs-toggle="collapse" data-bs-target="#tableSimple-h8sw19jbt8-accordion-7" aria-expanded="true" aria-controls="tableSimple-h8sw19jbt8-accordion-7" class="btn-accordion px-4"> <div class="btn-quote d-flex align-items-center w-100"><div class="
+                  plus
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  me-3
+                "></div> <a href="/th/market/index/set/tech" data-bs-toggle="collapse" data-bs-target="" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="heading-font-family">TECH</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เทคโนโลยี</span></div></a></div></button></td><td role="cell" data-key="last" class="tableSimple-h8sw19jbt8-td-simple-column-1 tableSimple-h8sw19jbt8-tdParent-1 text-end bg-td"><!----> 
+          282.67
+        </td><td role="cell" data-key="change" class="tableSimple-h8sw19jbt8-td-simple-column-2 tableSimple-h8sw19jbt8-tdParent-2 text-end bg-td  theme-success"><!----> <span class="theme-success">+7.39</span></td><td role="cell" data-key="percentChange" class="tableSimple-h8sw19jbt8-td-simple-column-3 tableSimple-h8sw19jbt8-tdParent-3 text-end bg-td  theme-success"><!----> <span class="theme-success">+2.68</span></td><td role="cell" data-key="volume" class="tableSimple-h8sw19jbt8-td-simple-column-4 tableSimple-h8sw19jbt8-tdParent-4 text-end bg-td"><!----> 
+          310,437,000
+        </td><td role="cell" data-key="value" class="tableSimple-h8sw19jbt8-td-simple-column-5 tableSimple-h8sw19jbt8-tdParent-5 px-4 text-end bg-td"><!----> 
+          5,654,793.19
+        </td></tr> <tr role="row" id="tableSimple-h8sw19jbt8-accordion-7" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-7-0 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-7-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/tech/etron" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">ETRON</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  ชิ้นส่วนอิเล็กทรอนิกส์</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-7-1" class="bg-td-child text-end bg-td">
+          8,981.90
+        </td><td id="tableSimple-h8sw19jbt8-accordion-7-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+560.23</span></td><td id="tableSimple-h8sw19jbt8-accordion-7-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+6.65</span></td><td id="tableSimple-h8sw19jbt8-accordion-7-4" class="bg-td-child text-end bg-td">
+          149,830,100
+        </td><td id="tableSimple-h8sw19jbt8-accordion-7-5" class="bg-td-child px-4 text-end bg-td">
+          4,102,122.46
+        </td></tr><tr role="row" id="tableSimple-h8sw19jbt8-accordion-7" aria-labelledby="accordion-heading" data-itemselected="false" class="accordion-collapse tableSimple-h8sw19jbt8-accordion-7-1 collapse show" style=""><td id="tableSimple-h8sw19jbt8-accordion-7-0" class="ps-3 bg-td-child b-table-sticky-column table-b-table-default column-sticky text-start bg-td "><div class="btn-quote d-flex align-items-center"><a href="/th/market/index/set/tech/ict" class="text-decoration-none text-black"><div class="symbol d-flex align-items-center"><span role="button" class="title-font-family text-wrap">ICT</span> <span class="heading-font-family ms-1 d-none d-md-inline-block">-
+                  เทคโนโลยีสารสนเทศและการสื่อสาร</span></div></a></div></td><td id="tableSimple-h8sw19jbt8-accordion-7-1" class="bg-td-child text-end bg-td">
+          187.56
+        </td><td id="tableSimple-h8sw19jbt8-accordion-7-2" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.75</span></td><td id="tableSimple-h8sw19jbt8-accordion-7-3" class="bg-td-child text-end bg-td  theme-success"><span class="theme-success">+0.40</span></td><td id="tableSimple-h8sw19jbt8-accordion-7-4" class="bg-td-child text-end bg-td">
+          160,604,300
+        </td><td id="tableSimple-h8sw19jbt8-accordion-7-5" class="bg-td-child px-4 text-end bg-td">
+          1,552,664.33
+        </td></tr></tbody></table></div></div></div>

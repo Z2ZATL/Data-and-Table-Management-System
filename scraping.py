@@ -801,6 +801,13 @@ def extract_set_special_format(container):
         dict: ข้อมูลดัชนีและราคาหุ้นที่สกัดได้
     """
     try:
+        # ค้นหาตารางข้อมูลในรูปแบบพิเศษของ SET
+        custom_table = container.find('div', {'class': 'table-simple-customfield'})
+        if custom_table:
+            # พบตารางในรูปแบบพิเศษ ดึงข้อมูลจากตารางนี้
+            return extract_set_custom_table(custom_table)
+            
+        # หากไม่พบตารางในรูปแบบพิเศษ ลองค้นหาข้อมูลในรูปแบบอื่น
         # ดึงข้อมูลดัชนีหลัก
         rows_data = []
         headers = ["ดัชนี", "ล่าสุด", "เปลี่ยนแปลง", "% เปลี่ยนแปลง", "ปริมาณ (พันหุ้น)", "มูลค่า (ล้านบาท)"]
@@ -884,6 +891,173 @@ def extract_set_special_format(container):
         return {
             "headers": ["ข้อมูล"],
             "rows": [["ไม่สามารถดึงข้อมูลในรูปแบบพิเศษได้"]]
+        }
+        
+def extract_set_custom_table(custom_table):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลจากตารางในรูปแบบพิเศษของ SET
+    
+    Args:
+        custom_table (BeautifulSoup element): ตารางในรูปแบบพิเศษของ SET
+        
+    Returns:
+        dict: ข้อมูลดัชนีและราคาหุ้นในรูปแบบตาราง
+    """
+    try:
+        # ค้นหาตารางในตัว custom_table
+        table_elem = custom_table.find('table')
+        if not table_elem:
+            return {
+                "headers": ["ข้อมูล"],
+                "rows": [["ไม่พบตารางข้อมูล"]]
+            }
+        
+        # ดึงข้อมูลส่วนหัวตาราง
+        headers = []
+        thead = table_elem.find('thead')
+        if thead:
+            # ค้นหาแถวส่วนหัวตาราง
+            header_row = thead.find('tr', {'class': 'header'})
+            if header_row:
+                # ดึงข้อมูลจากคอลัมน์ส่วนหัวตาราง
+                for th in header_row.find_all(['th']):
+                    header_text = th.get_text(strip=True)
+                    headers.append(header_text)
+        
+        # ถ้าไม่พบส่วนหัวตาราง ใช้ส่วนหัวพื้นฐาน
+        if not headers:
+            headers = ["กลุ่มอุตสาหกรรม/หมวดธุรกิจ", "ล่าสุด", "เปลี่ยนแปลง", "% เปลี่ยนแปลง", "ปริมาณ (หุ้น)", "มูลค่า ('000 บาท)"]
+        
+        # ดึงข้อมูลแถวในตาราง
+        rows_data = []
+        tbody = table_elem.find('tbody')
+        if tbody:
+            # ดึงเฉพาะแถวหลักที่ไม่ใช่แถวย่อย (accordion)
+            main_rows = tbody.find_all('tr', {'role': 'row', 'data-itemselected': 'false'})
+            for row in main_rows:
+                # ค้นหาส่วนที่มีชื่อกลุ่มอุตสาหกรรม/หมวดธุรกิจ
+                symbol_cell = row.find('td', {'data-key': 'symbol'})
+                if not symbol_cell:
+                    continue
+                
+                # ดึงข้อมูลชื่อ
+                symbol_text = ""
+                symbol_elem = symbol_cell.find('span', {'role': 'button'})
+                if symbol_elem:
+                    symbol_text = symbol_elem.get_text(strip=True)
+                
+                # ดึงข้อมูลชื่อเต็ม
+                full_name = ""
+                name_span = symbol_cell.find('span', {'class': 'd-none d-md-inline-block'})
+                if name_span:
+                    full_name = name_span.get_text(strip=True).replace('-', '').strip()
+                
+                # รวมชื่อและชื่อเต็ม
+                name = f"{symbol_text} {full_name}".strip()
+                
+                # ดึงข้อมูลคอลัมน์อื่นๆ
+                cells_data = [name]
+                
+                # ดึงข้อมูลล่าสุด
+                last_cell = row.find('td', {'data-key': 'last'})
+                if last_cell:
+                    cells_data.append(last_cell.get_text(strip=True))
+                else:
+                    cells_data.append("")
+                
+                # ดึงข้อมูลเปลี่ยนแปลง
+                change_cell = row.find('td', {'data-key': 'change'})
+                if change_cell:
+                    change_span = change_cell.find('span')
+                    if change_span:
+                        cells_data.append(change_span.get_text(strip=True))
+                    else:
+                        cells_data.append(change_cell.get_text(strip=True))
+                else:
+                    cells_data.append("")
+                
+                # ดึงข้อมูล % เปลี่ยนแปลง
+                percent_cell = row.find('td', {'data-key': 'percentChange'})
+                if percent_cell:
+                    percent_span = percent_cell.find('span')
+                    if percent_span:
+                        cells_data.append(percent_span.get_text(strip=True))
+                    else:
+                        cells_data.append(percent_cell.get_text(strip=True))
+                else:
+                    cells_data.append("")
+                
+                # ดึงข้อมูลปริมาณ
+                volume_cell = row.find('td', {'data-key': 'volume'})
+                if volume_cell:
+                    cells_data.append(volume_cell.get_text(strip=True))
+                else:
+                    cells_data.append("")
+                
+                # ดึงข้อมูลมูลค่า
+                value_cell = row.find('td', {'data-key': 'value'})
+                if value_cell:
+                    cells_data.append(value_cell.get_text(strip=True))
+                else:
+                    cells_data.append("")
+                
+                # เพิ่มข้อมูลแถวลงในตาราง
+                rows_data.append(cells_data)
+                
+                # ดึงข้อมูลจากแถวย่อย (accordion rows)
+                row_id = row.get('class', [])
+                row_indices = []
+                for cls in row_id:
+                    if cls.startswith('tableSimple-') and cls.endswith('-tr-filter-parent-'):
+                        # ดึงเลขท้ายของคลาส
+                        for part in cls.split('-'):
+                            if part.isdigit():
+                                row_indices.append(part)
+                
+                # ถ้าพบเลขแถว ดึงข้อมูลแถวย่อย
+                if row_indices:
+                    row_index = row_indices[-1]
+                    accordion_rows = tbody.find_all('tr', {'id': f'tableSimple-h8sw19jbt8-accordion-{row_index}'})
+                    
+                    for acc_row in accordion_rows:
+                        acc_cells = acc_row.find_all(['td'])
+                        if acc_cells and len(acc_cells) >= 6:
+                            # ดึงชื่อหมวดธุรกิจ
+                            first_cell = acc_cells[0]
+                            name_link = first_cell.find('a')
+                            if name_link:
+                                acc_name = name_link.get_text(strip=True)
+                            else:
+                                acc_name = first_cell.get_text(strip=True)
+                            
+                            # สร้างข้อมูลแถวย่อย
+                            acc_data = [f"  - {acc_name}"]
+                            
+                            # ดึงข้อมูลจากคอลัมน์อื่นๆ
+                            for i in range(1, 6):
+                                if i < len(acc_cells):
+                                    acc_data.append(acc_cells[i].get_text(strip=True))
+                                else:
+                                    acc_data.append("")
+                            
+                            # เพิ่มข้อมูลแถวย่อยลงในตาราง
+                            rows_data.append(acc_data)
+        
+        # ตรวจสอบว่าพบข้อมูลหรือไม่
+        if not rows_data:
+            rows_data.append(["ไม่พบข้อมูลในตาราง", "", "", "", "", ""])
+        
+        # ส่งกลับข้อมูลในรูปแบบตาราง
+        return {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+    except Exception as e:
+        print(f"Error extracting SET custom table: {str(e)}")
+        return {
+            "headers": ["ข้อมูล"],
+            "rows": [["เกิดข้อผิดพลาดในการดึงข้อมูลตาราง: " + str(e)]]
         }
 
 def extract_set_items_format(items):
