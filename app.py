@@ -98,7 +98,7 @@ def add_topic():
         description = request.form.get("description", "").strip()
         
         if not title:
-            return render_template("topic_form.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ")
+            return render_template("topic_form_updated.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ")
         
         try:
             conn = get_pg_connection()
@@ -116,11 +116,11 @@ def add_topic():
             
             return redirect(url_for('edit_topic', topic_id=new_topic_id))
         except Exception as e:
-            return render_template("topic_form.html", theme=theme, 
+            return render_template("topic_form_updated.html", theme=theme, 
                                   error=f"เกิดข้อผิดพลาดในการบันทึกหัวข้อ: {str(e)}",
                                   title=title, description=description)
     
-    return render_template("topic_form.html", theme=theme)
+    return render_template("topic_form_updated.html", theme=theme)
 
 @app.route("/topics/edit/<int:topic_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขหัวข้อ
 def edit_topic(topic_id):
@@ -135,7 +135,7 @@ def edit_topic(topic_id):
             description = request.form.get("description", "").strip()
             
             if not title:
-                return render_template("topic_form.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ", topic_id=topic_id)
+                return render_template("topic_form_updated.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ", topic_id=topic_id)
             
             cur.execute("""
                 UPDATE topics 
@@ -165,7 +165,7 @@ def edit_topic(topic_id):
         cur.close()
         conn.close()
         
-        return render_template("topic_form.html", theme=theme, topic=topic, contents=contents)
+        return render_template("topic_form_updated.html", theme=theme, topic=topic, contents=contents)
         
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการดึงข้อมูลหัวข้อ: {str(e)}", 500
@@ -186,11 +186,23 @@ def delete_topic(topic_id):
 
 @app.route("/topics/<int:topic_id>/content/add", methods=["POST"])  # route สำหรับเพิ่มเนื้อหาในหัวข้อ
 def add_topic_content(topic_id):
-    content = request.form.get("content", "").strip()
     content_type = request.form.get("content_type", "text")
+    is_table = request.form.get("is_table", "0") == "1"
     
-    if not content:
-        return redirect(url_for('edit_topic', topic_id=topic_id, error="กรุณากรอกเนื้อหา"))
+    if is_table:
+        # จัดการข้อมูลตาราง
+        table_data = request.form.get("table_data", "{}")
+        if not table_data:
+            return redirect(url_for('edit_topic', topic_id=topic_id, error="ไม่มีข้อมูลตาราง"))
+        
+        # ใช้ข้อมูลในรูปแบบ JSON ที่ได้รับจากฟอร์ม
+        content = table_data
+        content_type = "table"
+    else:
+        # จัดการเนื้อหาทั่วไป
+        content = request.form.get("content", "").strip()
+        if not content:
+            return redirect(url_for('edit_topic', topic_id=topic_id, error="กรุณากรอกเนื้อหา"))
     
     try:
         conn = get_pg_connection()

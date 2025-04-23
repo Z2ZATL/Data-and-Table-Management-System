@@ -210,6 +210,8 @@
                                             <span class="badge bg-primary">ลิงก์</span>
                                         {% elif content.content_type == 'highlight' %}
                                             <span class="badge bg-warning">ข้อความเน้น</span>
+                                        {% elif content.content_type == 'table' %}
+                                            <span class="badge bg-info">ตารางข้อมูล</span>
                                         {% else %}
                                             <span class="badge bg-secondary">{{ content.content_type }}</span>
                                         {% endif %}
@@ -237,4 +239,133 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // ตัวแปรสำหรับเก็บจำนวนแถวและคอลัมน์ปัจจุบัน
+    let currentRowCount = 1;
+    let currentColCount = 3;
+    
+    // เพิ่มแถวใหม่ในตาราง
+    function addTableRow() {
+        const tbody = document.querySelector('#dataTable tbody');
+        const newRow = document.createElement('tr');
+        newRow.setAttribute('data-row', currentRowCount);
+        
+        let rowHtml = `<td>${currentRowCount + 1}</td>`;
+        
+        // สร้าง input สำหรับแต่ละคอลัมน์
+        for (let i = 0; i < currentColCount; i++) {
+            rowHtml += `
+            <td>
+                <input type="text" class="form-control form-control-sm table-cell" 
+                   placeholder="ข้อมูล" data-row="${currentRowCount}" data-col="${i}">
+            </td>`;
+        }
+        
+        // เพิ่มปุ่มลบแถว
+        rowHtml += `
+        <td>
+            <button type="button" class="btn btn-sm btn-outline-danger" 
+               onclick="removeTableRow(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </td>`;
+        
+        newRow.innerHTML = rowHtml;
+        tbody.appendChild(newRow);
+        
+        currentRowCount++;
+    }
+    
+    // เพิ่มคอลัมน์ใหม่ในตาราง
+    function addTableColumn() {
+        const table = document.getElementById('dataTable');
+        const headerRow = table.querySelector('thead tr');
+        const dataRows = table.querySelectorAll('tbody tr');
+        
+        // เพิ่มหัวข้อคอลัมน์ใหม่
+        const newHeader = document.createElement('th');
+        newHeader.innerHTML = `
+        <input type="text" class="form-control form-control-sm table-header" 
+            placeholder="หัวข้อ ${String.fromCharCode(65 + currentColCount)}" data-col="${currentColCount}">
+        `;
+        
+        // แทรกหัวข้อคอลัมน์ก่อนคอลัมน์จัดการ
+        headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+        
+        // เพิ่มเซลล์ในทุกแถวข้อมูล
+        dataRows.forEach((row, index) => {
+            const newCell = document.createElement('td');
+            newCell.innerHTML = `
+            <input type="text" class="form-control form-control-sm table-cell" 
+                placeholder="ข้อมูล" data-row="${index}" data-col="${currentColCount}">
+            `;
+            row.insertBefore(newCell, row.lastElementChild);
+        });
+        
+        currentColCount++;
+    }
+    
+    // ลบแถวออกจากตาราง
+    function removeTableRow(button) {
+        const row = button.closest('tr');
+        const tbody = row.parentElement;
+        
+        // ตรวจสอบว่ามีแถวมากกว่า 1 แถวหรือไม่
+        if (tbody.children.length > 1) {
+            row.remove();
+            
+            // ปรับตัวเลขลำดับแถว
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                row.setAttribute('data-row', index);
+                row.firstElementChild.textContent = index + 1;
+                
+                // ปรับค่า data-row ของ input ทุกตัวในแถว
+                const inputs = row.querySelectorAll('.table-cell');
+                inputs.forEach(input => {
+                    input.setAttribute('data-row', index);
+                });
+            });
+            
+            currentRowCount = rows.length;
+        } else {
+            alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
+        }
+    }
+    
+    // บันทึกข้อมูลตาราง
+    function submitTableData() {
+        // เก็บข้อมูลในรูปแบบ JSON
+        const tableData = {
+            headers: [],
+            rows: []
+        };
+        
+        // ดึงข้อมูลหัวข้อ
+        const headers = document.querySelectorAll('.table-header');
+        headers.forEach(header => {
+            tableData.headers.push(header.value || header.placeholder);
+        });
+        
+        // ดึงข้อมูลเซลล์
+        const rows = document.querySelectorAll('#dataTable tbody tr');
+        rows.forEach(row => {
+            const rowData = [];
+            const cells = row.querySelectorAll('.table-cell');
+            cells.forEach(cell => {
+                rowData.push(cell.value || '');
+            });
+            tableData.rows.push(rowData);
+        });
+        
+        // กำหนดค่าให้กับ input hidden
+        document.getElementById('tableDataField').value = JSON.stringify(tableData);
+        
+        // ส่งฟอร์ม
+        document.getElementById('tableForm').submit();
+    }
+</script>
 {% endblock %}
