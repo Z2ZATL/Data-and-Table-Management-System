@@ -154,9 +154,15 @@
                         <h5 class="card-title mb-0">
                             <i class="fas fa-table me-2"></i>ตารางข้อมูลสำคัญ
                         </h5>
+                        {% if request.form.get('extract_mode') == 'table' %}
+                        <span class="badge bg-info">
+                            <i class="fas fa-table me-1"></i> ดึงตารางโดยตรงจากเว็บไซต์
+                        </span>
+                        {% else %}
                         <span class="badge bg-primary">
                             <i class="fas fa-robot me-1"></i> วิเคราะห์โดย Gemini AI
                         </span>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="card-body">
@@ -184,7 +190,11 @@
                 <div class="card-footer">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-info-circle text-primary me-2"></i>
+                        {% if request.form.get('extract_mode') == 'table' %}
+                        <small class="text-muted">ตารางข้อมูลดึงโดยตรงจากเว็บไซต์ {{ searched_url }}</small>
+                        {% else %}
                         <small class="text-muted">ตารางข้อมูลสร้างโดย Gemini AI จากการวิเคราะห์เนื้อหาของบทความ</small>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -275,7 +285,7 @@
                     </div>
                     
                     <h6 class="mb-3">เว็บไซต์ข่าวไทย</h6>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-2 mb-4">
                         <button type="button" class="btn btn-outline-primary btn-sm website-shortcut headline-site" data-url="https://www.thairath.co.th">
                             <i class="fas fa-newspaper me-1"></i> ไทยรัฐ
                         </button>
@@ -287,6 +297,19 @@
                         </button>
                         <button type="button" class="btn btn-outline-primary btn-sm website-shortcut headline-site" data-url="https://www.prachachat.net">
                             <i class="fas fa-newspaper me-1"></i> ประชาชาติธุรกิจ
+                        </button>
+                    </div>
+                    
+                    <h6 class="mb-3">เว็บไซต์ข้อมูลการเงิน (แนะนำใช้ปุ่ม "ดึงตารางหุ้น/ราคา")</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.set.or.th/th/market/index/set/overview">
+                            <i class="fas fa-chart-line me-1"></i> ตลาดหลักทรัพย์ไทย (SET)
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.goldtraders.or.th">
+                            <i class="fas fa-coins me-1"></i> สมาคมค้าทองคำ
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.bot.or.th/thai/statistics/financialmarkets/exchangerate/_layouts/application/exchangerate/exchangerate.aspx">
+                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (ธปท.)
                         </button>
                     </div>
                 </div>
@@ -461,6 +484,24 @@
                 const useAI = document.getElementById('use-ai').checked;
                 document.getElementById('use-ai-input').value = useAI ? "on" : "off";
                 
+                // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
+                document.getElementById('extract-mode-input').value = "general";
+                
+                // ส่งฟอร์ม
+                document.getElementById('content-form').submit();
+            }
+        });
+        
+        // สำหรับปุ่มดึงตารางหุ้น/ราคา
+        document.getElementById('get-table-btn').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+            if (url) {
+                // ส่ง URL ไปยังฟอร์ม
+                document.getElementById('content-url').value = url;
+                
+                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                document.getElementById('extract-mode-input').value = "table";
+                
                 // ส่งฟอร์ม
                 document.getElementById('content-form').submit();
             }
@@ -476,6 +517,9 @@
                 // อัปเดตค่า use_ai ตามการตั้งค่าของ checkbox
                 const useAi = document.getElementById('use-ai').checked;
                 document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                
+                // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
+                document.getElementById('extract-mode-input').value = "general";
                 
                 document.getElementById('content-form').submit();
             });
@@ -501,13 +545,24 @@
                     console.log("FilterNumerical input value: ", document.getElementById('filter-numerical-input').value);
                     
                     document.getElementById('headlines-form').submit();
+                } else if (this.classList.contains('table-site')) {
+                    // ส่งฟอร์มดึงตารางข้อมูล
+                    document.getElementById('content-url').value = url;
+                    
+                    // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                    document.getElementById('extract-mode-input').value = "table";
+                    
+                    document.getElementById('content-form').submit();
                 } else {
-                    // ส่งฟอร์มดึงเนื้อหา
+                    // ส่งฟอร์มดึงเนื้อหาทั่วไป
                     document.getElementById('content-url').value = url;
                     
                     // อัปเดตค่า use_ai ตามการตั้งค่าของ checkbox
                     const useAi = document.getElementById('use-ai').checked;
                     document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                    
+                    // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
+                    document.getElementById('extract-mode-input').value = "general";
                     
                     document.getElementById('content-form').submit();
                 }
