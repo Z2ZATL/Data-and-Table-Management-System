@@ -23,28 +23,68 @@
                     <h5 class="card-title mb-0"><i class="fas fa-search me-2"></i>ค้นหาข้อมูล</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ url_for('scrape_website') }}" method="post">
-                        <div class="mb-3">
-                            <label for="url" class="form-label">URL เว็บไซต์</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-globe"></i></span>
-                                <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search me-2"></i>ดึงข้อมูล
-                                </button>
-                            </div>
-                            <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล</div>
+                    <div class="mb-3">
+                        <label for="url" class="form-label">URL เว็บไซต์</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                            <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required>
+                            <button type="submit" class="btn btn-primary" id="get-headlines-btn" form="headlines-form">
+                                <i class="fas fa-list me-2"></i>ดึงหัวข้อข่าว
+                            </button>
+                            <button type="submit" class="btn btn-secondary" id="get-content-btn" form="content-form">
+                                <i class="fas fa-search me-2"></i>ดึงเนื้อหา
+                            </button>
                         </div>
+                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล</div>
+                    </div>
+                    <form id="headlines-form" action="{{ url_for('scrape_headlines') }}" method="post" style="display: none;">
+                        <input type="hidden" name="url" id="headlines-url">
+                    </form>
+                    <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
+                        <input type="hidden" name="url" id="content-url">
                     </form>
                 </div>
             </div>
             
             <!-- ส่วนผลลัพธ์ -->
+            {% if headlines %}
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list-alt me-2"></i>หัวข้อข่าวจาก 
+                        <a href="{{ searched_url }}" target="_blank" class="text-primary">{{ searched_url }}</a>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="content-result p-3 rounded">
+                        <div class="list-group headline-list">
+                            {% for headline in headlines %}
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div class="headline-title">{{ headline.title }}</div>
+                                <div class="headline-actions">
+                                    <a href="{{ headline.url }}" target="_blank" class="btn btn-sm btn-outline-info me-2">
+                                        <i class="fas fa-external-link-alt"></i> เปิด
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-primary fetch-article" data-url="{{ headline.url }}">
+                                        <i class="fas fa-file-alt"></i> ดึงเนื้อหา
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>* พบ {{ headlines|length }} หัวข้อ จาก {{ searched_url }}</small>
+                </div>
+            </div>
+            {% endif %}
+            
             {% if content %}
             <div class="card shadow-lg">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-file-alt me-2"></i>ผลลัพธ์จาก 
+                        <i class="fas fa-file-alt me-2"></i>เนื้อหาจาก 
                         <a href="{{ searched_url }}" target="_blank" class="text-primary">{{ searched_url }}</a>
                     </h5>
                 </div>
@@ -73,7 +113,7 @@
             {% endif %}
             
             <!-- เว็บไซต์ที่แนะนำ -->
-            {% if not content and not error %}
+            {% if not content and not headlines and not error %}
             <div class="card shadow-lg mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>เว็บไซต์ที่แนะนำ</h5>
@@ -97,16 +137,16 @@
                     
                     <h6 class="mb-3">เว็บไซต์ข่าวไทย</h6>
                     <div class="d-flex flex-wrap gap-2">
-                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.thairath.co.th">
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut headline-site" data-url="https://www.thairath.co.th">
                             <i class="fas fa-newspaper me-1"></i> ไทยรัฐ
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.dailynews.co.th">
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut headline-site" data-url="https://www.dailynews.co.th">
                             <i class="fas fa-newspaper me-1"></i> เดลินิวส์
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.matichon.co.th">
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut headline-site" data-url="https://www.matichon.co.th">
                             <i class="fas fa-newspaper me-1"></i> มติชน
                         </button>
-                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.prachachat.net">
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut headline-site" data-url="https://www.prachachat.net">
                             <i class="fas fa-newspaper me-1"></i> ประชาชาติธุรกิจ
                         </button>
                     </div>
@@ -123,22 +163,22 @@
                         <div class="col-md-4">
                             <div class="text-center mb-3 mb-md-0">
                                 <i class="fas fa-newspaper fa-3x mb-3 text-primary"></i>
-                                <h5>ดึงข้อมูลบทความ</h5>
-                                <p class="text-muted">ดึงเนื้อหาหลักจากบทความ ข่าว หรือบล็อก</p>
+                                <h5>ดึงหัวข้อข่าว</h5>
+                                <p class="text-muted">ดึงหัวข้อข่าวจากเว็บไซต์ข่าวต่างๆ เพื่อเลือกอ่านเนื้อหาที่สนใจ</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center mb-3 mb-md-0">
-                                <i class="fas fa-code fa-3x mb-3 text-primary"></i>
-                                <h5>ดึงข้อมูล API</h5>
-                                <p class="text-muted">ดึงข้อมูลจาก API ที่ส่งคืนข้อมูลในรูปแบบ JSON</p>
+                                <i class="fas fa-file-alt fa-3x mb-3 text-primary"></i>
+                                <h5>ดึงเนื้อหาบทความ</h5>
+                                <p class="text-muted">ดึงเนื้อหาหลักจากบทความเพื่ออ่านโดยไม่มีโฆษณารบกวน</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center">
-                                <i class="fas fa-rss fa-3x mb-3 text-primary"></i>
-                                <h5>ดึงข้อมูล RSS</h5>
-                                <p class="text-muted">ดึงข้อมูลจาก RSS Feed ของเว็บไซต์ข่าวต่างๆ</p>
+                                <i class="fas fa-chart-bar fa-3x mb-3 text-primary"></i>
+                                <h5>วิเคราะห์ข้อมูล</h5>
+                                <p class="text-muted">ดึงข้อมูลเพื่อนำไปวิเคราะห์และประมวลผลต่อไป</p>
                             </div>
                         </div>
                     </div>
@@ -197,6 +237,33 @@
         `;
         document.head.appendChild(styleElement);
         
+        // สำหรับจัดการกับปุ่มดึงหัวข้อข่าวและดึงเนื้อหา
+        document.getElementById('get-headlines-btn').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+            if (url) {
+                document.getElementById('headlines-url').value = url;
+                document.getElementById('headlines-form').submit();
+            }
+        });
+        
+        document.getElementById('get-content-btn').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+            if (url) {
+                document.getElementById('content-url').value = url;
+                document.getElementById('content-form').submit();
+            }
+        });
+        
+        // สำหรับปุ่มดึงเนื้อหาจากหัวข้อข่าว
+        const fetchArticleButtons = document.querySelectorAll('.fetch-article');
+        fetchArticleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                document.getElementById('content-url').value = url;
+                document.getElementById('content-form').submit();
+            });
+        });
+        
         // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
         const shortcutButtons = document.querySelectorAll('.website-shortcut');
         shortcutButtons.forEach(button => {
@@ -205,8 +272,16 @@
                 const url = this.getAttribute('data-url');
                 document.getElementById('url').value = url;
                 
-                // ส่งฟอร์มอัตโนมัติ
-                document.querySelector('form').submit();
+                // ตรวจสอบว่าเป็นเว็บไซต์ข่าวหรือไม่
+                if (this.classList.contains('headline-site')) {
+                    // ส่งฟอร์มดึงหัวข้อข่าว
+                    document.getElementById('headlines-url').value = url;
+                    document.getElementById('headlines-form').submit();
+                } else {
+                    // ส่งฟอร์มดึงเนื้อหา
+                    document.getElementById('content-url').value = url;
+                    document.getElementById('content-form').submit();
+                }
             });
         });
     });

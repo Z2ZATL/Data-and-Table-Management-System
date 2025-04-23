@@ -58,6 +58,77 @@ def format_special_content(text):
     
     return text.strip()
 
+def get_news_headlines(url):
+    """
+    ฟังก์ชันนี้ใช้สำหรับดึงหัวข้อข่าวจากเว็บไซต์
+    
+    Args:
+        url (str): URL ของเว็บไซต์ที่ต้องการดึงหัวข้อข่าว
+        
+    Returns:
+        list: รายการหัวข้อข่าวพร้อมลิงก์
+    """
+    try:
+        import re
+        from bs4 import BeautifulSoup
+        
+        # ส่งคำขอไปยังเว็บไซต์
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        # ตรวจสอบสถานะการตอบกลับ
+        if response.status_code != 200:
+            return []
+        
+        # ใช้ BeautifulSoup เพื่อแยกวิเคราะห์ HTML
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # ลิสต์เก็บหัวข้อข่าว
+        headlines = []
+        
+        # หาลิงก์ที่มีโอกาสเป็นข่าว
+        # 1. หาจากแท็ก <a> ที่มีข้อความยาวพอสมควร
+        for a_tag in soup.find_all('a', href=True):
+            # ตรวจสอบว่า href เป็น URL ที่สมบูรณ์หรือไม่
+            href = a_tag['href']
+            if not href.startswith(('http://', 'https://')):
+                # ถ้าเป็น relative URL ให้แปลงเป็น absolute URL
+                if href.startswith('/'):
+                    base_url = re.match(r'(https?://[^/]+)', url).group(1)
+                    href = base_url + href
+                else:
+                    continue  # ข้ามลิงก์ที่ไม่ใช่ URL
+            
+            # ตรวจสอบข้อความในลิงก์
+            text = a_tag.get_text().strip()
+            
+            # กรองเฉพาะลิงก์ที่น่าจะเป็นข่าว (ความยาวของข้อความมากกว่า 30 ตัวอักษร)
+            if len(text) > 30 and not re.search(r'\.(jpg|jpeg|png|gif|css|js)$', href, re.I):
+                # ตรวจสอบว่าลิงก์นี้อยู่ในโดเมนเดียวกันกับเว็บไซต์หลักหรือไม่
+                original_domain = re.match(r'https?://([^/]+)', url).group(1)
+                link_domain = re.match(r'https?://([^/]+)', href)
+                
+                if link_domain and (link_domain.group(1) == original_domain or 
+                                   link_domain.group(1).endswith('.' + original_domain)):
+                    # เพิ่มหัวข้อข่าวลงในลิสต์
+                    headline = {
+                        'title': text,
+                        'url': href
+                    }
+                    
+                    # ตรวจสอบความซ้ำซ้อน
+                    if headline not in headlines:
+                        headlines.append(headline)
+        
+        # จำกัดจำนวนหัวข้อข่าว
+        return headlines[:20]  # คืนค่าแค่ 20 หัวข้อแรก
+        
+    except Exception as e:
+        print(f"Error getting news headlines: {str(e)}")
+        return []
+
 def get_data_from_website(url):
     """
     ฟังก์ชันนี้ใช้สำหรับดึงข้อมูลจากเว็บไซต์และจัดรูปแบบให้เป็นคำอธิบายสั้นๆ

@@ -279,6 +279,39 @@ def scraping_page():
     theme = get_theme_from_cookie(request)
     return render_template("scraping_new.html", theme=theme)
 
+@app.route("/scrape-headlines", methods=["POST"])  # route สำหรับการดึงหัวข้อข่าวจากเว็บไซต์
+def scrape_headlines():
+    try:
+        # รับค่า URL จากฟอร์ม
+        url = request.form.get("url", "")
+        
+        if not url:
+            return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
+        
+        # ดึงหัวข้อข่าวจากเว็บไซต์
+        headlines = scraping.get_news_headlines(url)
+        
+        if not headlines:
+            return render_template(
+                "scraping_new.html",
+                error="ไม่พบหัวข้อข่าวในเว็บไซต์นี้ หรือเว็บไซต์ไม่รองรับการดึงหัวข้อข่าว",
+                theme=get_theme_from_cookie(request)
+            )
+        
+        # ส่งข้อมูลไปแสดงผล
+        return render_template(
+            "scraping_new.html", 
+            headlines=headlines, 
+            searched_url=url, 
+            theme=get_theme_from_cookie(request)
+        )
+    except Exception as e:
+        return render_template(
+            "scraping_new.html", 
+            error=f"เกิดข้อผิดพลาดในการดึงหัวข้อข่าว: {str(e)}", 
+            theme=get_theme_from_cookie(request)
+        )
+
 @app.route("/scrape-website", methods=["POST"])  # route สำหรับการดึงข้อมูลจากเว็บไซต์
 def scrape_website():
     try:
