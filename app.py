@@ -186,5 +186,20 @@ def edit(user_id):
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล: {str(e)}", 500
 
+@app.route("/delete/<int:user_id>", methods=["GET"])  # route สำหรับลบข้อมูล
+def delete(user_id):
+    try:
+        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
+        
+        # ลบข้อมูลผู้ใช้จากฐานข้อมูล
+        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('data'))  # กลับไปที่หน้าแสดงข้อมูล
+    
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการลบข้อมูล: {str(e)}", 500
+
 if __name__ == "__main__":  # เมื่อรันไฟล์นี้โดยตรง
     app.run(debug=True)  # เริ่มต้น Flask app ในโหมด debug
