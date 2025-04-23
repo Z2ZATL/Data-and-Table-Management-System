@@ -29,13 +29,7 @@
                             <span class="input-group-text"><i class="fas fa-globe"></i></span>
                             <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required value="{{ searched_url|default('') }}">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-primary" id="get-headlines-btn">
-                                    <i class="fas fa-list me-1"></i> ดึงหัวข้อข่าว
-                                </button>
-                                <button type="button" class="btn btn-success" id="get-content-direct-btn">
-                                    <i class="fas fa-file-alt me-1"></i> ดึงเนื้อหาโดยตรง
-                                </button>
-                                <button type="button" class="btn btn-info" id="get-table-btn">
+                                <button type="button" class="btn btn-info btn-lg w-100" id="get-table-btn">
                                     <i class="fas fa-table me-1"></i> ดึงตารางหุ้น/ราคา
                                 </button>
                             </div>
@@ -163,9 +157,18 @@
                             <i class="fas fa-robot me-1"></i> วิเคราะห์โดย Gemini AI
                         </span>
                         {% endif %}
+                        <button type="button" class="btn btn-outline-success btn-sm ms-2" id="generate-chart-btn">
+                            <i class="fas fa-chart-bar me-1"></i> สร้างกราฟ
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- แสดงกราฟ -->
+                    <div class="chart-container mb-4" style="display: none; position: relative; height: 400px;">
+                        <canvas id="data-chart"></canvas>
+                    </div>
+                    
+                    <!-- แสดงตาราง -->
                     <div class="table-responsive">
                         <table class="table table-striped table-hover align-middle">
                             <thead class="table-dark">
@@ -357,6 +360,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // เพิ่ม CSS สำหรับผลลัพธ์
@@ -524,6 +528,173 @@
                 document.getElementById('content-form').submit();
             });
         });
+        
+        // สำหรับปุ่มสร้างกราฟจากตารางข้อมูล
+        const generateChartBtn = document.getElementById('generate-chart-btn');
+        if (generateChartBtn) {
+            generateChartBtn.addEventListener('click', function() {
+                // ดึงข้อมูลจากตาราง
+                const tableData = extractTableData();
+                
+                // ตรวจสอบว่ามีข้อมูลหรือไม่
+                if (!tableData || !tableData.rows || tableData.rows.length === 0) {
+                    alert('ไม่พบข้อมูลในตารางที่จะสร้างกราฟ');
+                    return;
+                }
+                
+                // สร้างกราฟ
+                createChart(tableData);
+                
+                // แสดงส่วนกราฟ
+                document.querySelector('.chart-container').style.display = 'block';
+                
+                // เลื่อนไปที่กราฟ
+                document.querySelector('.chart-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+        
+        // ฟังก์ชันดึงข้อมูลจากตาราง
+        function extractTableData() {
+            try {
+                const table = document.querySelector('.table-responsive table');
+                if (!table) return null;
+                
+                const headers = [];
+                const headerCells = table.querySelectorAll('thead th');
+                headerCells.forEach(cell => {
+                    headers.push(cell.textContent.trim());
+                });
+                
+                const rows = [];
+                const tableBodies = table.querySelectorAll('tbody tr');
+                tableBodies.forEach(row => {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('td');
+                    cells.forEach(cell => {
+                        rowData.push(cell.textContent.trim());
+                    });
+                    rows.push(rowData);
+                });
+                
+                return {
+                    headers: headers,
+                    rows: rows
+                };
+            } catch (error) {
+                console.error('Error extracting table data:', error);
+                return null;
+            }
+        }
+        
+        // ฟังก์ชันสร้างกราฟจากข้อมูล
+        function createChart(tableData) {
+            // ตรวจสอบว่ามี canvas สำหรับกราฟหรือไม่
+            const chartCanvas = document.getElementById('data-chart');
+            if (!chartCanvas) return;
+            
+            // หาคอลัมน์ที่เป็นตัวเลขและคอลัมน์ที่เป็นข้อความ
+            const dataColumns = findNumericColumns(tableData);
+            
+            if (dataColumns.length === 0) {
+                alert('ไม่พบข้อมูลตัวเลขในตารางที่เหมาะสำหรับการสร้างกราฟ');
+                return;
+            }
+            
+            // ใช้คอลัมน์แรกเป็นชื่อ/label
+            const labelsColumnIndex = 0;
+            
+            // ดึงข้อมูลสำหรับกราฟ
+            const labels = tableData.rows.map(row => row[labelsColumnIndex]);
+            
+            // สร้างชุดข้อมูลสำหรับแต่ละคอลัมน์ตัวเลข
+            const datasets = dataColumns.map((colIndex, index) => {
+                // ดึงข้อมูลตัวเลขจากคอลัมน์นี้
+                const data = tableData.rows.map(row => {
+                    const value = row[colIndex];
+                    // แปลงข้อความเป็นตัวเลข (ลบเครื่องหมาย + - % และ คอมม่า)
+                    return parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, '')) || 0;
+                });
+                
+                // กำหนดสีแบบสุ่ม
+                const hue = (index * 137) % 360; // ใช้ golden angle เพื่อให้สีกระจายตัว
+                
+                return {
+                    label: tableData.headers[colIndex],
+                    data: data,
+                    backgroundColor: `hsla(${hue}, 70%, 60%, 0.5)`,
+                    borderColor: `hsla(${hue}, 70%, 45%, 1)`,
+                    borderWidth: 1
+                };
+            });
+            
+            // ทำความสะอาดกราฟเดิม (ถ้ามี)
+            if (window.dataChart) {
+                window.dataChart.destroy();
+            }
+            
+            // สร้างกราฟ
+            const ctx = chartCanvas.getContext('2d');
+            window.dataChart = new Chart(ctx, {
+                type: 'bar', // หรือเลือกประเภทกราฟอื่น เช่น 'line'
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'ข้อมูลจากตาราง',
+                            color: '#fff',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ฟังก์ชันค้นหาคอลัมน์ที่เป็นตัวเลข
+        function findNumericColumns(tableData) {
+            const numericColumns = [];
+            
+            // ตรวจสอบแต่ละคอลัมน์ (ยกเว้นคอลัมน์แรกที่เป็นชื่อ)
+            for (let colIndex = 1; colIndex < tableData.headers.length; colIndex++) {
+                let numericCount = 0;
+                
+                // ตรวจสอบแต่ละแถวในคอลัมน์นี้
+                for (let rowIndex = 0; rowIndex < tableData.rows.length; rowIndex++) {
+                    if (tableData.rows[rowIndex][colIndex]) {
+                        const value = tableData.rows[rowIndex][colIndex];
+                        
+                        // ทดสอบว่าเป็นตัวเลขหรือไม่ (หลังจากลบเครื่องหมายพิเศษและคอมม่า)
+                        const numericValue = parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, ''));
+                        if (!isNaN(numericValue)) {
+                            numericCount++;
+                        }
+                    }
+                }
+                
+                // ถ้ามีค่าตัวเลขมากกว่า 60% ของข้อมูลทั้งหมดในคอลัมน์ ถือว่าเป็นคอลัมน์ตัวเลข
+                if (numericCount / tableData.rows.length > 0.6) {
+                    numericColumns.push(colIndex);
+                }
+            }
+            
+            return numericColumns;
+        }
         
         // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
         const shortcutButtons = document.querySelectorAll('.website-shortcut');
