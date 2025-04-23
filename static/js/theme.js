@@ -97,7 +97,28 @@ function applyTheme(theme) {
     }
 }
 
-// เมื่อโหลดหน้าเพจเสร็จ ให้ตรวจสอบและใช้ธีมที่บันทึกไว้
+// ฟังก์ชันสำหรับกำหนดธีมทันทีเมื่อเริ่มโหลดหน้า
+(function() {
+    // ดึงค่าธีมที่บันทึกไว้ใน localStorage
+    const savedTheme = localStorage.getItem('theme');
+    
+    // ถ้ามีการบันทึกธีมไว้ ให้กำหนดธีมทันที
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    } 
+    // ถ้าไม่มีธีมที่บันทึกไว้ แต่มีการตั้งค่าให้ใช้ธีมตามระบบ
+    else if (localStorage.getItem('theme') === 'auto') {
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-bs-theme', prefersDarkScheme ? 'dark' : 'light');
+    }
+    // ถ้าไม่มีการตั้งค่าธีมเลย ให้ใช้ธีมมืดเป็นค่าเริ่มต้น
+    else {
+        localStorage.setItem('theme', 'dark');
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+    }
+})();
+
+// เมื่อโหลดหน้าเพจเสร็จ ให้ทำการจัดการธีมอย่างละเอียดอีกครั้ง
 document.addEventListener('DOMContentLoaded', function() {
     // ดึงค่าธีมที่บันทึกไว้ใน localStorage
     const savedTheme = localStorage.getItem('theme');
