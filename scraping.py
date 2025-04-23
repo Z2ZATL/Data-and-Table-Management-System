@@ -187,12 +187,13 @@ def get_news_headlines(url, filter_numerical=False):
         print(f"Error getting news headlines: {str(e)}")
         return []
 
-def get_data_from_website(url):
+def get_data_from_website(url, use_ai=True):
     """
     ฟังก์ชันนี้ใช้สำหรับดึงข้อมูลจากเว็บไซต์และจัดรูปแบบให้เป็นคำอธิบายสั้นๆ
     
     Args:
         url (str): URL ของเว็บไซต์ที่ต้องการดึงข้อมูล
+        use_ai (bool): หากเป็น True จะใช้ AI ในการสรุปเนื้อหาและสร้างตาราง
         
     Returns:
         str: คำอธิบายสั้นๆ เกี่ยวกับเนื้อหาของเว็บไซต์
@@ -246,13 +247,26 @@ def get_data_from_website(url):
             else:
                 text = text[:1997] + "..."
         
-        # วิเคราะห์หาข้อมูลตัวเลขในเนื้อหา
+        # สรุปเนื้อหาด้วย AI ถ้า use_ai เป็น True
+        ai_summary = None
+        ai_table = None
+        
+        if use_ai:
+            # สรุปเนื้อหาด้วย AI
+            ai_summary = ai_helper.summarize_article_with_ai(text)
+            
+            # สร้างตารางข้อมูลด้วย AI
+            ai_table = ai_helper.extract_numerical_table_with_ai(text)
+        
+        # วิเคราะห์หาข้อมูลตัวเลขในเนื้อหาด้วยวิธีปกติ
         numerical_data = extract_numerical_data(text)
         
         # สร้างการตอบกลับที่มีทั้งเนื้อหาและข้อมูลกราฟ
         result = {
             'content': text,
-            'chart_data': numerical_data
+            'chart_data': numerical_data,
+            'ai_summary': ai_summary,
+            'ai_table': ai_table
         }
             
         return result

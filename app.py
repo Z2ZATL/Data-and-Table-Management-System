@@ -338,8 +338,11 @@ def scrape_website():
         if not url:
             return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
+        # รับค่าการใช้งาน AI จากฟอร์ม
+        use_ai = request.form.get("use_ai", "on") == "on"
+        
         # ดึงข้อมูลจากเว็บไซต์
-        result = scraping.get_data_from_website(url)
+        result = scraping.get_data_from_website(url, use_ai=use_ai)
         
         # ตรวจสอบประเภทของข้อมูลที่ได้รับ
         if isinstance(result, str):
