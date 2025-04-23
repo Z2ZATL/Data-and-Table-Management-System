@@ -271,84 +271,40 @@ def set_theme():
     response.set_cookie("theme", theme, max_age=60*60*24*365)  # ตั้งคุกกี้เก็บไว้ 1 ปี
     return response
 
-@app.route("/submit", methods=["POST"])  # route สำหรับรับข้อมูลจากฟอร์ม
-def submit():
+@app.route("/data")  # route สำหรับข้อมูลตาราง
+def data():
+    theme = get_theme_from_cookie(request)
+    
+    # ดึงหัวข้อทั้งหมดจากฐานข้อมูล PostgreSQL
     try:
-        first_name = request.form["first_name"]  # รับค่าชื่อจากฟอร์ม
-        last_name = request.form["last_name"]  # รับค่านามสกุลจากฟอร์ม
-        gender = request.form["gender"]  # รับค่าเพศจากฟอร์ม
-        age = request.form["age"]  # รับค่าอายุจากฟอร์ม
-        province = request.form["province"]  # รับค่าจังหวัดจากฟอร์ม
-        pet = request.form["pet"]  # รับค่าสัตว์เลี้ยงจากฟอร์ม
-
-        # ตรวจสอบความถูกต้องของข้อมูล
-        if not first_name or not last_name or not gender or not age or not province:
-            return "ข้อมูลไม่ครบถ้วน กรุณากรอกข้อมูลให้ครบทุกช่อง", 400
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT id, title, description, created_at, updated_at
+            FROM topics
+            ORDER BY updated_at DESC
+        """)
+        topics = cur.fetchall()
         
-        try:
-            age = int(age)  # แปลงอายุเป็นตัวเลข
-            if age <= 0 or age > 120:
-                return "อายุต้องอยู่ระหว่าง 1-120 ปี", 400
-        except ValueError:
-            return "อายุต้องเป็นตัวเลขเท่านั้น", 400
-
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        conn.execute("INSERT INTO users (first_name, last_name, gender, age, province, pet) VALUES (?, ?, ?, ?, ?, ?)",
-                    (first_name, last_name, gender, age, province, pet))  # บันทึกข้อมูลลงในฐานข้อมูล พร้อมสัตว์เลี้ยง
-        conn.commit()  # ยืนยันการบันทึกข้อมูล
+        # ดึงเนื้อหาของแต่ละหัวข้อที่เป็นตาราง
+        for topic in topics:
+            cur.execute("""
+                SELECT id, content, content_type, created_at
+                FROM topic_content
+                WHERE topic_id = %s AND content_type = 'table'
+                ORDER BY created_at DESC
+            """, (topic['id'],))
+            topic['table_contents'] = cur.fetchall()
         
-        # นับจำนวนผู้ใช้ทั้งหมดเพื่อคำนวณหน้าสุดท้าย
-        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-        items_per_page = 50  # จำนวนรายการต่อหน้า
-        last_page = (total_users + items_per_page - 1) // items_per_page  # คำนวณหน้าสุดท้าย
-        
-        conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
-        
-        # เปลี่ยนเส้นทางไปที่หน้าสุดท้ายของข้อมูล
-        return redirect(url_for('data', page=last_page))
+        cur.close()
+        conn.close()
     except Exception as e:
-        return f"เกิดข้อผิดพลาด: {str(e)}", 500
+        topics = []
+        print(f"Error fetching topics data: {str(e)}")
+    
+    return render_template("data.html", theme=theme, topics=topics)
 
-@app.route("/data")  # route สำหรับการแสดงข้อมูล
-@app.route("/data/<int:page>")  # route รองรับการเปลี่ยนหน้า
-def data(page=1):
-    try:
-        items_per_page = 50  # จำนวนรายการต่อหน้า
-        offset = (page - 1) * items_per_page  # คำนวณตำแหน่งเริ่มต้น
-        
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        # นับจำนวนผู้ใช้ทั้งหมด
-        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-        
-        # ดึงข้อมูลเฉพาะส่วนที่ต้องการแสดงในหน้านี้
-        users = conn.execute(
-            "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?", 
-            (items_per_page, offset)
-        ).fetchall()
-        
-        # คำนวณจำนวนหน้าทั้งหมด
-        total_pages = (total_users + items_per_page - 1) // items_per_page
-        
-        conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
-        
-        # คำนวณตำแหน่งเริ่มต้นของการนับลำดับ
-        start_index = (page - 1) * items_per_page + 1
-        
-        # ดึงธีมจาก cookie
-        theme = get_theme_from_cookie(request)
-        
-        return render_template(
-            "data.html", 
-            users=users, 
-            total_users=total_users,
-            page=page,
-            total_pages=total_pages,
-            start_index=start_index,
-            theme=theme
-        )  # ส่งข้อมูลที่ดึงมาไปแสดงใน template data.html
-    except Exception as e:
-        return f"เกิดข้อผิดพลาดในการดึงข้อมูล: {str(e)}", 500
+
 
 @app.route("/analysis")  # route สำหรับหน้าการวิเคราะห์ข้อมูล
 def analysis():
