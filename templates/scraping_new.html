@@ -28,11 +28,19 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-globe"></i></span>
                             <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required value="{{ searched_url|default('') }}">
-                            <button type="submit" class="btn btn-primary" id="get-headlines-btn" form="headlines-form">
-                                <i class="fas fa-list me-2"></i>ดึงหัวข้อข่าว
-                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" id="get-headlines-btn">
+                                    <i class="fas fa-list me-1"></i> ดึงหัวข้อข่าว
+                                </button>
+                                <button type="button" class="btn btn-success" id="get-content-direct-btn">
+                                    <i class="fas fa-file-alt me-1"></i> ดึงเนื้อหาโดยตรง
+                                </button>
+                            </div>
                         </div>
-                        <div class="form-text">ป้อน URL ของเว็บไซต์ข่าวที่ต้องการดึงหัวข้อข่าว เช่น thairath.co.th หรือ matichon.co.th</div>
+                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล - เช่น set.or.th หรือ thairath.co.th</div>
+                        <div class="alert alert-info p-2 mt-2" role="alert">
+                            <i class="fas fa-info-circle me-1"></i> <small>สำหรับเว็บที่มีตาราง (เช่น ราคาหุ้น) กรุณาใช้ปุ่ม "<b>ดึงเนื้อหาโดยตรง</b>" เพื่อดึงข้อมูลโดยตรงจากเว็บไซต์</small>
+                        </div>
                     </div>
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="filter-numerical" {% if filter_numerical %}checked{% endif %}>
@@ -435,6 +443,22 @@
                 
                 // ส่งฟอร์ม
                 document.getElementById('headlines-form').submit();
+            }
+        });
+        
+        // สำหรับปุ่มดึงเนื้อหาโดยตรง
+        document.getElementById('get-content-direct-btn').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+            if (url) {
+                // ส่ง URL ไปยังฟอร์ม
+                document.getElementById('content-url').value = url;
+                
+                // ส่งค่าตัวเลือกการใช้ AI
+                const useAI = document.getElementById('use-ai').checked;
+                document.getElementById('use-ai-input').value = useAI ? "on" : "off";
+                
+                // ส่งฟอร์ม
+                document.getElementById('content-form').submit();
             }
         });
         
