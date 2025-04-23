@@ -272,6 +272,39 @@
         }
       }
     });
+    
+    // Pet Chart
+    const petCtx = document.getElementById('petChart').getContext('2d');
+    const petChart = new Chart(petCtx, {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'สัตว์เลี้ยง',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(54, 162, 235, 0.7)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'สัตว์เลี้ยงยอดนิยม'
+          }
+        }
+      }
+    });
 
     // Update all charts
     function updateCharts() {
@@ -294,6 +327,12 @@
       const ageCounts = countByAgeGroup(users);
       ageChart.data.datasets[0].data = [ageCounts['0-20'], ageCounts['21-40'], ageCounts['41+']];
       ageChart.update();
+      
+      // Update pet chart
+      const petData = countByPet(users);
+      petChart.data.labels = petData.labels.length ? petData.labels : ['ไม่มีข้อมูล'];
+      petChart.data.datasets[0].data = petData.values.length ? petData.values : [1];
+      petChart.update();
     }
 
     // Event listeners
