@@ -360,7 +360,9 @@
                 
                 // ส่งค่าตัวเลือกการกรองข่าว
                 const filterNumerical = document.getElementById('filter-numerical').checked;
+                console.log("FilterNumerical checked: ", filterNumerical);
                 document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
+                console.log("FilterNumerical input value: ", document.getElementById('filter-numerical-input').value);
                 
                 // ส่งฟอร์ม
                 document.getElementById('headlines-form').submit();
@@ -392,7 +394,9 @@
                     
                     // ส่งค่าตัวเลือกการกรองข่าว
                     const filterNumerical = document.getElementById('filter-numerical').checked;
+                    console.log("FilterNumerical checked: ", filterNumerical);
                     document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
+                    console.log("FilterNumerical input value: ", document.getElementById('filter-numerical-input').value);
                     
                     document.getElementById('headlines-form').submit();
                 } else {

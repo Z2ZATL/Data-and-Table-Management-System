@@ -287,7 +287,10 @@ def scrape_headlines():
         url = request.form.get("url", "")
         
         # รับค่าตัวเลือกการกรองข่าวเกี่ยวกับข้อมูลตัวเลข
-        filter_numerical = request.form.get("filter_numerical") == "on"
+        filter_value = request.form.get("filter_numerical", "off")
+        print(f"Debug - filter_value from form: {filter_value}")
+        filter_numerical = filter_value == "on"
+        print(f"Debug - filter_numerical after conversion: {filter_numerical}")
         
         if not url:
             return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))

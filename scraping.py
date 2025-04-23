@@ -72,6 +72,7 @@ def get_news_headlines(url, filter_numerical=False):
     Returns:
         list: รายการหัวข้อข่าวพร้อมลิงก์
     """
+    print(f"Debug - filter_numerical: {filter_numerical}, type: {type(filter_numerical)}")
     try:
         # ส่งคำขอไปยังเว็บไซต์
         headers = {
@@ -129,11 +130,26 @@ def get_news_headlines(url, filter_numerical=False):
                 if filter_numerical:
                     # ตรวจสอบว่ามีคำสำคัญที่เกี่ยวกับข้อมูลตัวเลขหรือไม่
                     has_numerical_keyword = any(keyword.lower() in text.lower() for keyword in numerical_keywords)
-                    # มีตัวเลขในหัวข้อหรือไม่
+                    
+                    # มีตัวเลขในหัวข้อหรือไม่ (ต้องมีตัวเลขอย่างน้อย 1 ตัว)
                     has_number = bool(re.search(r'\d+', text))
                     
-                    # ถ้าไม่มีคำสำคัญหรือตัวเลข ข้ามไป
-                    if not (has_numerical_keyword or has_number):
+                    # เพิ่มเงื่อนไขความเข้มงวด - ต้องมีทั้งคำสำคัญและตัวเลข
+                    if not (has_numerical_keyword and has_number):
+                        continue
+                    
+                    # เพิ่มการตรวจสอบเพิ่มเติมว่ามีคำสำคัญทางเศรษฐกิจหรือสถิติหรือไม่
+                    economic_keywords = ['เศรษฐกิจ', 'ราคา', 'บาท', 'ดอลลาร์', 'หุ้น', 'ธนาคาร', 'ตลาด',
+                                        'ร้อยละ', '%', 'เปอร์เซ็นต์', 'ยอดขาย', 'กำไร', 'รายได้', 'ขาดทุน', 
+                                        'เพิ่มขึ้น', 'ลดลง', 'สูงสุด', 'ต่ำสุด', 'อัตรา', 'สถิติ', 'จำนวน',
+                                        'ล้าน', 'พันล้าน', 'หมื่นล้าน']
+                    has_economic_keyword = any(keyword.lower() in text.lower() for keyword in economic_keywords)
+                    
+                    # ตรวจสอบว่ามีรูปแบบตัวเลขพิเศษหรือไม่ เช่น เปอร์เซ็นต์ สกุลเงิน
+                    has_special_number = bool(re.search(r'(\d+(?:\.\d+)?)\s*(?:%|บาท|ดอลลาร์|ล้าน|พันล้าน|เปอร์เซ็นต์|เท่า)', text))
+                    
+                    # ถ้าไม่มีคำสำคัญทางเศรษฐกิจ หรือไม่มีรูปแบบตัวเลขพิเศษ ยังคัดกรองเพิ่มเติม
+                    if not (has_economic_keyword or has_special_number):
                         continue
                 
                 # ตรวจสอบว่าลิงก์นี้อยู่ในโดเมนเดียวกันกับเว็บไซต์หลักหรือไม่
