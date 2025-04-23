@@ -55,9 +55,28 @@ def get_data_from_website(url):
         if not text:
             return "ไม่สามารถดึงเนื้อหาจากเว็บไซต์นี้ได้"
         
+        # ปรับแต่งเนื้อหา
+        # แทนที่ช่องว่างซ้ำด้วยช่องว่างเดียว
+        text = ' '.join(text.split())
+        
+        # แทนที่บรรทัดว่างซ้ำด้วยบรรทัดว่างเดียว
+        text = text.replace('\n\n\n', '\n\n')
+        
+        # เพิ่มบรรทัดว่างหลังจุด เพื่อให้อ่านง่ายขึ้น
+        text = text.replace('. ', '.\n')
+        
+        # แทนที่เครื่องหมายอื่นๆ เพื่อให้อ่านง่ายขึ้น
+        text = text.replace('! ', '!\n')
+        text = text.replace('? ', '?\n')
+        
         # จำกัดความยาวของเนื้อหา
-        if len(text) > 1000:
-            text = text[:997] + "..."
+        if len(text) > 2000:
+            # ตัดที่ประโยคที่สมบูรณ์เพื่อให้อ่านง่ายขึ้น
+            cutoff = text[:1997].rfind('.')
+            if cutoff > 1000:  # ถ้าพบจุดในช่วงที่เหมาะสม
+                text = text[:cutoff+1] + "..."
+            else:
+                text = text[:1997] + "..."
             
         return text
         

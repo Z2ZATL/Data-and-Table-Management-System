@@ -53,7 +53,9 @@
                         {% if isinstance(content, dict) or isinstance(content, list) %}
                             <pre class="json-result">{{ content|tojson(indent=2) }}</pre>
                         {% else %}
-                            <p>{{ content|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}</p>
+                            <div class="formatted-content">
+                                {{ content|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -177,6 +179,20 @@
             .website-shortcut:hover {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .formatted-content {
+                font-size: 1.1rem;
+                line-height: 1.8;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.03);
+                border-radius: 8px;
+            }
+            
+            .formatted-content br {
+                display: block;
+                margin: 10px 0;
+                content: "";
             }
         `;
         document.head.appendChild(styleElement);
