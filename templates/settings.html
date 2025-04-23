@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+{% block title %}ตั้งค่า{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">ตั้งค่าระบบ</h1>
+                <p class="lead mb-0">ปรับแต่งการทำงานและรูปแบบการแสดงผลของเว็บไซต์</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-palette me-2"></i>การแสดงผล</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">ธีม</h6>
+                    <p class="text-muted mb-4">เลือกธีมที่ต้องการใช้งานสำหรับเว็บไซต์นี้</p>
+                    
+                    <div class="d-flex flex-column gap-3">
+                        <!-- โหมดสว่าง -->
+                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('light')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="lightTheme" value="light">
+                            <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="lightTheme">
+                                <div>
+                                    <span class="fw-medium">โหมดสว่าง</span>
+                                    <p class="text-muted mb-0 small">ใช้ธีมสว่างสำหรับการแสดงผล</p>
+                                </div>
+                                <i class="fas fa-sun fs-4"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- โหมดมืด -->
+                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('dark')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="darkTheme" value="dark">
+                            <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="darkTheme">
+                                <div>
+                                    <span class="fw-medium">โหมดมืด</span>
+                                    <p class="text-muted mb-0 small">ใช้ธีมมืดสำหรับการแสดงผล</p>
+                                </div>
+                                <i class="fas fa-moon fs-4"></i>
+                            </label>
+                        </div>
+                        
+                        <!-- โหมดตามระบบ -->
+                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('auto')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="autoTheme" value="auto">
+                            <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="autoTheme">
+                                <div>
+                                    <span class="fw-medium">ตามระบบ</span>
+                                    <p class="text-muted mb-0 small">ใช้ธีมตามการตั้งค่าของระบบปฏิบัติการ</p>
+                                </div>
+                                <i class="fas fa-adjust fs-4"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // สไตล์สำหรับออปชันธีม
+    document.addEventListener('DOMContentLoaded', function() {
+        // เพิ่ม CSS สำหรับตัวเลือกธีม
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .theme-option {
+                border: 1px solid rgba(94, 96, 206, 0.2);
+                transition: all 0.25s ease;
+                cursor: pointer;
+            }
+            .theme-option:hover {
+                border-color: rgba(94, 96, 206, 0.5);
+                background-color: rgba(94, 96, 206, 0.1);
+            }
+            .theme-option input:checked + label {
+                font-weight: 600;
+            }
+            .theme-option input:checked ~ .theme-option {
+                border-color: var(--primary-color);
+                background-color: rgba(94, 96, 206, 0.2);
+            }
+        `;
+        document.head.appendChild(styleElement);
+        
+        // ดึงค่าธีมปัจจุบัน
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // เลือกตัวเลือกที่ตรงกับธีมปัจจุบัน
+        if (currentTheme === 'light') {
+            document.getElementById('lightTheme').checked = true;
+        } else if (currentTheme === 'dark') {
+            document.getElementById('darkTheme').checked = true;
+        } else if (currentTheme === 'auto') {
+            document.getElementById('autoTheme').checked = true;
+        }
+    });
+</script>
+{% endblock %}

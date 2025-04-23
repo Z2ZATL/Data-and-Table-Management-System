@@ -18,6 +18,10 @@ def index():
 def about():
     return render_template("about.html")
 
+@app.route("/settings")  # route สำหรับหน้าตั้งค่า
+def settings():
+    return render_template("settings.html")
+
 @app.route("/submit", methods=["POST"])  # route สำหรับรับข้อมูลจากฟอร์ม
 def submit():
     try:
