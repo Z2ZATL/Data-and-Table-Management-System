@@ -390,6 +390,9 @@
                         <a class="nav-link menu-link {% if request.path == '/data' %}active{% endif %}" href="/data"><i class="fas fa-table me-1"></i> จัดการข้อมูล</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link menu-link {% if request.path == '/upload' %}active{% endif %}" href="/upload"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูล</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link menu-link {% if request.path == '/analysis' %}active{% endif %}" href="/analysis"><i class="fas fa-chart-pie me-1"></i> วิเคราะห์ข้อมูล</a>
                     </li>
                     <li class="nav-item">
@@ -423,6 +426,7 @@
                         <div class="d-flex justify-content-center gap-4 mb-4">
                             <a href="/" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-home"></i></a>
                             <a href="/data" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-table"></i></a>
+                            <a href="/upload" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-file-upload"></i></a>
                             <a href="/analysis" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-chart-pie"></i></a>
                             <a href="/scraping" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-globe"></i></a>
                             <a href="/about" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-info-circle"></i></a>
