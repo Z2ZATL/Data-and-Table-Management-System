@@ -278,7 +278,7 @@ def delete(user_id):
 def scraping_page():
     # ดึงธีมจาก cookie
     theme = get_theme_from_cookie(request)
-    return render_template("scraping_new.html", theme=theme)
+    return render_template("scraping_financial.html", theme=theme)
 
 @app.route("/scrape-headlines", methods=["POST"])  # route สำหรับการดึงหัวข้อข่าวจากเว็บไซต์
 def scrape_headlines():
@@ -293,7 +293,7 @@ def scrape_headlines():
         print(f"Debug - filter_numerical after conversion: {filter_numerical}")
         
         if not url:
-            return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
+            return render_template("scraping_financial.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
         # ดึงหัวข้อข่าวจากเว็บไซต์ พร้อมส่งตัวเลือกการกรอง
         headlines = scraping.get_news_headlines(url, filter_numerical)
@@ -305,7 +305,7 @@ def scrape_headlines():
             error_message += " หรือเว็บไซต์ไม่รองรับการดึงหัวข้อข่าว"
             
             return render_template(
-                "scraping_new.html",
+                "scraping_financial.html",
                 error=error_message,
                 theme=get_theme_from_cookie(request),
                 filter_numerical=filter_numerical,
@@ -314,7 +314,7 @@ def scrape_headlines():
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(
-            "scraping_new.html", 
+            "scraping_financial.html", 
             headlines=headlines, 
             searched_url=url,
             filter_numerical=filter_numerical,
@@ -322,7 +322,7 @@ def scrape_headlines():
         )
     except Exception as e:
         return render_template(
-            "scraping_new.html", 
+            "scraping_financial.html", 
             error=f"เกิดข้อผิดพลาดในการดึงหัวข้อข่าว: {str(e)}", 
             filter_numerical=filter_numerical if 'filter_numerical' in locals() else False,
             searched_url=url if 'url' in locals() else "",
@@ -336,7 +336,7 @@ def scrape_website():
         url = request.form.get("url", "")
         
         if not url:
-            return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
+            return render_template("scraping_financial.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
         # รับค่าการใช้งาน AI จากฟอร์ม
         use_ai = request.form.get("use_ai", "on") == "on"
@@ -360,7 +360,7 @@ def scrape_website():
                 }
             else:
                 return render_template(
-                    "scraping_new.html", 
+                    "scraping_financial.html", 
                     error="ไม่พบตารางข้อมูลในเว็บไซต์นี้ หรือรูปแบบไม่รองรับ", 
                     searched_url=url,
                     theme=get_theme_from_cookie(request)
@@ -385,7 +385,7 @@ def scrape_website():
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(
-            "scraping_new.html", 
+            "scraping_financial.html", 
             content=content,
             chart_data=chart_data,
             searched_url=url, 
@@ -397,7 +397,7 @@ def scrape_website():
         )
     except Exception as e:
         return render_template(
-            "scraping_new.html", 
+            "scraping_financial.html", 
             error=f"เกิดข้อผิดพลาด: {str(e)}", 
             theme=get_theme_from_cookie(request)
         )

@@ -1,0 +1,577 @@
+{% extends 'layout.html' %}
+
+{% block title %}ดึงข้อมูลการเงินและราคา{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">ดึงข้อมูลการเงินและราคา</h1>
+                <p class="lead mb-0">ดึงข้อมูลราคาหุ้น ราคาทอง และอัตราแลกเปลี่ยนอย่างรวดเร็ว</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <!-- ส่วนค้นหา -->
+            <div class="card shadow-lg mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-search me-2"></i>ค้นหาข้อมูล</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="url" class="form-label">URL เว็บไซต์</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                            <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required value="{{ searched_url|default('') }}">
+                            <button type="button" class="btn btn-info btn-lg" id="table-btn">
+                                <i class="fas fa-table me-1"></i> ดึงตารางหุ้น/ราคา
+                            </button>
+                        </div>
+                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่เกี่ยวกับการเงินและราคา เช่น set.or.th, goldtraders.or.th หรือ bot.or.th</div>
+                        <div class="alert alert-info p-2 mt-2" role="alert">
+                            <i class="fas fa-info-circle me-1"></i> <small>เครื่องมือนี้เหมาะสำหรับเว็บไซต์ที่มีข้อมูลตารางการเงินเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน</small>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="filter-numerical" {% if filter_numerical %}checked{% endif %} checked disabled>
+                        <label class="form-check-label" for="filter-numerical">
+                            <i class="fas fa-chart-line me-1"></i> เน้นเฉพาะข้อมูลตัวเลขทางการเงิน (ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน)
+                        </label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="use-ai" checked>
+                        <label class="form-check-label" for="use-ai">
+                            <i class="fas fa-robot me-1"></i> ใช้ AI วิเคราะห์และสรุปเนื้อหา
+                        </label>
+                    </div>
+                    <div class="badge bg-info p-2 mb-3">
+                        <i class="fas fa-robot me-1"></i> ใช้ Gemini AI ช่วยวิเคราะห์ข้อมูลจากเนื้อหาบทความ
+                    </div>
+                    <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
+                        <input type="hidden" name="url" id="content-url">
+                        <input type="hidden" name="use_ai" id="use-ai-input" value="on">
+                        <input type="hidden" name="extract_mode" id="extract-mode-input" value="general">
+                    </form>
+                </div>
+            </div>
+            
+            <!-- ส่วนผลลัพธ์ -->            
+            {% if content %}
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>เนื้อหาจาก 
+                        <a href="{{ searched_url }}" target="_blank" class="text-primary">{{ searched_url }}</a>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="content-result p-3 rounded">
+                        {% if isinstance(content, dict) %}
+                            {% if content.ai_summary %}
+                            <div class="mb-4">
+                                <div class="ai-summary bg-gradient-dark p-3 rounded-3 mb-3 border border-primary-subtle">
+                                    {{ content.ai_summary|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-primary"><i class="fas fa-robot me-1"></i> สรุปโดย Gemini AI</span>
+                                </div>
+                            </div>
+                            <hr>
+                            {% endif %}
+                            
+                            <div class="formatted-content">
+                                {{ content.content|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}
+                            </div>
+                        {% elif isinstance(content, list) %}
+                            <pre class="json-result">{{ content|tojson(indent=2) }}</pre>
+                        {% else %}
+                            <div class="formatted-content">
+                                {{ content|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>* เนื้อหาอาจถูกตัดทอนหรือถูกจัดรูปแบบใหม่ตามความเหมาะสม</small>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if content is defined and content is mapping and content.ai_table %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-table me-2"></i>ตารางข้อมูลสำคัญ
+                        </h5>
+                        {% if request.form.get('extract_mode') == 'table' %}
+                        <span class="badge bg-info">
+                            <i class="fas fa-table me-1"></i> ดึงตารางโดยตรงจากเว็บไซต์
+                        </span>
+                        {% else %}
+                        <span class="badge bg-primary">
+                            <i class="fas fa-robot me-1"></i> วิเคราะห์โดย Gemini AI
+                        </span>
+                        {% endif %}
+                        <button type="button" class="btn btn-outline-success btn-sm ms-2" id="chart-btn">
+                            <i class="fas fa-chart-bar me-1"></i> สร้างกราฟ
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- แสดงกราฟ -->
+                    <div class="chart-container mb-4" style="display: none; position: relative; height: 400px;">
+                        <canvas id="data-chart"></canvas>
+                    </div>
+                    
+                    <!-- แสดงตาราง -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    {% for header in content.ai_table.headers %}
+                                    <th scope="col">{{ header }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in content.ai_table.rows %}
+                                <tr>
+                                    {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle text-primary me-2"></i>
+                        {% if request.form.get('extract_mode') == 'table' %}
+                        <small class="text-muted">ตารางข้อมูลดึงโดยตรงจากเว็บไซต์ {{ searched_url }}</small>
+                        {% else %}
+                        <small class="text-muted">ตารางข้อมูลสร้างโดย Gemini AI จากการวิเคราะห์เนื้อหาของบทความ</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if chart_data %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-table me-2"></i>ข้อมูลตัวเลขที่พบในเนื้อหา
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">ข้อความ</th>
+                                    <th scope="col" class="text-center">ตัวเลข</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in range(chart_data.data.labels|length) %}
+                                <tr>
+                                    <td class="text-center">{{ i+1 }}</td>
+                                    <td>{{ chart_data.data.sentences[i] }}</td>
+                                    <td class="text-center fw-bold">{{ chart_data.data.values[i] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle text-primary me-2"></i>
+                        <small class="text-muted">ข้อมูลตัวเลขที่พบถูกวิเคราะห์จากเนื้อหาของบทความ</small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if content is defined and content and not chart_data %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>ผลการวิเคราะห์ข้อมูล
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-table me-2"></i>
+                        ไม่พบข้อมูลตัวเลขที่สำคัญในเนื้อหานี้ ไม่สามารถสร้างตารางข้อมูลได้
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- แสดงข้อความข้อผิดพลาด (ถ้ามี) -->
+            {% if error %}
+            <div class="alert alert-danger mt-4" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+            </div>
+            {% endif %}
+            
+            <!-- เว็บไซต์ที่แนะนำ -->
+            {% if (content is not defined or not content) and (error is not defined or not error) %}
+            <div class="card shadow-lg mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>เว็บไซต์ที่แนะนำ</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-3">ข้อมูลหุ้นและการลงทุน</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <button type="button" class="btn btn-outline-success btn-sm shortcut-btn" data-url="https://www.set.or.th/th/market/index/set/overview">
+                            <i class="fas fa-chart-line me-1"></i> SET (ตลาดหุ้นไทย)
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm shortcut-btn" data-url="https://marketdata.set.or.th/mkt/sectorquotation.do?sector=SET100&language=th&country=TH">
+                            <i class="fas fa-chart-line me-1"></i> SET100
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm shortcut-btn" data-url="https://www.set.or.th/th/market/index/set50/overview">
+                            <i class="fas fa-chart-line me-1"></i> SET50
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm shortcut-btn" data-url="https://marketdata.set.or.th/mkt/sectorialindices.do?language=th&country=TH">
+                            <i class="fas fa-chart-line me-1"></i> ดัชนีกลุ่มอุตสาหกรรม
+                        </button>
+                    </div>
+                    
+                    <h6 class="mb-3">ราคาทองและโลหะมีค่า</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <button type="button" class="btn btn-outline-warning btn-sm shortcut-btn" data-url="https://www.goldtraders.or.th">
+                            <i class="fas fa-coins me-1"></i> สมาคมค้าทองคำ
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm shortcut-btn" data-url="https://xn--42cah7d0cxcvbbb9x.com">
+                            <i class="fas fa-coins me-1"></i> ราคาทองวันนี้
+                        </button>
+                        <button type="button" class="btn btn-outline-warning btn-sm shortcut-btn" data-url="https://www.hua-seng-heng.com/gold-price">
+                            <i class="fas fa-coins me-1"></i> ห้างทองฮั่วเซ่งเฮง
+                        </button>
+                    </div>
+                    
+                    <h6 class="mb-3">อัตราแลกเปลี่ยนและสกุลเงิน</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-info btn-sm shortcut-btn" data-url="https://www.bot.or.th/thai/statistics/financialmarkets/exchangerate/_layouts/application/exchangerate/exchangerate.aspx">
+                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (ธปท.)
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm shortcut-btn" data-url="https://www.kasikornbank.com/th/rate/pages/forex.aspx">
+                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (กสิกร)
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm shortcut-btn" data-url="https://www.bangkokbank.com/th-TH/Personal/Other-Services/View-Rates/Foreign-Exchange-Rates">
+                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (กรุงเทพ)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- คำแนะนำ -->
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>คำแนะนำ</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3 mb-md-0">
+                                <i class="fas fa-table fa-3x mb-3 text-success"></i>
+                                <h5>ดึงตารางราคา</h5>
+                                <p class="text-muted">ดึงตารางราคาหุ้น ทอง และอัตราแลกเปลี่ยนโดยตรงจากเว็บไซต์แหล่งข้อมูล</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3 mb-md-0">
+                                <i class="fas fa-robot fa-3x mb-3 text-primary"></i>
+                                <h5>วิเคราะห์ด้วย AI</h5>
+                                <p class="text-muted">ใช้ Gemini AI วิเคราะห์และสรุปข้อมูลการเงินจากเนื้อหาเว็บไซต์</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-chart-bar fa-3x mb-3 text-warning"></i>
+                                <h5>สร้างกราฟข้อมูล</h5>
+                                <p class="text-muted">สร้างกราฟแสดงราคาและข้อมูลตัวเลขเพื่อการวิเคราะห์ที่สะดวก</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // เพิ่ม CSS สำหรับผลลัพธ์
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            .content-result {
+                max-height: 500px;
+                overflow-y: auto;
+                background-color: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+            }
+            
+            .json-result {
+                background-color: transparent;
+                color: var(--card-text);
+                border: none;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
+            
+            .shortcut-btn {
+                transition: all 0.25s ease;
+                margin-bottom: 5px;
+            }
+            
+            .shortcut-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+            
+            .formatted-content {
+                font-size: 1.1rem;
+                line-height: 1.8;
+                padding: 10px;
+                background-color: rgba(255, 255, 255, 0.03);
+                border-radius: 8px;
+            }
+            
+            .formatted-content br {
+                display: block;
+                margin: 10px 0;
+                content: "";
+            }
+        `;
+        document.head.appendChild(styleElement);
+        
+        // ปุ่มดึงตารางหุ้น/ราคา
+        document.getElementById('table-btn').addEventListener('click', function() {
+            const url = document.getElementById('url').value;
+            if (url) {
+                // ส่ง URL ไปยังฟอร์ม
+                document.getElementById('content-url').value = url;
+                
+                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                document.getElementById('extract-mode-input').value = "table";
+                
+                // ตรวจสอบว่าใช้ AI หรือไม่
+                const useAi = document.getElementById('use-ai').checked;
+                document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                
+                // ส่งฟอร์ม
+                document.getElementById('content-form').submit();
+            }
+        });
+        
+        // ปุ่มสร้างกราฟ
+        const chartBtn = document.getElementById('chart-btn');
+        if (chartBtn) {
+            chartBtn.addEventListener('click', function() {
+                // ดึงข้อมูลจากตาราง
+                const tableData = extractTableData();
+                
+                // ตรวจสอบว่ามีข้อมูลหรือไม่
+                if (!tableData || !tableData.rows || tableData.rows.length === 0) {
+                    alert('ไม่พบข้อมูลในตารางที่จะสร้างกราฟ');
+                    return;
+                }
+                
+                // สร้างกราฟ
+                createChart(tableData);
+                
+                // แสดงส่วนกราฟ
+                document.querySelector('.chart-container').style.display = 'block';
+                
+                // เลื่อนไปที่กราฟ
+                document.querySelector('.chart-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+        
+        // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
+        const shortcutBtns = document.querySelectorAll('.shortcut-btn');
+        shortcutBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                document.getElementById('url').value = url;
+                
+                // ส่ง URL ไปยังฟอร์ม
+                document.getElementById('content-url').value = url;
+                
+                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                document.getElementById('extract-mode-input').value = "table";
+                
+                // ตรวจสอบว่าใช้ AI หรือไม่
+                const useAi = document.getElementById('use-ai').checked;
+                document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
+                
+                // ส่งฟอร์ม
+                document.getElementById('content-form').submit();
+            });
+        });
+        
+        // ฟังก์ชันดึงข้อมูลจากตาราง
+        function extractTableData() {
+            try {
+                const table = document.querySelector('.table-responsive table');
+                if (!table) return null;
+                
+                const headers = [];
+                const headerCells = table.querySelectorAll('thead th');
+                headerCells.forEach(cell => {
+                    headers.push(cell.textContent.trim());
+                });
+                
+                const rows = [];
+                const tableBodies = table.querySelectorAll('tbody tr');
+                tableBodies.forEach(row => {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('td');
+                    cells.forEach(cell => {
+                        rowData.push(cell.textContent.trim());
+                    });
+                    rows.push(rowData);
+                });
+                
+                return {
+                    headers: headers,
+                    rows: rows
+                };
+            } catch (error) {
+                console.error('Error extracting table data:', error);
+                return null;
+            }
+        }
+        
+        // ฟังก์ชันสร้างกราฟจากข้อมูล
+        function createChart(tableData) {
+            // ตรวจสอบว่ามี canvas สำหรับกราฟหรือไม่
+            const chartCanvas = document.getElementById('data-chart');
+            if (!chartCanvas) return;
+            
+            // หาคอลัมน์ที่เป็นตัวเลขและคอลัมน์ที่เป็นข้อความ
+            const dataColumns = findNumericColumns(tableData);
+            
+            if (dataColumns.length === 0) {
+                alert('ไม่พบข้อมูลตัวเลขในตารางที่เหมาะสำหรับการสร้างกราฟ');
+                return;
+            }
+            
+            // ใช้คอลัมน์แรกเป็นชื่อ/label
+            const labelsColumnIndex = 0;
+            
+            // ดึงข้อมูลสำหรับกราฟ
+            const labels = tableData.rows.map(row => row[labelsColumnIndex]);
+            
+            // สร้างชุดข้อมูลสำหรับแต่ละคอลัมน์ตัวเลข
+            const datasets = dataColumns.map((colIndex, index) => {
+                // ดึงข้อมูลตัวเลขจากคอลัมน์นี้
+                const data = tableData.rows.map(row => {
+                    const value = row[colIndex];
+                    // แปลงข้อความเป็นตัวเลข (ลบเครื่องหมาย + - % และ คอมม่า)
+                    return parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, '')) || 0;
+                });
+                
+                // กำหนดสีแบบสุ่ม
+                const hue = (index * 137) % 360; // ใช้ golden angle เพื่อให้สีกระจายตัว
+                
+                return {
+                    label: tableData.headers[colIndex],
+                    data: data,
+                    backgroundColor: `hsla(${hue}, 70%, 60%, 0.5)`,
+                    borderColor: `hsla(${hue}, 70%, 45%, 1)`,
+                    borderWidth: 1
+                };
+            });
+            
+            // ทำความสะอาดกราฟเดิม (ถ้ามี)
+            if (window.dataChart) {
+                window.dataChart.destroy();
+            }
+            
+            // สร้างกราฟ
+            const ctx = chartCanvas.getContext('2d');
+            window.dataChart = new Chart(ctx, {
+                type: 'bar', // หรือเลือกประเภทกราฟอื่น เช่น 'line'
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'ข้อมูลจากตาราง',
+                            color: '#fff',
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ฟังก์ชันค้นหาคอลัมน์ที่เป็นตัวเลข
+        function findNumericColumns(tableData) {
+            const numericColumns = [];
+            
+            // ตรวจสอบแต่ละคอลัมน์ (ยกเว้นคอลัมน์แรกที่เป็นชื่อ)
+            for (let colIndex = 1; colIndex < tableData.headers.length; colIndex++) {
+                let numericCount = 0;
+                
+                // ตรวจสอบแต่ละแถวในคอลัมน์นี้
+                for (let rowIndex = 0; rowIndex < tableData.rows.length; rowIndex++) {
+                    if (tableData.rows[rowIndex][colIndex]) {
+                        const value = tableData.rows[rowIndex][colIndex];
+                        
+                        // ทดสอบว่าเป็นตัวเลขหรือไม่ (หลังจากลบเครื่องหมายพิเศษและคอมม่า)
+                        const numericValue = parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, ''));
+                        if (!isNaN(numericValue)) {
+                            numericCount++;
+                        }
+                    }
+                }
+                
+                // ถ้ามีค่าตัวเลขมากกว่า 60% ของข้อมูลทั้งหมดในคอลัมน์ ถือว่าเป็นคอลัมน์ตัวเลข
+                if (numericCount / tableData.rows.length > 0.6) {
+                    numericColumns.push(colIndex);
+                }
+            }
+            
+            return numericColumns;
+        }
+    });
+</script>
+{% endblock %}
