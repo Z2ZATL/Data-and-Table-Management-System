@@ -5,131 +5,281 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ระบบจัดการข้อมูลผู้ใช้{% endblock %}</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+        
         :root {
-            --primary-color: #8a55e8;
-            --primary-hover: #7544d4;
-            --hero-gradient-start: #7a4adf;
-            --hero-gradient-end: #c06cfc;
-            --card-bg: #2b3035;
-            --card-text: #e9ecef;
-            --card-header-bg: #343a40;
-            --card-border: #444;
-            --dark-bg: #212529;
+            --primary-color: #5e60ce;
+            --primary-hover: #4d4daa;
+            --secondary-color: #64dfdf;
+            --accent-color: #80ffdb;
+            --dark-color: #1a1b41;
+            --darker-color: #0a0b21;
+            --card-bg: rgba(30, 31, 67, 0.9);
+            --card-text: #f8f9fa;
+            --card-header-bg: rgba(35, 36, 72, 0.9);
+            --card-border: #5e60ce;
+            --dark-bg: #121224;
+            --light-text: #e9ecef;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            --box-shadow-hover: 0 15px 60px rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(30, 31, 67, 0.8);
+            --glass-border: rgba(94, 96, 206, 0.4);
         }
         
-        /* ปรับสีพื้นหลังและข้อความให้มีความแตกต่างชัดเจน */
+        /* ทั่วไป */
         body {
             background-color: var(--dark-bg);
-            color: #f8f9fa;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%231e1f43' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23252649'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+            color: var(--light-text);
+            font-family: 'Prompt', sans-serif;
+            line-height: 1.6;
         }
         
+        /* Hero Section */
         .hero-section {
-            background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
-            padding: 100px 0;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #5e60ce, #56cfe1);
+            padding: 120px 0 100px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        /* ปรับสีของการ์ด */
+        .hero-section:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.12'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-section h1 {
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-section p {
+            font-size: 1.25rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        
+        /* Glass Morphism Cards */
         .card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background-color: var(--card-bg);
-            border-color: var(--card-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: var(--box-shadow);
+            transition: all 0.35s ease;
             color: var(--card-text);
         }
         
         .card-header {
             background-color: var(--card-header-bg);
-            border-bottom-color: var(--card-border);
+            border-bottom: 1px solid var(--glass-border);
+            border-top-left-radius: 16px !important;
+            border-top-right-radius: 16px !important;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 1.25rem 1.5rem;
         }
         
         .card-footer {
             background-color: var(--card-header-bg);
-            border-top-color: var(--card-border);
+            border-top: 1px solid var(--glass-border);
+            border-bottom-left-radius: 16px !important;
+            border-bottom-right-radius: 16px !important;
+            padding: 1.25rem 1.5rem;
         }
         
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-10px);
+            box-shadow: var(--box-shadow-hover);
         }
         
         /* ปรับสีตาราง */
         .table {
             color: var(--card-text);
+            margin-bottom: 0;
         }
         
         .table-hover tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.075);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* สีของปุ่มและฟอร์ม */
+        /* Modern Navbar */
+        .navbar {
+            padding: 1rem 0;
+            background-color: var(--darker-color) !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
         .navbar-brand {
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 0.5rem 0;
         }
         
+        .nav-link {
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.15rem;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .nav-link.active, .nav-link:hover {
+            background-color: rgba(94, 96, 206, 0.25);
+        }
+        
+        .nav-link.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 1rem;
+            right: 1rem;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+        
+        /* Modern Inputs and Buttons */
         .form-control, .form-select {
-            background-color: #343a40;
-            border-color: #495057;
+            background-color: rgba(30, 31, 67, 0.6);
+            border: 1px solid rgba(94, 96, 206, 0.4);
+            border-radius: 10px;
             color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(138, 85, 232, 0.25);
-            background-color: #3a4147;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(100, 223, 223, 0.25);
+            background-color: rgba(30, 31, 67, 0.8);
             color: #f8f9fa;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+        }
+        
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background: linear-gradient(45deg, var(--primary-color), #6b72e5);
+            border: none;
+            box-shadow: 0 4px 10px rgba(94, 96, 206, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
+            background: linear-gradient(45deg, var(--primary-hover), #5d63d6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(94, 96, 206, 0.4);
         }
         
-        /* ปรับสีของ pagination */
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(94, 96, 206, 0.4);
+        }
+        
+        /* Pagination */
+        .pagination {
+            gap: 0.25rem;
+        }
+        
         .pagination .page-link {
-            background-color: #343a40;
-            border-color: #495057;
-            color: #f8f9fa;
+            background-color: rgba(30, 31, 67, 0.6);
+            border: 1px solid rgba(94, 96, 206, 0.4);
+            color: var(--light-text);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
         }
         
         .pagination .page-item.active .page-link {
-            background-color: var(--primary-color);
+            background: linear-gradient(45deg, var(--primary-color), #6b72e5);
             border-color: var(--primary-color);
             color: white;
+            box-shadow: 0 4px 10px rgba(94, 96, 206, 0.3);
         }
         
         .pagination .page-link:hover {
-            background-color: #495057;
-            border-color: #6c757d;
+            background-color: rgba(94, 96, 206, 0.25);
+            border-color: rgba(94, 96, 206, 0.5);
             color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--darker-color) !important;
+            border-top: 1px solid rgba(94, 96, 206, 0.3);
+            padding: 2rem 0 !important;
+            margin-top: 4rem !important;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-section {
+            animation: fadeIn 0.8s ease forwards;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">ระบบจัดการข้อมูลผู้ใช้</a>
+            <a class="navbar-brand" href="/"><i class="fas fa-database me-2"></i>ระบบจัดการข้อมูลผู้ใช้</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">หน้าแรก</a>
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/"><i class="fas fa-home me-1"></i> หน้าแรก</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/data' %}active{% endif %}" href="/data">ข้อมูลผู้ใช้</a>
+                        <a class="nav-link {% if request.path == '/data' %}active{% endif %}" href="/data"><i class="fas fa-table me-1"></i> ข้อมูลผู้ใช้</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/analysis' %}active{% endif %}" href="/analysis">วิเคราะห์ข้อมูล</a>
+                        <a class="nav-link {% if request.path == '/analysis' %}active{% endif %}" href="/analysis"><i class="fas fa-chart-pie me-1"></i> วิเคราะห์ข้อมูล</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">เกี่ยวกับ</a>
+                        <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about"><i class="fas fa-info-circle me-1"></i> เกี่ยวกับ</a>
                     </li>
                 </ul>
             </div>
@@ -138,9 +288,27 @@
 
     {% block content %}{% endblock %}
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <footer class="text-white text-center">
         <div class="container">
-            <p class="mb-0">© 2025 ระบบจัดการข้อมูลผู้ใช้ | พัฒนาด้วย Flask</p>
+            <div class="py-4">
+                <div class="mb-4">
+                    <a href="/" class="text-decoration-none">
+                        <i class="fas fa-database me-2"></i>
+                        <span class="fw-bold" style="background: linear-gradient(45deg, var(--secondary-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ระบบจัดการข้อมูลผู้ใช้</span>
+                    </a>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-center gap-4 mb-4">
+                            <a href="/" class="text-white text-decoration-none"><i class="fas fa-home"></i></a>
+                            <a href="/data" class="text-white text-decoration-none"><i class="fas fa-table"></i></a>
+                            <a href="/analysis" class="text-white text-decoration-none"><i class="fas fa-chart-pie"></i></a>
+                            <a href="/about" class="text-white text-decoration-none"><i class="fas fa-info-circle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <p class="mb-0">© 2025 ระบบจัดการข้อมูลผู้ใช้ | <i class="fab fa-python me-1"></i> พัฒนาด้วย Flask</p>
+            </div>
         </div>
     </footer>
 

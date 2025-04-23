@@ -44,7 +44,9 @@
                                     <td>{{ user.province }}</td>
                                     <td>{{ user.pet if user.pet else '-' }}</td>
                                     <td class="pe-4">
-                                        <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-primary">แก้ไข</a>
+                                        <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit me-1"></i> แก้ไข
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -88,7 +90,9 @@
                         </nav>
                         {% endif %}
                         
-                        <a href="/" class="btn btn-primary">เพิ่มข้อมูลใหม่</a>
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลใหม่
+                        </a>
                     </div>
                 </div>
             </div>
