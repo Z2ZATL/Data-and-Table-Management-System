@@ -35,11 +35,14 @@
                                 <button type="button" class="btn btn-success" id="get-content-direct-btn">
                                     <i class="fas fa-file-alt me-1"></i> ดึงเนื้อหาโดยตรง
                                 </button>
+                                <button type="button" class="btn btn-info" id="get-table-btn">
+                                    <i class="fas fa-table me-1"></i> ดึงตารางหุ้น/ราคา
+                                </button>
                             </div>
                         </div>
                         <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล - เช่น set.or.th หรือ thairath.co.th</div>
                         <div class="alert alert-info p-2 mt-2" role="alert">
-                            <i class="fas fa-info-circle me-1"></i> <small>สำหรับเว็บที่มีตาราง (เช่น ราคาหุ้น) กรุณาใช้ปุ่ม "<b>ดึงเนื้อหาโดยตรง</b>" เพื่อดึงข้อมูลโดยตรงจากเว็บไซต์</small>
+                            <i class="fas fa-info-circle me-1"></i> <small>สำหรับเว็บที่มีตารางข้อมูลเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน ฯลฯ กรุณาใช้ปุ่ม "<b>ดึงตารางหุ้น/ราคา</b>" เพื่อดึงข้อมูลตารางโดยตรง</small>
                         </div>
                     </div>
                     <div class="form-check form-switch mb-3">
@@ -64,6 +67,7 @@
                     <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="content-url">
                         <input type="hidden" name="use_ai" id="use-ai-input" value="on">
+                        <input type="hidden" name="extract_mode" id="extract-mode-input" value="general">
                     </form>
                 </div>
             </div>

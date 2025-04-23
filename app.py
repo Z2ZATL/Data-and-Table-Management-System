@@ -341,22 +341,47 @@ def scrape_website():
         # รับค่าการใช้งาน AI จากฟอร์ม
         use_ai = request.form.get("use_ai", "on") == "on"
         
-        # ดึงข้อมูลจากเว็บไซต์
-        result = scraping.get_data_from_website(url, use_ai=use_ai)
+        # รับค่าโหมดการดึงข้อมูล (ทั่วไป หรือ ตาราง)
+        extract_mode = request.form.get("extract_mode", "general")
         
-        # ตรวจสอบประเภทของข้อมูลที่ได้รับ
-        if isinstance(result, str):
-            # กรณีที่ได้ข้อความแจ้งเตือนเป็น string
-            content = result
-            chart_data = None
-        elif isinstance(result, dict) and 'content' in result:
-            # กรณีที่ได้ข้อมูลเป็น dict ที่มีคีย์ content
-            content = result['content']
-            chart_data = result.get('chart_data')
+        content = None
+        chart_data = None
+        
+        # ดึงข้อมูลตามโหมดที่เลือก
+        if extract_mode == "table":
+            # ดึงข้อมูลตารางหุ้นหรือข้อมูลตัวเลขโดยตรง
+            table_data = scraping.extract_stock_tables(url)
+            
+            if table_data:
+                # สร้างข้อมูลในรูปแบบที่เทมเพลตเข้าใจ
+                content = {
+                    'content': f"**ข้อมูลตารางจาก** {url}",
+                    'ai_table': table_data
+                }
+            else:
+                return render_template(
+                    "scraping_new.html", 
+                    error="ไม่พบตารางข้อมูลในเว็บไซต์นี้ หรือรูปแบบไม่รองรับ", 
+                    searched_url=url,
+                    theme=get_theme_from_cookie(request)
+                )
         else:
-            # กรณีที่ได้ข้อมูลอื่นๆ
-            content = result
-            chart_data = None
+            # ดึงข้อมูลทั่วไปจากเว็บไซต์
+            result = scraping.get_data_from_website(url, use_ai=use_ai)
+            
+            # ตรวจสอบประเภทของข้อมูลที่ได้รับ
+            if isinstance(result, str):
+                # กรณีที่ได้ข้อความแจ้งเตือนเป็น string
+                content = result
+                chart_data = None
+            elif isinstance(result, dict) and 'content' in result:
+                # กรณีที่ได้ข้อมูลเป็น dict ที่มีคีย์ content
+                content = result['content']
+                chart_data = result.get('chart_data')
+            else:
+                # กรณีที่ได้ข้อมูลอื่นๆ
+                content = result
+                chart_data = None
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(

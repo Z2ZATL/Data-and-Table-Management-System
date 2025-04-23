@@ -634,6 +634,394 @@ def extract_numerical_data(text):
     return chart_data
 
 # ฟังก์ชันสำหรับดึงข้อมูลข่าวจาก RSS Feed
+def extract_stock_tables(url):
+    """
+    ฟังก์ชันสำหรับดึงตารางข้อมูลหุ้นจากเว็บไซต์โดยตรง
+    
+    Args:
+        url (str): URL ของเว็บไซต์ที่ต้องการดึงข้อมูลหุ้น
+        
+    Returns:
+        dict: ข้อมูลตารางที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
+    """
+    try:
+        # ส่งคำขอไปยังเว็บไซต์
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        
+        # ตรวจสอบสถานะการตอบกลับ
+        if response.status_code != 200:
+            return None
+        
+        # ใช้ BeautifulSoup เพื่อแยกวิเคราะห์ HTML
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # ตรวจสอบว่ามีตารางหรือไม่
+        tables = soup.find_all('table')
+        if not tables:
+            return None
+            
+        # วิเคราะห์เว็บไซต์ประเภทต่างๆ
+        
+        # ตรวจสอบว่าเป็นเว็บไซต์ set.or.th
+        if "set.or.th" in url or "marketdata" in url:
+            return extract_set_data(soup)
+        
+        # ตรวจสอบว่าเป็นเว็บไซต์ข้อมูลทอง
+        if "goldtraders" in url or "gold" in url:
+            return extract_gold_data(soup)
+            
+        # ตรวจสอบว่าเป็นเว็บไซต์อัตราแลกเปลี่ยน
+        if "exchange" in url or "currency" in url or "fx" in url:
+            return extract_exchange_rate_data(soup)
+            
+        # ถ้าไม่ตรงกับเงื่อนไขข้างต้น ทดลองดึงข้อมูลจากตารางทั่วไป
+        return extract_general_table_data(soup)
+            
+    except Exception as e:
+        print(f"Error extracting stock tables from {url}: {str(e)}")
+        return None
+
+def extract_set_data(soup):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลจากเว็บไซต์ตลาดหลักทรัพย์
+    
+    Args:
+        soup (BeautifulSoup): BeautifulSoup object ที่มีเนื้อหาเว็บไซต์
+        
+    Returns:
+        dict: ข้อมูลหุ้นที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
+    """
+    try:
+        # ตรวจสอบหาตาราง
+        # อาจต้องปรับเปลี่ยนตาม class หรือ id ที่ใช้ในเว็บไซต์
+        tables = soup.find_all('table', {'class': ['table', 'table-info', 'table-hover', 'table-responsive']})
+        
+        if not tables:
+            # ลองค้นหาด้วยรูปแบบอื่น
+            tables = soup.find_all('table')
+            
+        if not tables:
+            # ลองค้นหาด้วย class ที่มักใช้ในข้อมูลหุ้น
+            divs = soup.find_all('div', {'class': ['table', 'stock-table', 'market-table', 'quotes-table']})
+            if divs:
+                for div in divs:
+                    tables_in_div = div.find_all('table')
+                    if tables_in_div:
+                        tables = tables_in_div
+                        break
+        
+        if not tables:
+            return None
+            
+        # เลือกตารางที่น่าจะมีข้อมูลหุ้นมากที่สุด
+        target_table = None
+        max_rows = 0
+        
+        for table in tables:
+            rows = table.find_all('tr')
+            if len(rows) > max_rows:
+                max_rows = len(rows)
+                target_table = table
+        
+        if not target_table:
+            return None
+            
+        # ดึงข้อมูลจากตาราง
+        headers = []
+        rows_data = []
+        
+        # ดึงส่วนหัวตาราง
+        header_row = target_table.find('thead')
+        if header_row:
+            th_elements = header_row.find_all('th')
+            if not th_elements:
+                th_elements = header_row.find_all('td')
+            
+            headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ถ้าไม่มี thead ลองดูแถวแรกเป็นหัวตารางแทน
+        if not headers:
+            first_row = target_table.find('tr')
+            if first_row:
+                th_elements = first_row.find_all('th')
+                if not th_elements:
+                    th_elements = first_row.find_all('td')
+                
+                headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ดึงข้อมูลแถว
+        rows = target_table.find_all('tr')
+        start_idx = 0 if not headers else 1
+        
+        for row in rows[start_idx:]:
+            cells = row.find_all(['td', 'th'])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            
+            # เฉพาะแถวที่มีข้อมูล
+            if any(cell for cell in row_data):
+                rows_data.append(row_data)
+        
+        # สร้างตารางข้อมูลในรูปแบบเดียวกับที่ AI สร้าง
+        if not headers and rows_data:
+            # สร้างส่วนหัวตารางแบบอัตโนมัติ
+            headers = [f"Column {i+1}" for i in range(len(rows_data[0]))]
+        
+        # ข้อมูลที่จะส่งกลับ
+        table_data = {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+        return table_data
+        
+    except Exception as e:
+        print(f"Error extracting SET data: {str(e)}")
+        return None
+
+def extract_gold_data(soup):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลราคาทองจากเว็บไซต์
+    
+    Args:
+        soup (BeautifulSoup): BeautifulSoup object ที่มีเนื้อหาเว็บไซต์
+        
+    Returns:
+        dict: ข้อมูลราคาทองที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
+    """
+    try:
+        # ดึงข้อมูลเฉพาะสำหรับราคาทอง
+        gold_table = None
+        tables = soup.find_all('table')
+        
+        for table in tables:
+            text = table.get_text().lower()
+            if 'ทอง' in text or 'บาท' in text or 'รูปพรรณ' in text or 'ขาย' in text:
+                gold_table = table
+                break
+                
+        if not gold_table:
+            return None
+            
+        # ดึงข้อมูลจากตาราง
+        headers = []
+        rows_data = []
+        
+        # ดึงส่วนหัวตาราง
+        header_row = gold_table.find('thead')
+        if header_row:
+            th_elements = header_row.find_all('th')
+            if not th_elements:
+                th_elements = header_row.find_all('td')
+            
+            headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ถ้าไม่มี thead ลองดูแถวแรกเป็นหัวตารางแทน
+        if not headers:
+            first_row = gold_table.find('tr')
+            if first_row:
+                th_elements = first_row.find_all('th')
+                if not th_elements:
+                    th_elements = first_row.find_all('td')
+                
+                headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ดึงข้อมูลแถว
+        rows = gold_table.find_all('tr')
+        start_idx = 0 if not headers else 1
+        
+        for row in rows[start_idx:]:
+            cells = row.find_all(['td', 'th'])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            
+            # เฉพาะแถวที่มีข้อมูล
+            if any(cell for cell in row_data):
+                rows_data.append(row_data)
+        
+        # สร้างตารางข้อมูลในรูปแบบเดียวกับที่ AI สร้าง
+        if not headers and rows_data:
+            # สร้างส่วนหัวตารางแบบอัตโนมัติ
+            headers = [f"Column {i+1}" for i in range(len(rows_data[0]))]
+        
+        # ข้อมูลที่จะส่งกลับ
+        table_data = {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+        return table_data
+        
+    except Exception as e:
+        print(f"Error extracting gold data: {str(e)}")
+        return None
+
+def extract_exchange_rate_data(soup):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลอัตราแลกเปลี่ยนจากเว็บไซต์
+    
+    Args:
+        soup (BeautifulSoup): BeautifulSoup object ที่มีเนื้อหาเว็บไซต์
+        
+    Returns:
+        dict: ข้อมูลอัตราแลกเปลี่ยนที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
+    """
+    try:
+        # ดึงข้อมูลเฉพาะสำหรับอัตราแลกเปลี่ยน
+        exchange_table = None
+        tables = soup.find_all('table')
+        
+        for table in tables:
+            text = table.get_text().lower()
+            if 'usd' in text or 'eur' in text or 'jpy' in text or 'currency' in text or 'สกุลเงิน' in text:
+                exchange_table = table
+                break
+                
+        if not exchange_table:
+            return None
+            
+        # ดึงข้อมูลจากตาราง
+        headers = []
+        rows_data = []
+        
+        # ดึงส่วนหัวตาราง
+        header_row = exchange_table.find('thead')
+        if header_row:
+            th_elements = header_row.find_all('th')
+            if not th_elements:
+                th_elements = header_row.find_all('td')
+            
+            headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ถ้าไม่มี thead ลองดูแถวแรกเป็นหัวตารางแทน
+        if not headers:
+            first_row = exchange_table.find('tr')
+            if first_row:
+                th_elements = first_row.find_all('th')
+                if not th_elements:
+                    th_elements = first_row.find_all('td')
+                
+                headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ดึงข้อมูลแถว
+        rows = exchange_table.find_all('tr')
+        start_idx = 0 if not headers else 1
+        
+        for row in rows[start_idx:]:
+            cells = row.find_all(['td', 'th'])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            
+            # เฉพาะแถวที่มีข้อมูล
+            if any(cell for cell in row_data):
+                rows_data.append(row_data)
+        
+        # สร้างตารางข้อมูลในรูปแบบเดียวกับที่ AI สร้าง
+        if not headers and rows_data:
+            # สร้างส่วนหัวตารางแบบอัตโนมัติ
+            headers = [f"Column {i+1}" for i in range(len(rows_data[0]))]
+        
+        # ข้อมูลที่จะส่งกลับ
+        table_data = {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+        return table_data
+        
+    except Exception as e:
+        print(f"Error extracting exchange rate data: {str(e)}")
+        return None
+
+def extract_general_table_data(soup):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลจากตารางทั่วไป
+    
+    Args:
+        soup (BeautifulSoup): BeautifulSoup object ที่มีเนื้อหาเว็บไซต์
+        
+    Returns:
+        dict: ข้อมูลตารางที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
+    """
+    try:
+        # ค้นหาตารางที่มีตัวเลขมากที่สุด
+        tables = soup.find_all('table')
+        
+        if not tables:
+            return None
+            
+        best_table = None
+        max_numeric_cells = 0
+        
+        for table in tables:
+            numeric_count = 0
+            cells = table.find_all(['td', 'th'])
+            
+            for cell in cells:
+                text = cell.get_text(strip=True)
+                # ตรวจสอบว่ามีตัวเลขหรือไม่
+                if re.search(r'\d+\.?\d*', text):
+                    numeric_count += 1
+            
+            if numeric_count > max_numeric_cells:
+                max_numeric_cells = numeric_count
+                best_table = table
+        
+        if not best_table:
+            return None
+            
+        # ดึงข้อมูลจากตาราง
+        headers = []
+        rows_data = []
+        
+        # ดึงส่วนหัวตาราง
+        header_row = best_table.find('thead')
+        if header_row:
+            th_elements = header_row.find_all('th')
+            if not th_elements:
+                th_elements = header_row.find_all('td')
+            
+            headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ถ้าไม่มี thead ลองดูแถวแรกเป็นหัวตารางแทน
+        if not headers:
+            first_row = best_table.find('tr')
+            if first_row:
+                th_elements = first_row.find_all('th')
+                if not th_elements:
+                    th_elements = first_row.find_all('td')
+                
+                headers = [th.get_text(strip=True) for th in th_elements if th.get_text(strip=True)]
+        
+        # ดึงข้อมูลแถว
+        rows = best_table.find_all('tr')
+        start_idx = 0 if not headers else 1
+        
+        for row in rows[start_idx:]:
+            cells = row.find_all(['td', 'th'])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            
+            # เฉพาะแถวที่มีข้อมูล
+            if any(cell for cell in row_data):
+                rows_data.append(row_data)
+        
+        # สร้างตารางข้อมูลในรูปแบบเดียวกับที่ AI สร้าง
+        if not headers and rows_data:
+            # สร้างส่วนหัวตารางแบบอัตโนมัติ
+            headers = [f"Column {i+1}" for i in range(len(rows_data[0]))]
+        
+        # ข้อมูลที่จะส่งกลับ
+        table_data = {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+        return table_data
+        
+    except Exception as e:
+        print(f"Error extracting general table data: {str(e)}")
+        return None
+
 def get_news_from_rss(rss_url, limit=5):
     """
     ฟังก์ชันนี้ใช้สำหรับดึงข้อมูลข่าวจาก RSS Feed
