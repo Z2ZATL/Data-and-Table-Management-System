@@ -695,8 +695,13 @@ def extract_set_data(soup):
         dict: ข้อมูลหุ้นที่สกัดได้ หรือ None ถ้าไม่สามารถดึงได้
     """
     try:
-        # ตรวจสอบหาตาราง
-        # อาจต้องปรับเปลี่ยนตาม class หรือ id ที่ใช้ในเว็บไซต์
+        # ขั้นตอนที่ 1: ลองค้นหาข้อมูล SET จาก class เฉพาะของเว็บ set.or.th
+        set_container = soup.find('div', {'class': 'market-index-overview-SETMAI'})
+        if set_container:
+            # พบข้อมูล SET ในรูปแบบพิเศษ
+            return extract_set_special_format(set_container)
+        
+        # ขั้นตอนที่ 2: ตรวจสอบหาตารางทั่วไป
         tables = soup.find_all('table', {'class': ['table', 'table-info', 'table-hover', 'table-responsive']})
         
         if not tables:
@@ -714,6 +719,10 @@ def extract_set_data(soup):
                         break
         
         if not tables:
+            # ลองหาข้อมูลในรูปแบบที่ไม่ใช่ตาราง แต่มีโครงสร้างข้อมูลที่คล้ายตาราง
+            stock_items = soup.find_all('div', {'class': ['market-overview-item', 'stock-item', 'index-item']})
+            if stock_items and len(stock_items) > 0:
+                return extract_set_items_format(stock_items)
             return None
             
         # เลือกตารางที่น่าจะมีข้อมูลหุ้นมากที่สุด
@@ -779,6 +788,161 @@ def extract_set_data(soup):
         
     except Exception as e:
         print(f"Error extracting SET data: {str(e)}")
+        return None
+
+def extract_set_special_format(container):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูล SET จากรูปแบบพิเศษของเว็บไซต์ตลาดหลักทรัพย์
+    
+    Args:
+        container (BeautifulSoup element): ส่วนที่บรรจุข้อมูล SET
+        
+    Returns:
+        dict: ข้อมูลดัชนีและราคาหุ้นที่สกัดได้
+    """
+    try:
+        # ดึงข้อมูลดัชนีหลัก
+        rows_data = []
+        headers = ["ดัชนี", "ล่าสุด", "เปลี่ยนแปลง", "% เปลี่ยนแปลง", "ปริมาณ (พันหุ้น)", "มูลค่า (ล้านบาท)"]
+        
+        # ดึงข้อมูลในส่วนของ market-overview หรือ market-stats
+        market_data = container.find_all('div', {'class': ['market-overview', 'market-stats', 'index-overview', 'index-data']})
+        
+        # ถ้าไม่พบข้อมูลในรูปแบบที่คาด ลองค้นหาแบบทั่วไป
+        if not market_data:
+            market_data = container.find_all('div')
+        
+        for section in market_data:
+            # ค้นหาชื่อดัชนี
+            index_name = None
+            name_element = section.find('div', {'class': ['index-name', 'name', 'title']})
+            if name_element:
+                index_name = name_element.get_text(strip=True)
+            else:
+                # ลองค้นหาในรูปแบบอื่น
+                header = section.find(['h1', 'h2', 'h3', 'h4', 'h5'])
+                if header:
+                    index_name = header.get_text(strip=True)
+            
+            if not index_name:
+                continue
+                
+            # ค้นหาค่าดัชนีล่าสุด
+            last_value = None
+            value_element = section.find('div', {'class': ['index-value', 'last', 'value', 'price']})
+            if value_element:
+                last_value = value_element.get_text(strip=True)
+            
+            # ค้นหาค่าการเปลี่ยนแปลง
+            change_value = None
+            change_element = section.find('div', {'class': ['change-value', 'change']})
+            if change_element:
+                change_value = change_element.get_text(strip=True)
+            
+            # ค้นหาค่าเปอร์เซ็นต์การเปลี่ยนแปลง
+            change_percent = None
+            percent_element = section.find('div', {'class': ['change-percent', 'percent']})
+            if percent_element:
+                change_percent = percent_element.get_text(strip=True)
+            
+            # ค้นหาปริมาณการซื้อขาย
+            volume = None
+            volume_element = section.find('div', {'class': ['volume', 'vol']})
+            if volume_element:
+                volume = volume_element.get_text(strip=True)
+            
+            # ค้นหามูลค่าการซื้อขาย
+            value = None
+            value_element = section.find('div', {'class': ['trading-value', 'val']})
+            if value_element:
+                value = value_element.get_text(strip=True)
+            
+            # สร้างข้อมูลแถว
+            row_data = [index_name, last_value, change_value, change_percent, volume, value]
+            
+            # ตรวจสอบว่ามีข้อมูลในแถวหรือไม่
+            if any(cell for cell in row_data if cell is not None):
+                # แทนที่ค่า None ด้วยข้อความว่าง
+                row_data = [cell if cell is not None else "" for cell in row_data]
+                rows_data.append(row_data)
+        
+        # ตรวจสอบว่าพบข้อมูลหรือไม่
+        if not rows_data:
+            # ถ้าไม่พบข้อมูลในรูปแบบข้างต้น ลองดึงข้อมูลจากทั้งหน้า
+            all_text = container.get_text(strip=True)
+            rows_data.append(["ข้อมูลดัชนีตลาดหลักทรัพย์", all_text, "", "", "", ""])
+        
+        # ส่งกลับข้อมูลในรูปแบบตาราง
+        return {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+    except Exception as e:
+        print(f"Error extracting special SET format: {str(e)}")
+        # ส่งกลับข้อมูลพื้นฐานที่พบในข้อผิดพลาด
+        return {
+            "headers": ["ข้อมูล"],
+            "rows": [["ไม่สามารถดึงข้อมูลในรูปแบบพิเศษได้"]]
+        }
+
+def extract_set_items_format(items):
+    """
+    ฟังก์ชันสำหรับดึงข้อมูลจากรายการข้อมูลหุ้นที่ไม่ได้อยู่ในรูปแบบตาราง
+    
+    Args:
+        items (list): รายการ elements ที่มีข้อมูลหุ้นแต่ละตัว
+        
+    Returns:
+        dict: ข้อมูลหุ้นที่สกัดได้ในรูปแบบตาราง
+    """
+    try:
+        headers = ["ชื่อ", "ล่าสุด", "เปลี่ยนแปลง", "% เปลี่ยนแปลง"]
+        rows_data = []
+        
+        for item in items:
+            name = None
+            last_value = None
+            change = None
+            percent = None
+            
+            # ค้นหาชื่อ
+            name_element = item.find('div', {'class': ['name', 'title', 'symbol']})
+            if name_element:
+                name = name_element.get_text(strip=True)
+            
+            # ค้นหาค่าล่าสุด
+            last_element = item.find('div', {'class': ['last', 'value', 'price']})
+            if last_element:
+                last_value = last_element.get_text(strip=True)
+            
+            # ค้นหาค่าเปลี่ยนแปลง
+            change_element = item.find('div', {'class': ['change', 'change-value']})
+            if change_element:
+                change = change_element.get_text(strip=True)
+            
+            # ค้นหาเปอร์เซ็นต์เปลี่ยนแปลง
+            percent_element = item.find('div', {'class': ['percent', 'change-percent']})
+            if percent_element:
+                percent = percent_element.get_text(strip=True)
+            
+            # สร้างข้อมูลแถว
+            row_data = [name, last_value, change, percent]
+            
+            # ตรวจสอบว่ามีข้อมูลในแถวหรือไม่
+            if any(cell for cell in row_data if cell is not None):
+                # แทนที่ค่า None ด้วยข้อความว่าง
+                row_data = [cell if cell is not None else "" for cell in row_data]
+                rows_data.append(row_data)
+        
+        # ส่งกลับข้อมูลในรูปแบบตาราง
+        return {
+            "headers": headers,
+            "rows": rows_data
+        }
+        
+    except Exception as e:
+        print(f"Error extracting SET items format: {str(e)}")
         return None
 
 def extract_gold_data(soup):
