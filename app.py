@@ -309,152 +309,52 @@ def data():
 @app.route("/analysis")  # route สำหรับหน้าการวิเคราะห์ข้อมูล
 def analysis():
     try:
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        # ดึงข้อมูลทั้งหมดจากตาราง users
-        rows = conn.execute("SELECT * FROM users").fetchall()  
-        
-        # ดึงข้อมูลสถิติเพิ่มเติม
-        male_count = conn.execute("SELECT COUNT(*) FROM users WHERE gender = 'ชาย'").fetchone()[0]
-        female_count = conn.execute("SELECT COUNT(*) FROM users WHERE gender = 'หญิง'").fetchone()[0]
-        
-        age_stats = conn.execute("""
-            SELECT 
-                AVG(age) as avg_age,
-                MIN(age) as min_age,
-                MAX(age) as max_age
-            FROM users
-        """).fetchone()
-        
-        # จัดกลุ่มตามจังหวัด
-        province_counts = conn.execute("""
-            SELECT province, COUNT(*) as count 
-            FROM users 
-            GROUP BY province 
-            ORDER BY count DESC
-            LIMIT 5
-        """).fetchall()
-        
-        conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
-
-        users = [dict(row) for row in rows]  # แปลงข้อมูลจาก Row เป็น dictionary เพื่อใช้งานใน HTML
-        
-        # สร้างข้อมูลสถิติเพิ่มเติม
-        stats = {
-            'total': len(users),
-            'male': male_count,
-            'female': female_count,
-            'avg_age': round(age_stats[0], 1) if age_stats[0] else 0,
-            'min_age': age_stats[1],
-            'max_age': age_stats[2],
-            'top_provinces': [{
-                'name': p['province'], 
-                'count': p['count']
-            } for p in province_counts]
-        }
-        
         # ดึงธีมจาก cookie
         theme = get_theme_from_cookie(request)
         
-        return render_template("analysis.html", users=users, stats=stats, theme=theme)  # ส่งข้อมูลที่แปลงแล้วและสถิติไปแสดงใน template
+        # ดึงหัวข้อที่มีข้อมูลตารางจากฐานข้อมูล PostgreSQL
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # ดึงหัวข้อที่มีเนื้อหาประเภทตาราง
+        cur.execute("""
+            SELECT t.id, t.title, t.description 
+            FROM topics t
+            JOIN topic_content tc ON t.id = tc.topic_id
+            WHERE tc.content_type = 'table'
+            GROUP BY t.id, t.title, t.description
+            ORDER BY t.updated_at DESC
+        """)
+        topics_with_tables = cur.fetchall()
+        
+        # สำหรับแต่ละหัวข้อ ดึงเนื้อหาประเภทตารางล่าสุด
+        for topic in topics_with_tables:
+            cur.execute("""
+                SELECT id, content, created_at
+                FROM topic_content
+                WHERE topic_id = %s AND content_type = 'table'
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (topic['id'],))
+            latest_table = cur.fetchone()
+            
+            if latest_table:
+                # แปลงข้อมูล JSON เป็น dictionary
+                try:
+                    table_data = json.loads(latest_table['content'])
+                    topic['table_data'] = table_data
+                except Exception as e:
+                    print(f"Error parsing table data: {str(e)}")
+                    topic['table_data'] = None
+        
+        cur.close()
+        conn.close()
+        
+        return render_template("analysis.html", topics=topics_with_tables, theme=theme)
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล: {str(e)}", 500
 
-@app.route("/view/<int:user_id>")  # route สำหรับดูรายละเอียดผู้ใช้
-def view_user(user_id):
-    try:
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        # ดึงข้อมูลของผู้ใช้
-        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-        conn.close()
-        
-        if not user:
-            return "ไม่พบข้อมูลผู้ใช้", 404
-        
-        # ดึงธีมจาก cookie
-        theme = get_theme_from_cookie(request)
-        
-        return render_template("view_user.html", user=user, theme=theme)  # แสดงรายละเอียดผู้ใช้
-    
-    except Exception as e:
-        return f"เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้: {str(e)}", 500
-        
-@app.route("/edit/<int:user_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลผู้ใช้
-def edit_user(user_id):
-    try:
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        if request.method == "POST":
-            # รับข้อมูลจากฟอร์ม
-            first_name = request.form["first_name"]
-            last_name = request.form["last_name"]
-            gender = request.form["gender"]
-            age = request.form["age"]
-            province = request.form["province"]
-            pet = request.form["pet"] if request.form["pet"] else None
-            
-            # ตรวจสอบความถูกต้องของข้อมูล
-            if not first_name or not last_name or not gender or not age or not province:
-                return "ข้อมูลไม่ครบถ้วน กรุณากรอกข้อมูลให้ครบทุกช่อง", 400
-            
-            try:
-                age = int(age)  # แปลงอายุเป็นตัวเลข
-                if age <= 0 or age > 120:
-                    return "อายุต้องอยู่ระหว่าง 1-120 ปี", 400
-            except ValueError:
-                return "อายุต้องเป็นตัวเลขเท่านั้น", 400
-            
-            # อัพเดทข้อมูลในฐานข้อมูล
-            conn.execute(
-                "UPDATE users SET first_name = ?, last_name = ?, gender = ?, age = ?, province = ?, pet = ? WHERE id = ?",
-                (first_name, last_name, gender, age, province, pet, user_id)
-            )
-            conn.commit()
-            
-            return redirect(url_for('data'))  # กลับไปหน้าข้อมูลผู้ใช้
-        
-        # ถ้าเป็น GET request ให้ดึงข้อมูลของผู้ใช้มาแสดงในฟอร์ม
-        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-        conn.close()
-        
-        if not user:
-            return "ไม่พบข้อมูลผู้ใช้", 404
-        
-        # ดึงธีมจาก cookie
-        theme = get_theme_from_cookie(request)
-        
-        return render_template("edit.html", user=user, theme=theme)  # แสดงฟอร์มแก้ไขข้อมูล
-    
-    except Exception as e:
-        return f"เกิดข้อผิดพลาดในการแก้ไขข้อมูลผู้ใช้: {str(e)}", 500
-    
-@app.route("/delete/<int:user_id>")  # route สำหรับลบข้อมูลผู้ใช้
-def delete_user(user_id):
-    try:
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        # ตรวจสอบว่ามีผู้ใช้รหัสนี้หรือไม่
-        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-        
-        if not user:
-            return "ไม่พบข้อมูลผู้ใช้", 404
-        
-        # ลบข้อมูลผู้ใช้จากฐานข้อมูล
-        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
-        conn.commit()
-        conn.close()
-        
-        return redirect(url_for('data'))  # กลับไปหน้าข้อมูลผู้ใช้
-        
-    except Exception as e:
-        return f"เกิดข้อผิดพลาดในการลบข้อมูลผู้ใช้: {str(e)}", 500
-        
-@app.route("/add")  # route สำหรับหน้าเพิ่มข้อมูลผู้ใช้
-def add_user():
-    # ดึงธีมจาก cookie
-    theme = get_theme_from_cookie(request)
-    return render_template("add_user.html", theme=theme)
+
 
 @app.route("/scraping")  # route สำหรับหน้าการดึงข้อมูลจากเว็บไซต์
 def scraping_page():
@@ -598,6 +498,11 @@ def fromjson(value):
         return json.loads(value)
     except:
         return {}
+
+# ฟังก์ชันฟิลเตอร์สำหรับแปลง Python object เป็น JSON string
+@app.template_filter('tojson')
+def tojson_filter(obj):
+    return json.dumps(obj)
 
 if __name__ == "__main__":  # เมื่อรันไฟล์นี้โดยตรง
     app.run(debug=True)  # เริ่มต้น Flask app ในโหมด debug

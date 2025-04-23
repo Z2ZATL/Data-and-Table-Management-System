@@ -6,111 +6,152 @@
 <div class="hero-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">จัดการข้อมูลผู้ใช้</h1>
-                <p class="lead mb-0">จัดการรายการข้อมูลผู้ใช้ในระบบ</p>
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">จัดการข้อมูลตาราง</h1>
+                <p class="lead mb-4">รวบรวมข้อมูลตารางที่สร้างจากหัวข้อทั้งหมด</p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
+<div class="container py-5">
     <div class="row">
         <div class="col-12">
             <div class="card shadow-lg">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="ps-4">#</th>
-                                    <th scope="col">ชื่อ</th>
-                                    <th scope="col">นามสกุล</th>
-                                    <th scope="col">เพศ</th>
-                                    <th scope="col">อายุ</th>
-                                    <th scope="col">จังหวัด</th>
-                                    <th scope="col">สัตว์เลี้ยง</th>
-                                    <th scope="col" class="pe-4">จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in users %}
-                                <tr>
-                                    <th scope="row" class="ps-4">{{ start_index + loop.index0 }}</th>
-                                    <td>{{ user.first_name }}</td>
-                                    <td>{{ user.last_name }}</td>
-                                    <td>{{ user.gender }}</td>
-                                    <td>{{ user.age }}</td>
-                                    <td>{{ user.province }}</td>
-                                    <td>{{ user.pet if user.pet else '-' }}</td>
-                                    <td class="pe-4">
-                                        <div class="d-flex gap-2">
-                                            <a href="/view/{{ user.id }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i> ดู
-                                            </a>
-                                            <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-warning">
-                                                <i class="fas fa-edit me-1"></i> แก้ไข
-                                            </a>
-                                            <a href="/delete/{{ user.id }}" onclick="return confirm('คุณต้องการลบข้อมูลผู้ใช้นี้ใช่หรือไม่?')" class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash-alt me-1"></i> ลบ
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">ข้อมูลตารางที่ได้จากหัวข้อ</h5>
                 </div>
-                <div class="card-footer py-3">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center">
-                        <div>พบผู้ใช้ทั้งหมด {{ total_users }} คน (แสดงหน้า {{ page }} จาก {{ total_pages }})</div>
-                        
-                        <!-- ปุ่มเปลี่ยนหน้า -->
-                        {% if total_pages > 1 %}
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination mb-0">
-                                {% if page > 1 %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ url_for('data', page=page-1) }}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
+                <div class="card-body">
+                    {% if topics and topics|length > 0 %}
+                        {% for topic in topics %}
+                            {% if topic.table_contents and topic.table_contents|length > 0 %}
+                                <div class="topic-container mb-4">
+                                    <h3 class="h5 mb-3">
+                                        <i class="fas fa-table me-2 text-primary"></i>
+                                        {{ topic.title }}
+                                    </h3>
+                                    
+                                    {% if topic.description %}
+                                        <p class="text-muted mb-3">{{ topic.description }}</p>
+                                    {% endif %}
+                                    
+                                    {% for table_content in topic.table_contents %}
+                                        <div class="table-content mb-4">
+                                            <div class="card shadow-sm">
+                                                <div class="card-header py-3">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <h6 class="mb-1">ตารางข้อมูล #{{ loop.index }}</h6>
+                                                            <div class="small text-muted">
+                                                                สร้างเมื่อ {{ table_content.created_at.strftime('%d/%m/%Y %H:%M') if table_content.created_at else '-' }}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <button 
+                                                                class="btn btn-sm btn-outline-primary show-chart-btn"
+                                                                data-table-id="table-{{ topic.id }}-{{ table_content.id }}"
+                                                                data-chart-id="chart-{{ topic.id }}-{{ table_content.id }}"
+                                                            >
+                                                                <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="card-body">
+                                                    <div class="table-responsive mb-3">
+                                                        {% set table_data = table_content.content|fromjson %}
+                                                        {% if table_data and table_data.headers and table_data.rows %}
+                                                            <table class="table table-bordered table-hover" id="table-{{ topic.id }}-{{ table_content.id }}">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        {% for header in table_data.headers %}
+                                                                            <th>{{ header }}</th>
+                                                                        {% endfor %}
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for row in table_data.rows %}
+                                                                        <tr>
+                                                                            {% for cell in row %}
+                                                                                <td>{{ cell }}</td>
+                                                                            {% endfor %}
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        {% else %}
+                                                            <div class="alert alert-info">
+                                                                ไม่สามารถแสดงตารางได้ เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    
+                                                    <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
+                                                    <div class="chart-container" id="chart-{{ topic.id }}-{{ table_content.id }}" style="display: none; height: 400px;">
+                                                        <canvas></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                {% if not loop.last %}
+                                    <hr class="my-4">
                                 {% endif %}
-                                
-                                {% set start = [1, page-2]|max %}
-                                {% set end = [total_pages, page+2]|min %}
-                                
-                                {% for p in range(start, end+1) %}
-                                <li class="page-item {% if p == page %}active{% endif %}">
-                                    <a class="page-link" href="{{ url_for('data', page=p) }}">{{ p }}</a>
-                                </li>
-                                {% endfor %}
-                                
-                                {% if page < total_pages %}
-                                <li class="page-item">
-                                    <a class="page-link" href="{{ url_for('data', page=page+1) }}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                        {% endif %}
-                        
-                        <div class="d-flex gap-2">
-                            <a href="{{ url_for('add_user') }}" class="btn btn-success">
-                                <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลใหม่
-                            </a>
-                            <a href="/analysis" class="btn btn-primary">
-                                <i class="fas fa-chart-bar me-1"></i> วิเคราะห์ข้อมูล
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-table fa-4x text-muted"></i>
+                            </div>
+                            <h4>ยังไม่มีข้อมูลตาราง</h4>
+                            <p class="text-muted mb-4">คุณยังไม่มีข้อมูลตารางที่สร้างจากหัวข้อ</p>
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-1"></i> ไปยังหน้าจัดการหัวข้อ
                             </a>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // เพิ่มการจัดการปุ่ม "แสดงกราฟ"
+        document.querySelectorAll('.show-chart-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const tableId = this.getAttribute('data-table-id');
+                const chartId = this.getAttribute('data-chart-id');
+                const tableElement = document.getElementById(tableId);
+                const chartContainer = document.getElementById(chartId);
+                
+                if (chartContainer.style.display === 'none') {
+                    // สร้างกราฟจากข้อมูลตาราง
+                    createChart(chartId, tableElement);
+                    
+                    // แสดงกราฟ และเปลี่ยนข้อความปุ่ม
+                    chartContainer.style.display = 'block';
+                    this.innerHTML = '<i class="fas fa-table me-1"></i> แสดงตาราง';
+                    
+                    // ซ่อนตาราง
+                    tableElement.closest('.table-responsive').style.display = 'none';
+                } else {
+                    // ซ่อนกราฟ และเปลี่ยนข้อความปุ่ม
+                    chartContainer.style.display = 'none';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> แสดงกราฟ';
+                    
+                    // แสดงตาราง
+                    tableElement.closest('.table-responsive').style.display = 'block';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

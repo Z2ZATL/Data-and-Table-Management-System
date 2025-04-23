@@ -6,84 +6,90 @@
 <div class="hero-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">วิเคราะห์ข้อมูลผู้ใช้</h1>
-                <p class="lead mb-0">ดูภาพรวมและสถิติข้อมูลผู้ใช้แยกตามประเภทต่างๆ</p>
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">วิเคราะห์ข้อมูล</h1>
+                <p class="lead mb-4">ดูการวิเคราะห์และกราฟจากข้อมูลตารางที่สร้างจากหัวข้อ</p>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container py-5">
-    <div class="row mb-5">
-        <div class="col-lg-8 mx-auto">
+    <div class="row">
+        <div class="col-12">
             <div class="card shadow-lg">
-                <div class="card-header py-4">
-                    <h4 class="card-title mb-0">จำนวนผู้ใช้แยกตามจังหวัด</h4>
+                <div class="card-header">
+                    <h5 class="mb-0">การวิเคราะห์ข้อมูลจากตาราง</h5>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label for="genderFilter" class="form-label">กรองตามเพศ</label>
-                            <select id="genderFilter" class="form-select">
-                                <option value="All">ทั้งหมด</option>
-                                <option value="ชาย">ชาย</option>
-                                <option value="หญิง">หญิง</option>
-                            </select>
+                <div class="card-body">
+                    {% if topics and topics|length > 0 %}
+                        <div class="row">
+                            {% for topic in topics %}
+                                {% if topic.table_data %}
+                                    <div class="col-lg-6 mb-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">{{ topic.title }}</h5>
+                                                {% if topic.description %}
+                                                    <div class="small text-muted">{{ topic.description }}</div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container" style="height: 300px;" id="chart-{{ topic.id }}">
+                                                    <canvas></canvas>
+                                                </div>
+                                                
+                                                {% if topic.table_data.headers and topic.table_data.rows %}
+                                                    <div class="mt-3 small text-center text-muted">
+                                                        กราฟสร้างจากข้อมูล {{ topic.table_data.headers|length }} คอลัมน์, {{ topic.table_data.rows|length }} แถว
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="javascript:void(0)" class="view-data-btn btn btn-sm btn-outline-primary" 
+                                                   data-topic-id="{{ topic.id }}" 
+                                                   data-topic-title="{{ topic.title }}">
+                                                    <i class="fas fa-table me-1"></i> ดูข้อมูล
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <div class="col-md-6">
-                            <label for="ageFilter" class="form-label">กรองตามช่วงอายุ</label>
-                            <select id="ageFilter" class="form-select">
-                                <option value="All">ทั้งหมด</option>
-                                <option value="0-20">0-20 ปี</option>
-                                <option value="21-40">21-40 ปี</option>
-                                <option value="41+">41 ปีขึ้นไป</option>
-                            </select>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-chart-pie fa-4x text-muted"></i>
+                            </div>
+                            <h4>ยังไม่มีตารางข้อมูลสำหรับวิเคราะห์</h4>
+                            <p class="text-muted mb-4">คุณต้องสร้างหัวข้อและเพิ่มข้อมูลตารางก่อน</p>
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home me-1"></i> ไปยังหน้าหลัก
+                            </a>
                         </div>
-                    </div>
-                    <div class="chart-container" style="position: relative; height:400px; max-width: 800px; margin: 0 auto;">
-                        <canvas id="provinceChart"></canvas>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-lg h-100">
-                <div class="card-header py-4">
-                    <h4 class="card-title mb-0">สัดส่วนเพศ</h4>
-                </div>
-                <div class="card-body p-4">
-                    <div class="chart-container" style="position: relative; height:300px;">
-                        <canvas id="genderChart"></canvas>
-                    </div>
+</div>
+
+<!-- Modal แสดงข้อมูลตาราง -->
+<div class="modal fade" id="dataModal" tabindex="-1" aria-labelledby="dataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dataModalLabel">ข้อมูลตาราง</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalTableContainer" class="table-responsive">
+                    <!-- ตารางจะถูกเพิ่มที่นี่ด้วย JavaScript -->
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-lg h-100">
-                <div class="card-header py-4">
-                    <h4 class="card-title mb-0">ช่วงอายุ</h4>
-                </div>
-                <div class="card-body p-4">
-                    <div class="chart-container" style="position: relative; height:300px;">
-                        <canvas id="ageChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-lg h-100">
-                <div class="card-header py-4">
-                    <h4 class="card-title mb-0">สัตว์เลี้ยงยอดนิยม</h4>
-                </div>
-                <div class="card-body p-4">
-                    <div class="chart-container" style="position: relative; height:300px;">
-                        <canvas id="petChart"></canvas>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
             </div>
         </div>
     </div>
@@ -92,254 +98,97 @@
 
 {% block scripts %}
 <script>
-    // นำข้อมูลผู้ใช้จาก Flask มาที่ JavaScript
-    const users = {{ users|tojson }};
-    
-    // Filter selectors
-    const genderSelect = document.getElementById("genderFilter");
-    const ageSelect = document.getElementById("ageFilter");
-
-    // Filter data functions
-    function filterData(gender, ageRange) {
-      return users.filter(user => {
-        const passGender = gender === "All" || user.gender === gender;
-        const age = parseInt(user.age);
-        let passAge = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        // ข้อมูลสำหรับกราฟ
+        const topicData = {
+            {% for topic in topics %}
+                {% if topic.table_data %}
+                    "{{ topic.id }}": {{ topic.table_data|tojson }},
+                {% endif %}
+            {% endfor %}
+        };
         
-        if (ageRange === "0-20") passAge = age >= 0 && age <= 20;
-        else if (ageRange === "21-40") passAge = age >= 21 && age <= 40;
-        else if (ageRange === "41+") passAge = age > 40;
+        // สร้างกราฟสำหรับทุกหัวข้อ
+        for (const [topicId, data] of Object.entries(topicData)) {
+            if (data && data.headers && data.rows && data.headers.length >= 2) {
+                const chartId = `chart-${topicId}`;
+                const chartContainer = document.getElementById(chartId);
+                
+                if (chartContainer) {
+                    const canvas = chartContainer.querySelector('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // ใช้คอลัมน์แรกเป็นแกน X และคอลัมน์ที่สองเป็นแกน Y
+                    const labels = data.rows.map(row => row[0]);
+                    const values = data.rows.map(row => Number(row[1]) || 0);
+                    
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: data.headers[1],
+                                data: values,
+                                backgroundColor: 'rgba(75, 182, 146, 0.5)',
+                                borderColor: 'rgba(75, 182, 146, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
         
-        return passGender && passAge;
-      });
-    }
-
-    function countByProvince(data) {
-      const counts = {};
-      data.forEach(user => {
-        counts[user.province] = (counts[user.province] || 0) + 1;
-      });
-      return counts;
-    }
-
-    function countByGender(data) {
-      const genderCount = { 'ชาย': 0, 'หญิง': 0 };
-      data.forEach(user => {
-        if (user.gender in genderCount) {
-          genderCount[user.gender]++;
-        }
-      });
-      return genderCount;
-    }
-
-    function countByAgeGroup(data) {
-      const ageGroups = {
-        '0-20': 0,
-        '21-40': 0,
-        '41+': 0
-      };
-      
-      data.forEach(user => {
-        const age = parseInt(user.age);
-        if (age <= 20) ageGroups['0-20']++;
-        else if (age <= 40) ageGroups['21-40']++;
-        else ageGroups['41+']++;
-      });
-      
-      return ageGroups;
-    }
-    
-    function countByPet(data) {
-      const petCounts = {};
-      
-      data.forEach(user => {
-        if (user.pet && user.pet.trim() !== '') {
-          petCounts[user.pet] = (petCounts[user.pet] || 0) + 1;
-        }
-      });
-      
-      // Sort by count and take top 5
-      const sortedPets = Object.entries(petCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-      
-      return {
-        labels: sortedPets.map(item => item[0]),
-        values: sortedPets.map(item => item[1])
-      };
-    }
-
-    // Province Chart
-    const provinceCtx = document.getElementById('provinceChart').getContext('2d');
-    const provinceChart = new Chart(provinceCtx, {
-      type: 'pie',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'จำนวนคนในแต่ละจังหวัด',
-          data: [],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(255, 159, 64, 0.7)',
-            'rgba(201, 203, 207, 0.7)',
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 206, 86, 0.7)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'right',
-          },
-          title: {
-            display: true,
-            text: 'จำนวนผู้ใช้ในแต่ละจังหวัด'
-          }
-        }
-      }
+        // จัดการกับปุ่ม "ดูข้อมูล"
+        document.querySelectorAll('.view-data-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const topicId = this.getAttribute('data-topic-id');
+                const topicTitle = this.getAttribute('data-topic-title');
+                const data = topicData[topicId];
+                
+                if (data && data.headers && data.rows) {
+                    // กำหนดชื่อ Modal
+                    document.getElementById('dataModalLabel').textContent = `ข้อมูลตาราง: ${topicTitle}`;
+                    
+                    // สร้างตาราง
+                    const tableContainer = document.getElementById('modalTableContainer');
+                    let tableHTML = '<table class="table table-bordered table-hover">';
+                    
+                    // หัวตาราง
+                    tableHTML += '<thead class="table-light"><tr>';
+                    data.headers.forEach(header => {
+                        tableHTML += `<th>${header}</th>`;
+                    });
+                    tableHTML += '</tr></thead>';
+                    
+                    // ข้อมูล
+                    tableHTML += '<tbody>';
+                    data.rows.forEach(row => {
+                        tableHTML += '<tr>';
+                        row.forEach(cell => {
+                            tableHTML += `<td>${cell}</td>`;
+                        });
+                        tableHTML += '</tr>';
+                    });
+                    tableHTML += '</tbody></table>';
+                    
+                    tableContainer.innerHTML = tableHTML;
+                    
+                    // แสดง Modal
+                    const modal = new bootstrap.Modal(document.getElementById('dataModal'));
+                    modal.show();
+                }
+            });
+        });
     });
-
-    // Gender Chart
-    const genderCtx = document.getElementById('genderChart').getContext('2d');
-    const genderChart = new Chart(genderCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['ชาย', 'หญิง'],
-        datasets: [{
-          label: 'สัดส่วนเพศ',
-          data: [0, 0],
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.7)',
-            'rgba(255, 99, 132, 0.7)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-          },
-          title: {
-            display: true,
-            text: 'สัดส่วนเพศของผู้ใช้'
-          }
-        }
-      }
-    });
-
-    // Age Chart
-    const ageCtx = document.getElementById('ageChart').getContext('2d');
-    const ageChart = new Chart(ageCtx, {
-      type: 'bar',
-      data: {
-        labels: ['0-20 ปี', '21-40 ปี', '41+ ปี'],
-        datasets: [{
-          label: 'จำนวนผู้ใช้',
-          data: [0, 0, 0],
-          backgroundColor: [
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(153, 102, 255, 0.7)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: false
-          },
-          title: {
-            display: true,
-            text: 'จำนวนผู้ใช้ตามช่วงอายุ'
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-    
-    // Pet Chart
-    const petCtx = document.getElementById('petChart').getContext('2d');
-    const petChart = new Chart(petCtx, {
-      type: 'doughnut',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'สัตว์เลี้ยง',
-          data: [],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.7)',
-            'rgba(75, 192, 192, 0.7)',
-            'rgba(255, 206, 86, 0.7)',
-            'rgba(153, 102, 255, 0.7)',
-            'rgba(54, 162, 235, 0.7)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'right',
-          },
-          title: {
-            display: true,
-            text: 'สัตว์เลี้ยงยอดนิยม'
-          }
-        }
-      }
-    });
-
-    // Update all charts
-    function updateCharts() {
-      const selectedGender = genderSelect.value;
-      const selectedAge = ageSelect.value;
-      const filtered = filterData(selectedGender, selectedAge);
-      
-      // Update province chart
-      const provinceCounts = countByProvince(filtered);
-      provinceChart.data.labels = Object.keys(provinceCounts);
-      provinceChart.data.datasets[0].data = Object.values(provinceCounts);
-      provinceChart.update();
-      
-      // Update gender chart
-      const genderCounts = countByGender(users);
-      genderChart.data.datasets[0].data = [genderCounts['ชาย'], genderCounts['หญิง']];
-      genderChart.update();
-      
-      // Update age chart
-      const ageCounts = countByAgeGroup(users);
-      ageChart.data.datasets[0].data = [ageCounts['0-20'], ageCounts['21-40'], ageCounts['41+']];
-      ageChart.update();
-      
-      // Update pet chart
-      const petData = countByPet(users);
-      petChart.data.labels = petData.labels.length ? petData.labels : ['ไม่มีข้อมูล'];
-      petChart.data.datasets[0].data = petData.values.length ? petData.values : [1];
-      petChart.update();
-    }
-
-    // Event listeners
-    genderSelect.addEventListener("change", updateCharts);
-    ageSelect.addEventListener("change", updateCharts);
-
-    // Initialize charts
-    updateCharts();
 </script>
 {% endblock %}
