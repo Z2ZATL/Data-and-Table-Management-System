@@ -3,6 +3,8 @@ import sqlite3  # นำเข้า sqlite3 สำหรับเชื่อ�
 import os  # นำเข้า os เพื่อใช้งานตัวแปรสิ่งแวดล้อม
 import scraping  # นำเข้าโมดูล scraping ที่สร้างไว้
 import json  # นำเข้า json สำหรับการแปลงข้อมูล
+import psycopg2  # นำเข้า psycopg2 สำหรับเชื่อมต่อกับฐานข้อมูล PostgreSQL
+from psycopg2.extras import RealDictCursor  # เพื่อรับผลลัพธ์เป็น dictionary
 
 app = Flask(__name__)  # สร้างแอป Flask
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ตั้งค่า secret key สำหรับความปลอดภัย
@@ -22,15 +24,229 @@ def get_theme_from_cookie(request):
     # กรณีเป็นโหมดอื่นๆ ให้ใช้ค่าที่ได้รับจาก cookie โดยตรง
     return theme
 
-def get_db_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล
+def get_db_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล SQLite
     conn = sqlite3.connect('mock_data.db')  # เชื่อมต่อกับฐานข้อมูล mock_data.db
     conn.row_factory = sqlite3.Row  # ให้ผลลัพธ์จากการดึงข้อมูลเป็น dictionary
+    return conn  # ส่งกลับการเชื่อมต่อกับฐานข้อมูล
+
+def get_pg_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล PostgreSQL
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    conn = psycopg2.connect(DATABASE_URL)
     return conn  # ส่งกลับการเชื่อมต่อกับฐานข้อมูล
 
 @app.route("/")  # route สำหรับหน้าแรก
 def index():
     theme = get_theme_from_cookie(request)
-    return render_template("index.html", theme=theme)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลธีม
+    
+    # ดึงหัวข้อทั้งหมดจากฐานข้อมูล PostgreSQL
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT id, title, description, created_at, updated_at
+            FROM topics
+            ORDER BY updated_at DESC
+        """)
+        topics = cur.fetchall()
+        
+        # ดึงเนื้อหาของแต่ละหัวข้อ
+        for topic in topics:
+            cur.execute("""
+                SELECT id, content, content_type, created_at
+                FROM topic_content
+                WHERE topic_id = %s
+                ORDER BY created_at DESC
+            """, (topic['id'],))
+            topic['contents'] = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+    except Exception as e:
+        topics = []
+        print(f"Error fetching topics: {str(e)}")
+    
+    return render_template("index.html", theme=theme, topics=topics)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลธีมและหัวข้อ
+
+@app.route("/topics", methods=["GET"])  # route สำหรับหน้าจัดการหัวข้อ
+def topics():
+    theme = get_theme_from_cookie(request)
+    
+    # ดึงหัวข้อทั้งหมดจากฐานข้อมูล PostgreSQL
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT id, title, description, created_at, updated_at
+            FROM topics
+            ORDER BY updated_at DESC
+        """)
+        topics = cur.fetchall()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        topics = []
+        print(f"Error fetching topics: {str(e)}")
+    
+    return render_template("topics.html", theme=theme, topics=topics)
+
+@app.route("/topics/add", methods=["GET", "POST"])  # route สำหรับเพิ่มหัวข้อใหม่
+def add_topic():
+    theme = get_theme_from_cookie(request)
+    
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        
+        if not title:
+            return render_template("topic_form.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ")
+        
+        try:
+            conn = get_pg_connection()
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO topics (title, description)
+                VALUES (%s, %s)
+                RETURNING id
+            """, (title, description))
+            
+            new_topic_id = cur.fetchone()[0]
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return redirect(url_for('edit_topic', topic_id=new_topic_id))
+        except Exception as e:
+            return render_template("topic_form.html", theme=theme, 
+                                  error=f"เกิดข้อผิดพลาดในการบันทึกหัวข้อ: {str(e)}",
+                                  title=title, description=description)
+    
+    return render_template("topic_form.html", theme=theme)
+
+@app.route("/topics/edit/<int:topic_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขหัวข้อ
+def edit_topic(topic_id):
+    theme = get_theme_from_cookie(request)
+    
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        if request.method == "POST":
+            title = request.form.get("title", "").strip()
+            description = request.form.get("description", "").strip()
+            
+            if not title:
+                return render_template("topic_form.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ", topic_id=topic_id)
+            
+            cur.execute("""
+                UPDATE topics 
+                SET title = %s, description = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE id = %s
+            """, (title, description, topic_id))
+            conn.commit()
+            
+            return redirect(url_for('topics'))
+        
+        # ดึงข้อมูลหัวข้อ
+        cur.execute("SELECT * FROM topics WHERE id = %s", (topic_id,))
+        topic = cur.fetchone()
+        
+        if not topic:
+            return "ไม่พบหัวข้อที่ต้องการแก้ไข", 404
+        
+        # ดึงเนื้อหาของหัวข้อ
+        cur.execute("""
+            SELECT id, content, content_type, created_at
+            FROM topic_content
+            WHERE topic_id = %s
+            ORDER BY created_at DESC
+        """, (topic_id,))
+        contents = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+        
+        return render_template("topic_form.html", theme=theme, topic=topic, contents=contents)
+        
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการดึงข้อมูลหัวข้อ: {str(e)}", 500
+
+@app.route("/topics/delete/<int:topic_id>", methods=["GET"])  # route สำหรับลบหัวข้อ
+def delete_topic(topic_id):
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM topics WHERE id = %s", (topic_id,))
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return redirect(url_for('topics'))
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการลบหัวข้อ: {str(e)}", 500
+
+@app.route("/topics/<int:topic_id>/content/add", methods=["POST"])  # route สำหรับเพิ่มเนื้อหาในหัวข้อ
+def add_topic_content(topic_id):
+    content = request.form.get("content", "").strip()
+    content_type = request.form.get("content_type", "text")
+    
+    if not content:
+        return redirect(url_for('edit_topic', topic_id=topic_id, error="กรุณากรอกเนื้อหา"))
+    
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO topic_content (topic_id, content, content_type)
+            VALUES (%s, %s, %s)
+        """, (topic_id, content, content_type))
+        
+        # อัพเดทเวลาแก้ไขล่าสุดของหัวข้อ
+        cur.execute("""
+            UPDATE topics 
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (topic_id,))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return redirect(url_for('edit_topic', topic_id=topic_id))
+    except Exception as e:
+        return redirect(url_for('edit_topic', topic_id=topic_id, error=f"เกิดข้อผิดพลาดในการเพิ่มเนื้อหา: {str(e)}"))
+
+@app.route("/topics/content/delete/<int:content_id>", methods=["GET"])  # route สำหรับลบเนื้อหาในหัวข้อ
+def delete_topic_content(content_id):
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        
+        # ดึง topic_id ก่อนลบเนื้อหา
+        cur.execute("SELECT topic_id FROM topic_content WHERE id = %s", (content_id,))
+        result = cur.fetchone()
+        
+        if not result:
+            return "ไม่พบเนื้อหาที่ต้องการลบ", 404
+        
+        topic_id = result[0]
+        
+        # ลบเนื้อหา
+        cur.execute("DELETE FROM topic_content WHERE id = %s", (content_id,))
+        
+        # อัพเดทเวลาแก้ไขล่าสุดของหัวข้อ
+        cur.execute("""
+            UPDATE topics 
+            SET updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (topic_id,))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return redirect(url_for('edit_topic', topic_id=topic_id))
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการลบเนื้อหา: {str(e)}", 500
 
 @app.route("/about")  # route สำหรับหน้าเกี่ยวกับ
 def about():
@@ -182,52 +398,12 @@ def analysis():
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล: {str(e)}", 500
 
-@app.route("/edit/<int:user_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูล
-def edit(user_id):
+@app.route("/view/<int:user_id>")  # route สำหรับดูรายละเอียดผู้ใช้
+def view_user(user_id):
     try:
         conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
         
-        if request.method == "POST":
-            # รับข้อมูลจากฟอร์ม
-            first_name = request.form["first_name"]
-            last_name = request.form["last_name"]
-            gender = request.form["gender"]
-            age = request.form["age"]
-            province = request.form["province"]
-            pet = request.form["pet"]
-            
-            # ตรวจสอบความถูกต้องของข้อมูล
-            if not first_name or not last_name or not gender or not age or not province:
-                return "ข้อมูลไม่ครบถ้วน กรุณากรอกข้อมูลให้ครบทุกช่อง", 400
-            
-            try:
-                age = int(age)  # แปลงอายุเป็นตัวเลข
-                if age <= 0 or age > 120:
-                    return "อายุต้องอยู่ระหว่าง 1-120 ปี", 400
-            except ValueError:
-                return "อายุต้องเป็นตัวเลขเท่านั้น", 400
-            
-            # อัพเดทข้อมูลในฐานข้อมูล
-            conn.execute(
-                """UPDATE users SET 
-                    first_name = ?, last_name = ?, gender = ?, age = ?, 
-                    province = ?, pet = ? 
-                   WHERE id = ?""", 
-                (first_name, last_name, gender, age, province, pet, user_id)
-            )
-            conn.commit()
-            
-            # ค้นหาว่าข้อมูลผู้ใช้นี้อยู่ในหน้าไหน
-            items_per_page = 50  # จำนวนรายการต่อหน้า
-            user_position = conn.execute("SELECT COUNT(*) FROM users WHERE id <= ?", (user_id,)).fetchone()[0]
-            user_page = (user_position + items_per_page - 1) // items_per_page
-            
-            conn.close()
-            
-            # กลับไปที่หน้าที่ข้อมูลผู้ใช้นี้อยู่
-            return redirect(url_for('data', page=user_page))
-        
-        # ดึงข้อมูลของผู้ใช้ที่ต้องการแก้ไข
+        # ดึงข้อมูลของผู้ใช้
         user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
         conn.close()
         
@@ -237,42 +413,10 @@ def edit(user_id):
         # ดึงธีมจาก cookie
         theme = get_theme_from_cookie(request)
         
-        return render_template("edit.html", user=user, theme=theme)  # แสดงฟอร์มแก้ไขข้อมูล
+        return render_template("view_user.html", user=user, theme=theme)  # แสดงรายละเอียดผู้ใช้
     
     except Exception as e:
-        return f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล: {str(e)}", 500
-
-@app.route("/delete/<int:user_id>", methods=["GET"])  # route สำหรับลบข้อมูล
-def delete(user_id):
-    try:
-        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        
-        # ค้นหาว่าข้อมูลผู้ใช้นี้อยู่ในหน้าไหนก่อนลบ
-        items_per_page = 50  # จำนวนรายการต่อหน้า
-        user_position = conn.execute("SELECT COUNT(*) FROM users WHERE id <= ?", (user_id,)).fetchone()[0]
-        current_page = (user_position + items_per_page - 1) // items_per_page
-        
-        # นับจำนวนผู้ใช้ทั้งหมด
-        total_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-        
-        # ลบข้อมูลผู้ใช้จากฐานข้อมูล
-        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
-        conn.commit()
-        
-        # คำนวณจำนวนหน้าทั้งหมดหลังจากลบ
-        total_pages = ((total_users - 1) + items_per_page - 1) // items_per_page
-        
-        # ถ้าหน้าปัจจุบันมากกว่าจำนวนหน้าทั้งหมดหลังลบ ให้ไปหน้าสุดท้าย
-        if current_page > total_pages and total_pages > 0:
-            current_page = total_pages
-        
-        conn.close()
-        
-        # กลับไปที่หน้าเดิม หรือหน้าสุดท้ายถ้าหน้าเดิมไม่มีแล้ว
-        return redirect(url_for('data', page=current_page))
-    
-    except Exception as e:
-        return f"เกิดข้อผิดพลาดในการลบข้อมูล: {str(e)}", 500
+        return f"เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้: {str(e)}", 500
 
 @app.route("/scraping")  # route สำหรับหน้าการดึงข้อมูลจากเว็บไซต์
 def scraping_page():
