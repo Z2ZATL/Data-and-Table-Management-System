@@ -27,8 +27,8 @@
                     
                     <div class="d-flex flex-column gap-3">
                         <!-- โหมดสว่าง -->
-                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('light')">
-                            <input class="form-check-input" type="radio" name="themeOptions" id="lightTheme" value="light">
+                        <div class="form-check theme-option p-3 rounded" onclick="setThemeServer('light')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="lightTheme" value="light" {% if theme == 'light' %}checked{% endif %}>
                             <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="lightTheme">
                                 <div>
                                     <span class="fw-medium">โหมดสว่าง</span>
@@ -39,8 +39,8 @@
                         </div>
                         
                         <!-- โหมดมืด -->
-                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('dark')">
-                            <input class="form-check-input" type="radio" name="themeOptions" id="darkTheme" value="dark">
+                        <div class="form-check theme-option p-3 rounded" onclick="setThemeServer('dark')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="darkTheme" value="dark" {% if theme == 'dark' %}checked{% endif %}>
                             <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="darkTheme">
                                 <div>
                                     <span class="fw-medium">โหมดมืด</span>
@@ -51,8 +51,8 @@
                         </div>
                         
                         <!-- โหมดตามระบบ -->
-                        <div class="form-check theme-option p-3 rounded" onclick="setTheme('auto')">
-                            <input class="form-check-input" type="radio" name="themeOptions" id="autoTheme" value="auto">
+                        <div class="form-check theme-option p-3 rounded" onclick="setThemeServer('auto')">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="autoTheme" value="auto" {% if theme == 'auto' %}checked{% endif %}>
                             <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="autoTheme">
                                 <div>
                                     <span class="fw-medium">ตามระบบ</span>
@@ -94,18 +94,29 @@
             }
         `;
         document.head.appendChild(styleElement);
-        
-        // ดึงค่าธีมปัจจุบัน
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        
-        // เลือกตัวเลือกที่ตรงกับธีมปัจจุบัน
-        if (currentTheme === 'light') {
-            document.getElementById('lightTheme').checked = true;
-        } else if (currentTheme === 'dark') {
-            document.getElementById('darkTheme').checked = true;
-        } else if (currentTheme === 'auto') {
-            document.getElementById('autoTheme').checked = true;
-        }
     });
+    
+    // ฟังก์ชันสำหรับเปลี่ยนธีมผ่านเซิร์ฟเวอร์
+    function setThemeServer(theme) {
+        // ส่งข้อมูลธีมไปยังเซิร์ฟเวอร์
+        const formData = new FormData();
+        formData.append('theme', theme);
+        
+        fetch('/set-theme', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // บันทึกธีมใน localStorage เพื่อความเข้ากันได้กับ theme.js
+                localStorage.setItem('theme', theme);
+                
+                // รีโหลดหน้าเพื่อให้การเปลี่ยนธีมมีผล
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 </script>
 {% endblock %}
