@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for  # นำเข้า Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify  # นำเข้า Flask และอื่นๆ
 import sqlite3  # นำเข้า sqlite3 สำหรับเชื่อมต่อกับฐานข้อมูล
 import os  # นำเข้า os เพื่อใช้งานตัวแปรสิ่งแวดล้อม
 
 app = Flask(__name__)  # สร้างแอป Flask
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ตั้งค่า secret key สำหรับความปลอดภัย
+
+# ฟังก์ชันช่วยสำหรับการจัดการธีม
+def get_theme_from_cookie(request):
+    return request.cookies.get('theme', 'dark')
 
 def get_db_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล
     conn = sqlite3.connect('mock_data.db')  # เชื่อมต่อกับฐานข้อมูล mock_data.db
@@ -12,15 +16,25 @@ def get_db_connection():  # ฟังก์ชันที่ใช้ในก�
 
 @app.route("/")  # route สำหรับหน้าแรก
 def index():
-    return render_template("index.html")  # ส่งไฟล์ HTML ที่ชื่อ "index.html" กลับไปที่ผู้ใช้
+    theme = get_theme_from_cookie(request)
+    return render_template("index.html", theme=theme)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลธีม
 
 @app.route("/about")  # route สำหรับหน้าเกี่ยวกับ
 def about():
-    return render_template("about.html")
+    theme = get_theme_from_cookie(request)
+    return render_template("about.html", theme=theme)
 
 @app.route("/settings")  # route สำหรับหน้าตั้งค่า
 def settings():
-    return render_template("settings.html")
+    theme = get_theme_from_cookie(request)
+    return render_template("settings.html", theme=theme)
+    
+@app.route("/set-theme", methods=["POST"])  # route สำหรับเปลี่ยนธีม
+def set_theme():
+    theme = request.form.get("theme", "dark")
+    response = make_response(jsonify({"status": "success", "theme": theme}))
+    response.set_cookie("theme", theme, max_age=60*60*24*365)  # ตั้งคุกกี้เก็บไว้ 1 ปี
+    return response
 
 @app.route("/submit", methods=["POST"])  # route สำหรับรับข้อมูลจากฟอร์ม
 def submit():
@@ -86,13 +100,17 @@ def data(page=1):
         # คำนวณตำแหน่งเริ่มต้นของการนับลำดับ
         start_index = (page - 1) * items_per_page + 1
         
+        # ดึงธีมจาก cookie
+        theme = get_theme_from_cookie(request)
+        
         return render_template(
             "data.html", 
             users=users, 
             total_users=total_users,
             page=page,
             total_pages=total_pages,
-            start_index=start_index
+            start_index=start_index,
+            theme=theme
         )  # ส่งข้อมูลที่ดึงมาไปแสดงใน template data.html
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการดึงข้อมูล: {str(e)}", 500
@@ -144,7 +162,10 @@ def analysis():
             } for p in province_counts]
         }
         
-        return render_template("analysis.html", users=users, stats=stats)  # ส่งข้อมูลที่แปลงแล้วและสถิติไปแสดงใน template
+        # ดึงธีมจาก cookie
+        theme = get_theme_from_cookie(request)
+        
+        return render_template("analysis.html", users=users, stats=stats, theme=theme)  # ส่งข้อมูลที่แปลงแล้วและสถิติไปแสดงใน template
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล: {str(e)}", 500
 
@@ -200,7 +221,10 @@ def edit(user_id):
         if not user:
             return "ไม่พบข้อมูลผู้ใช้", 404
         
-        return render_template("edit.html", user=user)  # แสดงฟอร์มแก้ไขข้อมูล
+        # ดึงธีมจาก cookie
+        theme = get_theme_from_cookie(request)
+        
+        return render_template("edit.html", user=user, theme=theme)  # แสดงฟอร์มแก้ไขข้อมูล
     
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการแก้ไขข้อมูล: {str(e)}", 500
