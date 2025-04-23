@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Submission Successful{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card bg-dark border-success text-center p-5">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-success fa-5x"></i>
+            </div>
+            
+            <h1 class="display-4 mb-4">Thank You!</h1>
+            <p class="lead mb-4">Your form has been successfully submitted. We've received your information.</p>
+            
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i>
+                A confirmation email will be sent to the address you provided shortly.
+            </div>
+            
+            <div class="d-grid gap-2 col-md-6 mx-auto">
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>Return to Home
+                </a>
+                <a href="{{ url_for('contact_form') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-alt me-2"></i>Submit Another Form
+                </a>
+            </div>
+        </div>
+        
+        <!-- What Happens Next Section -->
+        <div class="card bg-dark border-info mt-4">
+            <div class="card-header bg-info text-white">
+                <h3 class="m-0"><i class="fas fa-tasks me-2"></i>What Happens Next?</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">1</div>
+                    </div>
+                    <div>
+                        <h5>Review Process</h5>
+                        <p>Our team will review your submission within 1-2 business days.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex mb-3">
+                    <div class="me-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">2</div>
+                    </div>
+                    <div>
+                        <h5>Email Confirmation</h5>
+                        <p>You'll receive a confirmation email with a copy of your submission.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex">
+                    <div class="me-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">3</div>
+                    </div>
+                    <div>
+                        <h5>Follow-up</h5>
+                        <p>If needed, a team member will contact you for additional information.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
