@@ -4,6 +4,10 @@ import scraping  # นำเข้าโมดูล scraping ที่สร้
 import json  # นำเข้า json สำหรับการแปลงข้อมูล
 import psycopg2  # นำเข้า psycopg2 สำหรับเชื่อมต่อกับฐานข้อมูล PostgreSQL
 from psycopg2.extras import RealDictCursor  # เพื่อรับผลลัพธ์เป็น dictionary
+import pandas as pd  # นำเข้า pandas สำหรับการจัดการข้อมูลตาราง
+import tempfile  # สำหรับสร้างไฟล์ชั่วคราว
+import io  # สำหรับ io operations
+from werkzeug.utils import secure_filename  # สำหรับความปลอดภัยของชื่อไฟล์
 
 app = Flask(__name__)  # สร้างแอป Flask
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ตั้งค่า secret key สำหรับความปลอดภัย
@@ -270,6 +274,120 @@ def set_theme():
     response = make_response(jsonify({"status": "success", "theme": theme}))
     response.set_cookie("theme", theme, max_age=60*60*24*365)  # ตั้งคุกกี้เก็บไว้ 1 ปี
     return response
+
+@app.route("/upload", methods=["GET", "POST"])  # route สำหรับอัพโหลดไฟล์ข้อมูล
+def upload_data():
+    theme = get_theme_from_cookie(request)
+    
+    if request.method == "POST":
+        # รับข้อมูลจากฟอร์ม
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        import_method = request.form.get("import_method", "file")
+        
+        if not title:
+            return render_template("upload_data.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ")
+        
+        try:
+            # เริ่มสร้างหัวข้อใหม่
+            conn = get_pg_connection()
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO topics (title, description)
+                VALUES (%s, %s)
+                RETURNING id
+            """, (title, description))
+            
+            new_topic_id = cur.fetchone()[0]
+            
+            # ตรวจสอบวิธีการนำเข้า
+            table_data = None
+            
+            if import_method == "file":
+                # อัพโหลดไฟล์
+                if 'data_file' not in request.files:
+                    return render_template("upload_data.html", theme=theme, error="ไม่พบไฟล์ที่อัพโหลด")
+                
+                data_file = request.files['data_file']
+                
+                if data_file.filename == '':
+                    return render_template("upload_data.html", theme=theme, error="ไม่ได้เลือกไฟล์")
+                
+                # ตรวจสอบนามสกุลไฟล์
+                filename = secure_filename(data_file.filename)
+                file_ext = os.path.splitext(filename)[1].lower()
+                
+                if file_ext not in ['.csv', '.xlsx', '.xls', '.tsv']:
+                    return render_template("upload_data.html", theme=theme, error="รูปแบบไฟล์ไม่รองรับ (รองรับเฉพาะ .csv, .xlsx, .xls และ .tsv)")
+                
+                # อ่านข้อมูลจากไฟล์
+                try:
+                    if file_ext in ['.xlsx', '.xls']:
+                        df = pd.read_excel(data_file)
+                    elif file_ext == '.csv':
+                        df = pd.read_csv(data_file)
+                    elif file_ext == '.tsv':
+                        df = pd.read_csv(data_file, sep='\t')
+                    
+                    # แปลงข้อมูลเป็นรูปแบบที่ต้องการ
+                    headers = df.columns.tolist()
+                    rows = df.values.tolist()
+                    
+                    # แปลงเซลล์ที่เป็น NaN ให้เป็นค่าว่าง
+                    rows = [['' if pd.isna(cell) else cell for cell in row] for row in rows]
+                    
+                    table_data = {
+                        'headers': headers,
+                        'rows': rows
+                    }
+                except Exception as e:
+                    conn.rollback()
+                    cur.execute("DELETE FROM topics WHERE id = %s", (new_topic_id,))
+                    conn.commit()
+                    return render_template("upload_data.html", theme=theme, error=f"ไม่สามารถอ่านข้อมูลจากไฟล์ได้: {str(e)}")
+            
+            else:  # method == "manual"
+                # กรอกข้อมูลเอง
+                table_data_str = request.form.get("table_data", "")
+                
+                if not table_data_str:
+                    return render_template("upload_data.html", theme=theme, error="ไม่มีข้อมูลตาราง")
+                
+                try:
+                    table_data = json.loads(table_data_str)
+                except:
+                    return render_template("upload_data.html", theme=theme, error="ข้อมูลตารางไม่ถูกต้อง")
+            
+            # เพิ่มเนื้อหาตารางในหัวข้อ
+            if table_data:
+                # ตรวจสอบความถูกต้องของข้อมูล
+                if 'headers' not in table_data or 'rows' not in table_data:
+                    return render_template("upload_data.html", theme=theme, error="รูปแบบข้อมูลตารางไม่ถูกต้อง")
+                
+                # แปลงข้อมูลเป็น JSON string
+                content = json.dumps(table_data)
+                
+                # บันทึกลงฐานข้อมูล
+                cur.execute("""
+                    INSERT INTO topic_content (topic_id, content, content_type)
+                    VALUES (%s, %s, %s)
+                """, (new_topic_id, content, "table"))
+                
+                conn.commit()
+                cur.close()
+                conn.close()
+                
+                return render_template("upload_data.html", theme=theme, success=f"สร้างหัวข้อและข้อมูลตารางสำเร็จแล้ว")
+            else:
+                conn.rollback()
+                cur.execute("DELETE FROM topics WHERE id = %s", (new_topic_id,))
+                conn.commit()
+                return render_template("upload_data.html", theme=theme, error="ไม่มีข้อมูลตารางที่จะบันทึก")
+            
+        except Exception as e:
+            return render_template("upload_data.html", theme=theme, error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}")
+    
+    return render_template("upload_data.html", theme=theme)
 
 @app.route("/data")  # route สำหรับข้อมูลตาราง
 def data():

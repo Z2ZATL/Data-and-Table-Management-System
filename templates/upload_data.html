@@ -1,0 +1,228 @@
+{% extends 'layout.html' %}
+
+{% block title %}อัพโหลดข้อมูล{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">อัพโหลดข้อมูลตาราง</h1>
+                <p class="lead mb-4">อัพโหลดไฟล์ CSV, Excel หรือกรอกข้อมูลตารางโดยตรงเพื่อสร้างชุดข้อมูลใหม่</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg mb-5">
+                <div class="card-header">
+                    <h5 class="mb-0">อัพโหลดไฟล์ข้อมูล</h5>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if success %}
+                        <div class="alert alert-success mb-4">
+                            <i class="fas fa-check-circle me-2"></i> {{ success }}
+                        </div>
+                    {% endif %}
+                    
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="title" class="form-label">ชื่อหัวข้อ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="ชื่อชุดข้อมูลของคุณ" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="description" class="form-label">คำอธิบาย</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="อธิบายเกี่ยวกับชุดข้อมูลนี้"></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">วิธีการนำเข้าข้อมูล</label>
+                            <div class="d-flex gap-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="import_method" id="method_file" value="file" checked>
+                                    <label class="form-check-label" for="method_file">
+                                        <i class="fas fa-file-upload me-1"></i> อัพโหลดไฟล์
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="import_method" id="method_manual" value="manual">
+                                    <label class="form-check-label" for="method_manual">
+                                        <i class="fas fa-edit me-1"></i> กรอกข้อมูลเอง
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="file_upload_section" class="mb-4">
+                            <label for="data_file" class="form-label">ไฟล์ข้อมูล (CSV, Excel, TSV) <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="data_file" name="data_file" accept=".csv,.xlsx,.xls,.tsv">
+                            <div class="form-text mt-2">
+                                <i class="fas fa-info-circle me-1"></i> รองรับไฟล์ .csv, .xlsx, .xls และ .tsv ขนาดไม่เกิน 5MB
+                            </div>
+                        </div>
+                        
+                        <div id="manual_entry_section" class="mb-4" style="display: none;">
+                            <label class="form-label">ข้อมูลตาราง <span class="text-danger">*</span></label>
+                            <div class="manual-table-container">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="manual_table">
+                                        <thead>
+                                            <tr id="header_row">
+                                                <th><input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ 1" required></th>
+                                                <th><input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ 2" required></th>
+                                                <th>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add_column">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล"></td>
+                                                <td><input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล"></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-2 d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add_row">
+                                        <i class="fas fa-plus me-1"></i> เพิ่มแถว
+                                    </button>
+                                </div>
+                                
+                                <input type="hidden" name="table_data" id="table_data">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> กลับ
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-cloud-upload-alt me-1"></i> อัพโหลดและสร้างตาราง
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // สลับการแสดงส่วนอัพโหลดไฟล์/กรอกข้อมูลเอง
+        const methodFile = document.getElementById('method_file');
+        const methodManual = document.getElementById('method_manual');
+        const fileUploadSection = document.getElementById('file_upload_section');
+        const manualEntrySection = document.getElementById('manual_entry_section');
+        
+        methodFile.addEventListener('change', function() {
+            fileUploadSection.style.display = 'block';
+            manualEntrySection.style.display = 'none';
+        });
+        
+        methodManual.addEventListener('change', function() {
+            fileUploadSection.style.display = 'none';
+            manualEntrySection.style.display = 'block';
+        });
+        
+        // ปุ่มเพิ่มคอลัมน์
+        const addColumnBtn = document.getElementById('add_column');
+        const headerRow = document.getElementById('header_row');
+        
+        addColumnBtn.addEventListener('click', function() {
+            const newHeader = document.createElement('th');
+            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ ${headerRow.cells.length}">`;
+            
+            // แทรกคอลัมน์ใหม่ก่อนปุ่ม
+            headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+            
+            // เพิ่มเซลล์ในแต่ละแถวข้อมูล
+            const dataRows = document.querySelectorAll('#manual_table tbody tr');
+            dataRows.forEach(row => {
+                const newCell = document.createElement('td');
+                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                row.insertBefore(newCell, row.lastElementChild);
+            });
+        });
+        
+        // ปุ่มเพิ่มแถว
+        const addRowBtn = document.getElementById('add_row');
+        const tableBody = document.querySelector('#manual_table tbody');
+        
+        addRowBtn.addEventListener('click', function() {
+            const headerColumns = headerRow.cells.length - 1; // ไม่รวมคอลัมน์ปุ่ม
+            const newRow = document.createElement('tr');
+            
+            for (let i = 0; i < headerColumns; i++) {
+                const cell = document.createElement('td');
+                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                newRow.appendChild(cell);
+            }
+            
+            // เพิ่มเซลล์ว่างสำหรับความสมดุล
+            const emptyCell = document.createElement('td');
+            newRow.appendChild(emptyCell);
+            
+            tableBody.appendChild(newRow);
+        });
+        
+        // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
+        const form = document.querySelector('form');
+        const tableDataInput = document.getElementById('table_data');
+        
+        form.addEventListener('submit', function(e) {
+            // ตรวจสอบว่าเลือกวิธีกรอกข้อมูลเอง
+            if (methodManual.checked) {
+                e.preventDefault();
+                
+                // อ่านข้อมูลส่วนหัวตาราง
+                const headers = [];
+                const headerInputs = document.querySelectorAll('.header-cell');
+                headerInputs.forEach(input => {
+                    headers.push(input.value || '');
+                });
+                
+                // อ่านข้อมูลในตาราง
+                const rows = [];
+                const dataRows = document.querySelectorAll('#manual_table tbody tr');
+                
+                dataRows.forEach(row => {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('.data-cell');
+                    cells.forEach(cell => {
+                        rowData.push(cell.value || '');
+                    });
+                    rows.push(rowData);
+                });
+                
+                // เก็บข้อมูลในฟิลด์ซ่อน
+                const tableData = {
+                    headers: headers,
+                    rows: rows
+                };
+                
+                tableDataInput.value = JSON.stringify(tableData);
+                
+                // ส่งฟอร์ม
+                form.submit();
+            }
+        });
+    });
+</script>
+{% endblock %}
