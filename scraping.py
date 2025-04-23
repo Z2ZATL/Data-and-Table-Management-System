@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup
 import json
 import ai_helper
+from urllib.parse import urlparse
 
 def get_website_text_content(url):
     """
@@ -634,6 +635,98 @@ def extract_numerical_data(text):
     return chart_data
 
 # ฟังก์ชันสำหรับดึงข้อมูลข่าวจาก RSS Feed
+def extract_images_from_webpage(url, soup=None):
+    """
+    ฟังก์ชันสำหรับดึงรูปภาพจากเว็บไซต์ โดยเฉพาะกราฟและชาร์ต
+    
+    Args:
+        url (str): URL ของเว็บไซต์ที่ต้องการดึงรูปภาพ
+        soup (BeautifulSoup, optional): BeautifulSoup object ที่มีเนื้อหาเว็บไซต์
+        
+    Returns:
+        list: รายการ URLs ของรูปภาพที่พบ โดยเน้นรูปภาพที่เป็นกราฟหรือชาร์ต
+    """
+    try:
+        images = []
+        
+        if soup is None:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # คำสำคัญที่บ่งชี้ว่ารูปอาจเป็นกราฟหรือชาร์ต
+        chart_keywords = ['chart', 'graph', 'plot', 'แผนภูมิ', 'กราฟ', 'trend', 'timeline']
+        
+        # ดึงรูปภาพทั้งหมด
+        all_images = soup.find_all('img')
+        
+        for img in all_images:
+            img_url = img.get('src', '')
+            img_alt = img.get('alt', '').lower()
+            img_class = ' '.join(img.get('class', [])).lower() if img.get('class') else ''
+            
+            # หากไม่มี src หรือเป็น data URL หรือ base64 ให้ข้าม
+            if not img_url or img_url.startswith('data:'):
+                continue
+                
+            # แปลงเป็น URL แบบเต็ม
+            if img_url.startswith('/'):
+                # เป็น URL แบบสัมพัทธ์ ต้องแปลงเป็น URL เต็ม
+                parsed_url = urlparse(url)
+                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+                img_url = base_url + img_url
+            elif not img_url.startswith(('http://', 'https://')):
+                # ถ้าไม่ได้ขึ้นต้นด้วย http หรือ https
+                parsed_url = urlparse(url)
+                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+                
+                # ถ้า URL ของหน้าเว็บมี path
+                if parsed_url.path and '/' in parsed_url.path:
+                    # ตัดส่วนท้ายออก เพื่อให้ได้ path ของโฟลเดอร์
+                    path_parts = parsed_url.path.split('/')
+                    dir_path = '/'.join(path_parts[:-1]) + '/'
+                    img_url = base_url + dir_path + img_url
+                else:
+                    img_url = base_url + '/' + img_url
+            
+            # ตรวจสอบว่าเป็นรูปที่น่าจะเป็นกราฟหรือชาร์ตหรือไม่
+            is_chart = False
+            
+            # ตรวจสอบจากคำสำคัญใน URL, alt, class
+            for keyword in chart_keywords:
+                if (keyword in img_url.lower() or 
+                    keyword in img_alt or 
+                    keyword in img_class):
+                    is_chart = True
+                    break
+            
+            # ตรวจสอบจากขนาดของรูป (กราฟมักมีขนาดใหญ่พอสมควร)
+            width = img.get('width', '')
+            height = img.get('height', '')
+            
+            # แปลงเป็นตัวเลขหากเป็นไปได้
+            try:
+                if width and int(width) > 200 and height and int(height) > 100:
+                    is_chart = True
+            except ValueError:
+                pass
+                
+            # เพิ่มเข้าลิสต์ถ้าเป็นกราฟหรือชาร์ต
+            if is_chart:
+                images.append({
+                    'url': img_url,
+                    'alt': img_alt
+                })
+        
+        return images
+        
+    except Exception as e:
+        print(f"Error extracting images from {url}: {str(e)}")
+        return []
+        
 def extract_stock_tables(url):
     """
     ฟังก์ชันสำหรับดึงตารางข้อมูลหุ้นจากเว็บไซต์โดยตรง
@@ -658,27 +751,48 @@ def extract_stock_tables(url):
         # ใช้ BeautifulSoup เพื่อแยกวิเคราะห์ HTML
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # ดึงรูปภาพกราฟและชาร์ตจากเว็บไซต์
+        images = extract_images_from_webpage(url, soup)
+        
+        # เตรียมผลลัพธ์
+        result = None
+        
         # ตรวจสอบว่ามีตารางหรือไม่
         tables = soup.find_all('table')
-        if not tables:
+        if not tables and not images:  # ถ้าไม่มีทั้งตารางและรูปภาพ
             return None
             
         # วิเคราะห์เว็บไซต์ประเภทต่างๆ
         
         # ตรวจสอบว่าเป็นเว็บไซต์ set.or.th
         if "set.or.th" in url or "marketdata" in url:
-            return extract_set_data(soup)
+            result = extract_set_data(soup)
         
         # ตรวจสอบว่าเป็นเว็บไซต์ข้อมูลทอง
-        if "goldtraders" in url or "gold" in url:
-            return extract_gold_data(soup)
+        elif "goldtraders" in url or "gold" in url:
+            result = extract_gold_data(soup)
             
         # ตรวจสอบว่าเป็นเว็บไซต์อัตราแลกเปลี่ยน
-        if "exchange" in url or "currency" in url or "fx" in url:
-            return extract_exchange_rate_data(soup)
+        elif "exchange" in url or "currency" in url or "fx" in url:
+            result = extract_exchange_rate_data(soup)
             
         # ถ้าไม่ตรงกับเงื่อนไขข้างต้น ทดลองดึงข้อมูลจากตารางทั่วไป
-        return extract_general_table_data(soup)
+        else:
+            result = extract_general_table_data(soup)
+        
+        # ถ้ามีผลลัพธ์และมีรูปภาพ ให้เพิ่มรูปภาพลงในผลลัพธ์
+        if result and images:
+            result['images'] = images
+        
+        # ถ้าไม่มีผลลัพธ์แต่มีรูปภาพ ให้ส่งผลลัพธ์เป็นข้อมูลรูปภาพอย่างเดียว
+        elif not result and images:
+            result = {
+                'type': 'images_only',
+                'title': 'รูปภาพกราฟและชาร์ต',
+                'images': images
+            }
+            
+        return result
             
     except Exception as e:
         print(f"Error extracting stock tables from {url}: {str(e)}")
