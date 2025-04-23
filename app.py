@@ -565,5 +565,13 @@ def scrape_website():
             theme=get_theme_from_cookie(request)
         )
 
+# ฟังก์ชันฟิลเตอร์สำหรับแปลง JSON string เป็น Python object
+@app.template_filter('fromjson')
+def fromjson(value):
+    try:
+        return json.loads(value)
+    except:
+        return {}
+
 if __name__ == "__main__":  # เมื่อรันไฟล์นี้โดยตรง
     app.run(debug=True)  # เริ่มต้น Flask app ในโหมด debug

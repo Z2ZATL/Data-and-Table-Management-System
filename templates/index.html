@@ -118,6 +118,40 @@
                                                 <div class="content-highlight p-2 rounded">
                                                     {{ content.content }}
                                                 </div>
+                                            {% elif content.content_type == 'table' %}
+                                                <div class="table-container mb-3">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm table-bordered table-hover">
+                                                            {% set table_data = content.content|tojson|safe|fromjson %}
+                                                            
+                                                            {% if table_data and table_data.headers %}
+                                                            <thead>
+                                                                <tr>
+                                                                    {% for header in table_data.headers %}
+                                                                    <th>{{ header }}</th>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for row in table_data.rows %}
+                                                                <tr>
+                                                                    {% for cell in row %}
+                                                                    <td>{{ cell }}</td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                            {% endif %}
+                                                        </table>
+                                                    </div>
+                                                    <div class="text-end mt-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                                onclick="createChart('chart-{{ content.id }}', {{ content.content|safe }})">
+                                                            <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                                        </button>
+                                                    </div>
+                                                    <div id="chart-{{ content.id }}" class="mt-3" style="height: 300px; display: none;"></div>
+                                                </div>
                                             {% else %}
                                                 <div class="content-text">
                                                     {{ content.content }}
