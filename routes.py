@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from app import app, db
 from forms import ContactForm
 from models import FormSubmission
@@ -35,3 +35,15 @@ def contact_form():
 @app.route('/success')
 def success():
     return render_template('success.html')
+
+@app.route('/admin')
+def admin():
+    # Get all submissions from the database
+    submissions = FormSubmission.query.order_by(FormSubmission.submission_date.desc()).all()
+    return render_template('admin.html', submissions=submissions)
+
+@app.route('/admin/submission/<int:submission_id>')
+def view_submission(submission_id):
+    # Get the specific submission or return 404
+    submission = FormSubmission.query.get_or_404(submission_id)
+    return render_template('view_submission.html', submission=submission)
