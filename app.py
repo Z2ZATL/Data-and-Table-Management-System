@@ -71,12 +71,16 @@ def data(page=1):
         
         conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
         
+        # คำนวณตำแหน่งเริ่มต้นของการนับลำดับ
+        start_index = (page - 1) * items_per_page + 1
+        
         return render_template(
             "data.html", 
             users=users, 
             total_users=total_users,
             page=page,
-            total_pages=total_pages
+            total_pages=total_pages,
+            start_index=start_index
         )  # ส่งข้อมูลที่ดึงมาไปแสดงใน template data.html
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการดึงข้อมูล: {str(e)}", 500

@@ -36,7 +36,7 @@
                             <tbody>
                                 {% for user in users %}
                                 <tr>
-                                    <th scope="row" class="ps-4">{{ loop.index }}</th>
+                                    <th scope="row" class="ps-4">{{ start_index + loop.index0 }}</th>
                                     <td>{{ user.first_name }}</td>
                                     <td>{{ user.last_name }}</td>
                                     <td>{{ user.gender }}</td>
