@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+
+{% block title %}เพิ่มข้อมูลผู้ใช้{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">เพิ่มข้อมูลผู้ใช้ใหม่</h1>
+                <p class="lead mb-4">กรอกข้อมูลเพื่อเพิ่มผู้ใช้ใหม่เข้าสู่ระบบ</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-body p-4 p-lg-5">
+                    <h2 class="card-title text-center mb-4">ฟอร์มเพิ่มข้อมูล</h2>
+                    <form action="/submit" method="post">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">ชื่อ</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="กรุณากรอกชื่อ">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">นามสกุล</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="กรุณากรอกนามสกุล">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">เพศ</label>
+                            <select class="form-select" name="gender" id="gender" required>
+                                <option value="" disabled selected>เลือกเพศ</option>
+                                <option value="ชาย">ชาย</option>
+                                <option value="หญิง">หญิง</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="age" class="form-label">อายุ</label>
+                            <input type="number" class="form-control" id="age" name="age" required placeholder="กรุณากรอกอายุ" min="1" max="120">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="province" class="form-label">จังหวัด</label>
+                            <input type="text" class="form-control" id="province" name="province" required placeholder="กรุณากรอกจังหวัด">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="pet" class="form-label">สัตว์เลี้ยง</label>
+                            <input type="text" class="form-control" id="pet" name="pet" placeholder="กรุณากรอกชื่อหรือชนิดสัตว์เลี้ยง (ถ้ามี)">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('data') }}" class="btn btn-outline-secondary flex-grow-1">
+                                <i class="fas fa-times me-1"></i> ยกเลิก
+                            </a>
+                            <button type="submit" class="btn btn-success flex-grow-1">
+                                <i class="fas fa-save me-1"></i> บันทึกข้อมูล
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -429,6 +429,82 @@ def view_user(user_id):
     
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้: {str(e)}", 500
+        
+@app.route("/edit/<int:user_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลผู้ใช้
+def edit_user(user_id):
+    try:
+        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
+        
+        if request.method == "POST":
+            # รับข้อมูลจากฟอร์ม
+            first_name = request.form["first_name"]
+            last_name = request.form["last_name"]
+            gender = request.form["gender"]
+            age = request.form["age"]
+            province = request.form["province"]
+            pet = request.form["pet"] if request.form["pet"] else None
+            
+            # ตรวจสอบความถูกต้องของข้อมูล
+            if not first_name or not last_name or not gender or not age or not province:
+                return "ข้อมูลไม่ครบถ้วน กรุณากรอกข้อมูลให้ครบทุกช่อง", 400
+            
+            try:
+                age = int(age)  # แปลงอายุเป็นตัวเลข
+                if age <= 0 or age > 120:
+                    return "อายุต้องอยู่ระหว่าง 1-120 ปี", 400
+            except ValueError:
+                return "อายุต้องเป็นตัวเลขเท่านั้น", 400
+            
+            # อัพเดทข้อมูลในฐานข้อมูล
+            conn.execute(
+                "UPDATE users SET first_name = ?, last_name = ?, gender = ?, age = ?, province = ?, pet = ? WHERE id = ?",
+                (first_name, last_name, gender, age, province, pet, user_id)
+            )
+            conn.commit()
+            
+            return redirect(url_for('data'))  # กลับไปหน้าข้อมูลผู้ใช้
+        
+        # ถ้าเป็น GET request ให้ดึงข้อมูลของผู้ใช้มาแสดงในฟอร์ม
+        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        conn.close()
+        
+        if not user:
+            return "ไม่พบข้อมูลผู้ใช้", 404
+        
+        # ดึงธีมจาก cookie
+        theme = get_theme_from_cookie(request)
+        
+        return render_template("edit.html", user=user, theme=theme)  # แสดงฟอร์มแก้ไขข้อมูล
+    
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการแก้ไขข้อมูลผู้ใช้: {str(e)}", 500
+    
+@app.route("/delete/<int:user_id>")  # route สำหรับลบข้อมูลผู้ใช้
+def delete_user(user_id):
+    try:
+        conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
+        
+        # ตรวจสอบว่ามีผู้ใช้รหัสนี้หรือไม่
+        user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+        
+        if not user:
+            return "ไม่พบข้อมูลผู้ใช้", 404
+        
+        # ลบข้อมูลผู้ใช้จากฐานข้อมูล
+        conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('data'))  # กลับไปหน้าข้อมูลผู้ใช้
+        
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการลบข้อมูลผู้ใช้: {str(e)}", 500
+        
+@app.route("/add")  # route สำหรับหน้าเพิ่มข้อมูลผู้ใช้
+def add_user():
+    # ดึงธีมจาก cookie
+    theme = get_theme_from_cookie(request)
+    return render_template("add_user.html", theme=theme)
 
 @app.route("/scraping")  # route สำหรับหน้าการดึงข้อมูลจากเว็บไซต์
 def scraping_page():
