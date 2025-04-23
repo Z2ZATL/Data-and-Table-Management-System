@@ -1,107 +1,103 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Analysis</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- นำเข้า Chart.js สำหรับสร้างกราฟ -->
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f3f4f7;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+{% extends 'layout.html' %}
 
-    .container {
-      background-color: white;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-      width: 80%;
-      max-width: 800px;
-      text-align: center;
-    }
+{% block title %}วิเคราะห์ข้อมูล{% endblock %}
 
-    h1 {
-      font-size: 2.5rem;
-      color: #7a4adf;
-      margin-bottom: 40px;
-    }
-
-    label {
-      font-size: 1.1rem;
-      color: #333;
-      margin-right: 10px;
-    }
-
-    select {
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      margin-bottom: 30px;
-      width: 200px;
-    }
-
-    canvas {
-      width: 100%;
-      max-width: 500px;
-      height: 400px;
-      margin-top: 30px;
-    }
-
-    select, label {
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h1>Data Analysis</h1>
-
-    <div>
-      <label>Filter by Gender:</label>
-      <select id="genderFilter">
-        <option value="All">All</option>
-        <option value="ชาย">ชาย</option>
-        <option value="หญิง">หญิง</option>
-      </select>
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">วิเคราะห์ข้อมูลผู้ใช้</h1>
+                <p class="lead mb-0">ดูภาพรวมและสถิติข้อมูลผู้ใช้แยกตามประเภทต่างๆ</p>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div>
-      <label>Filter by Age Range:</label>
-      <select id="ageFilter">
-        <option value="All">All</option>
-        <option value="0-20">0-20</option>
-        <option value="21-40">21-40</option>
-        <option value="41+">41+</option>
-      </select>
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header bg-white py-4">
+                    <h4 class="card-title mb-0">จำนวนผู้ใช้แยกตามจังหวัด</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="genderFilter" class="form-label">กรองตามเพศ</label>
+                            <select id="genderFilter" class="form-select">
+                                <option value="All">ทั้งหมด</option>
+                                <option value="ชาย">ชาย</option>
+                                <option value="หญิง">หญิง</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ageFilter" class="form-label">กรองตามช่วงอายุ</label>
+                            <select id="ageFilter" class="form-select">
+                                <option value="All">ทั้งหมด</option>
+                                <option value="0-20">0-20 ปี</option>
+                                <option value="21-40">21-40 ปี</option>
+                                <option value="41+">41 ปีขึ้นไป</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:400px; max-width: 800px; margin: 0 auto;">
+                        <canvas id="provinceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-white py-4">
+                    <h4 class="card-title mb-0">สัดส่วนเพศ</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-white py-4">
+                    <h4 class="card-title mb-0">ช่วงอายุ</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    <canvas id="provinceChart" width="400" height="400"></canvas>
-  </div>
-
-  <script>
+{% block scripts %}
+<script>
     // นำข้อมูลผู้ใช้จาก Flask มาที่ JavaScript
-    const users = {{ users|tojson }};  // แปลงข้อมูล Python เป็น JSON
-
+    const users = {{ users|tojson }};
+    
+    // Filter selectors
     const genderSelect = document.getElementById("genderFilter");
     const ageSelect = document.getElementById("ageFilter");
 
+    // Filter data functions
     function filterData(gender, ageRange) {
       return users.filter(user => {
         const passGender = gender === "All" || user.gender === gender;
         const age = parseInt(user.age);
         let passAge = true;
+        
         if (ageRange === "0-20") passAge = age >= 0 && age <= 20;
         else if (ageRange === "21-40") passAge = age >= 21 && age <= 40;
         else if (ageRange === "41+") passAge = age > 40;
+        
         return passGender && passAge;
       });
     }
@@ -114,15 +110,36 @@
       return counts;
     }
 
-    function updateChart(chart, data) {
-      const provinceCounts = countByProvince(data);
-      chart.data.labels = Object.keys(provinceCounts);
-      chart.data.datasets[0].data = Object.values(provinceCounts);
-      chart.update();
+    function countByGender(data) {
+      const genderCount = { 'ชาย': 0, 'หญิง': 0 };
+      data.forEach(user => {
+        if (user.gender in genderCount) {
+          genderCount[user.gender]++;
+        }
+      });
+      return genderCount;
     }
 
-    const ctx = document.getElementById('provinceChart').getContext('2d');
-    const provinceChart = new Chart(ctx, {
+    function countByAgeGroup(data) {
+      const ageGroups = {
+        '0-20': 0,
+        '21-40': 0,
+        '41+': 0
+      };
+      
+      data.forEach(user => {
+        const age = parseInt(user.age);
+        if (age <= 20) ageGroups['0-20']++;
+        else if (age <= 40) ageGroups['21-40']++;
+        else ageGroups['41+']++;
+      });
+      
+      return ageGroups;
+    }
+
+    // Province Chart
+    const provinceCtx = document.getElementById('provinceChart').getContext('2d');
+    const provinceChart = new Chart(provinceCtx, {
       type: 'pie',
       data: {
         labels: [],
@@ -130,37 +147,128 @@
           label: 'จำนวนคนในแต่ละจังหวัด',
           data: [],
           backgroundColor: [
-            'rgba(255, 99, 132, 0.6)',
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(255, 206, 86, 0.6)',
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-            'rgba(255, 159, 64, 0.6)',
-            'rgba(201, 203, 207, 0.6)'
-          ]
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(201, 203, 207, 0.7)',
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)'
+          ],
+          borderWidth: 1
         }]
       },
       options: {
         responsive: true,
-        animation: {
-          animateScale: true,
-          animateRotate: true
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'จำนวนผู้ใช้ในแต่ละจังหวัด'
+          }
         }
       }
     });
 
-    function handleFilterChange() {
+    // Gender Chart
+    const genderCtx = document.getElementById('genderChart').getContext('2d');
+    const genderChart = new Chart(genderCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['ชาย', 'หญิง'],
+        datasets: [{
+          label: 'สัดส่วนเพศ',
+          data: [0, 0],
+          backgroundColor: [
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 99, 132, 0.7)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+          title: {
+            display: true,
+            text: 'สัดส่วนเพศของผู้ใช้'
+          }
+        }
+      }
+    });
+
+    // Age Chart
+    const ageCtx = document.getElementById('ageChart').getContext('2d');
+    const ageChart = new Chart(ageCtx, {
+      type: 'bar',
+      data: {
+        labels: ['0-20 ปี', '21-40 ปี', '41+ ปี'],
+        datasets: [{
+          label: 'จำนวนผู้ใช้',
+          data: [0, 0, 0],
+          backgroundColor: [
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'จำนวนผู้ใช้ตามช่วงอายุ'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Update all charts
+    function updateCharts() {
       const selectedGender = genderSelect.value;
       const selectedAge = ageSelect.value;
       const filtered = filterData(selectedGender, selectedAge);
-      updateChart(provinceChart, filtered);
+      
+      // Update province chart
+      const provinceCounts = countByProvince(filtered);
+      provinceChart.data.labels = Object.keys(provinceCounts);
+      provinceChart.data.datasets[0].data = Object.values(provinceCounts);
+      provinceChart.update();
+      
+      // Update gender chart
+      const genderCounts = countByGender(users);
+      genderChart.data.datasets[0].data = [genderCounts['ชาย'], genderCounts['หญิง']];
+      genderChart.update();
+      
+      // Update age chart
+      const ageCounts = countByAgeGroup(users);
+      ageChart.data.datasets[0].data = [ageCounts['0-20'], ageCounts['21-40'], ageCounts['41+']];
+      ageChart.update();
     }
 
-    genderSelect.addEventListener("change", handleFilterChange);
-    ageSelect.addEventListener("change", handleFilterChange);
+    // Event listeners
+    genderSelect.addEventListener("change", updateCharts);
+    ageSelect.addEventListener("change", updateCharts);
 
-    handleFilterChange();  // แสดงกราฟครั้งแรก
-  </script>
-
-</body>
-</html>
+    // Initialize charts
+    updateCharts();
+</script>
+{% endblock %}

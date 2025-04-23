@@ -1,110 +1,59 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลผู้ใช้</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+{% extends 'layout.html' %}
 
-        .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 1000px;
-            overflow-x: auto;
-        }
+{% block title %}ข้อมูลผู้ใช้{% endblock %}
 
-        h2 {
-            text-align: center;
-            color: #7a4adf;
-            margin-bottom: 30px;
-            font-size: 2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        th {
-            background-color: #7a4adf;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-            transform: scale(1.02);
-        }
-
-        td {
-            color: #333;
-        }
-
-        /* Animation to show the table */
-        .container {
-            opacity: 0;
-            animation: fadeInUp 0.8s forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-    </style>
-</head>
-<body>
-
+{% block content %}
+<div class="hero-section">
     <div class="container">
-        <h2>ข้อมูลทั้งหมด</h2>
-
-        <table>
-            <tr>
-                <th>ชื่อ</th>
-                <th>นามสกุล</th>
-                <th>เพศ</th>
-                <th>อายุ</th>
-                <th>จังหวัด</th>
-            </tr>
-            <!-- ใช้ Jinja2 Template syntax เพื่อวนลูปข้อมูลผู้ใช้ -->
-            {% for user in users %}
-            <tr>
-                <td>{{ user.first_name }}</td>
-                <td>{{ user.last_name }}</td>
-                <td>{{ user.gender }}</td>
-                <td>{{ user.age }}</td>
-                <td>{{ user.province }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">ข้อมูลผู้ใช้ทั้งหมด</h1>
+                <p class="lead mb-0">แสดงรายการข้อมูลผู้ใช้ที่ลงทะเบียนในระบบ</p>
+            </div>
+        </div>
     </div>
+</div>
 
-</body>
-</html>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="ps-4">#</th>
+                                    <th scope="col">ชื่อ</th>
+                                    <th scope="col">นามสกุล</th>
+                                    <th scope="col">เพศ</th>
+                                    <th scope="col">อายุ</th>
+                                    <th scope="col" class="pe-4">จังหวัด</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <th scope="row" class="ps-4">{{ loop.index }}</th>
+                                    <td>{{ user.first_name }}</td>
+                                    <td>{{ user.last_name }}</td>
+                                    <td>{{ user.gender }}</td>
+                                    <td>{{ user.age }}</td>
+                                    <td class="pe-4">{{ user.province }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>พบผู้ใช้ทั้งหมด {{ users|length }} คน</div>
+                        <a href="/" class="btn btn-primary">เพิ่มข้อมูลใหม่</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
