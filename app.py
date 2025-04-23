@@ -277,7 +277,7 @@ def delete(user_id):
 def scraping_page():
     # ดึงธีมจาก cookie
     theme = get_theme_from_cookie(request)
-    return render_template("scraping.html", theme=theme)
+    return render_template("scraping_new.html", theme=theme)
 
 @app.route("/scrape-website", methods=["POST"])  # route สำหรับการดึงข้อมูลจากเว็บไซต์
 def scrape_website():
@@ -286,14 +286,14 @@ def scrape_website():
         url = request.form.get("url", "")
         
         if not url:
-            return render_template("scraping.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
+            return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
         # ดึงข้อมูลจากเว็บไซต์
         content = scraping.get_data_from_website(url)
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(
-            "scraping.html", 
+            "scraping_new.html", 
             content=content, 
             searched_url=url, 
             isinstance=isinstance, 
@@ -303,7 +303,7 @@ def scrape_website():
         )
     except Exception as e:
         return render_template(
-            "scraping.html", 
+            "scraping_new.html", 
             error=f"เกิดข้อผิดพลาด: {str(e)}", 
             theme=get_theme_from_cookie(request)
         )
