@@ -169,16 +169,57 @@ def get_news_headlines(url, filter_numerical=False):
                     if headline not in headlines:
                         headlines.append(headline)
         
-        # ถ้าต้องการใช้ AI ในการกรองข่าวที่เกี่ยวกับข้อมูลตัวเลข
+        # ถ้าต้องการกรองข่าวที่เกี่ยวกับข้อมูลตัวเลข
         if filter_numerical and headlines:
             print(f"Before AI filtering: {len(headlines)} headlines")
-            # ใช้ AI กรองหัวข้อข่าวที่เกี่ยวกับข้อมูลตัวเลข
-            ai_filtered_headlines = ai_helper.filter_headlines_with_ai(headlines)
             
-            # ถ้า AI สามารถกรองได้ จะใช้ผลลัพธ์จาก AI
-            if ai_filtered_headlines:
-                headlines = ai_filtered_headlines
-                print(f"After AI filtering: {len(headlines)} headlines")
+            # ลองใช้ AI กรองหัวข้อข่าวที่เกี่ยวกับข้อมูลตัวเลข
+            try:
+                ai_filtered_headlines = ai_helper.filter_headlines_with_ai(headlines)
+                
+                # ถ้า AI สามารถกรองได้ จะใช้ผลลัพธ์จาก AI
+                if ai_filtered_headlines and len(ai_filtered_headlines) > 0:
+                    headlines = ai_filtered_headlines
+                    print(f"After AI filtering: {len(headlines)} headlines")
+                    return headlines[:20]  # คืนค่าแค่ 20 หัวข้อแรก
+            except Exception as e:
+                print(f"Error using AI for filtering: {str(e)}")
+                
+            # ถ้า AI ไม่ทำงาน ใช้การกรองแบบปกติแทน
+            print("Using regular filtering instead of AI")
+            
+            numerical_keywords = [
+                'เพิ่มขึ้น', 'ลดลง', 'ร้อยละ', 'เปอร์เซ็นต์', '%', 'บาท', 'ล้าน', 'พันล้าน',
+                'หมื่นล้าน', 'แสนล้าน', 'ดอลลาร์', 'ยูโร', 'เยน', 'หยวน', 'ปอนด์',
+                'ดัชนี', 'ราคา', 'หุ้น', 'ค่าเงิน', 'อัตรา', 'ทอง', 'น้ำมัน', 'GDP',
+                'ตลาดหุ้น', 'ตลาดหลักทรัพย์', 'SET', 'ธนาคาร', 'งบประมาณ', 'เศรษฐกิจ',
+                'การเงิน', 'สถิติ', 'ตัวเลข', 'จำนวน', 'ผลประกอบการ', 'กำไร', 'ขาดทุน', 
+                'รายได้', 'รายจ่าย', 'บัญชี', 'หนี้', 'เงินเฟ้อ', 'ดอกเบี้ย', 'เงินกู้', 
+                'ตาราง', 'ข้อมูล', 'สำรวจ', 'ระดับ', 'เปรียบเทียบ', 'อันดับ', 'จัดอันดับ'
+            ]
+            
+            # กรองเฉพาะข่าวที่มีคำสำคัญและตัวเลข
+            filtered_headlines = []
+            
+            for headline in headlines:
+                title = headline['title'].lower()
+                # ตรวจสอบว่ามีตัวเลขในหัวข้อหรือไม่
+                has_number = bool(re.search(r'\d', title))
+                
+                # ตรวจสอบว่ามีคำสำคัญในหัวข้อหรือไม่
+                has_keyword = any(keyword.lower() in title for keyword in numerical_keywords)
+                
+                # ต้องมีทั้งตัวเลขและคำสำคัญ
+                if has_number and has_keyword:
+                    filtered_headlines.append(headline)
+            
+            # ถ้าไม่พบข่าวที่เกี่ยวกับตัวเลขเลย ให้ใช้หัวข้อทั้งหมด
+            if not filtered_headlines:
+                print("No numerical headlines found with regular filtering, returning all headlines")
+                return headlines[:20]
+            
+            print(f"After regular filtering: {len(filtered_headlines)} headlines")
+            headlines = filtered_headlines
         
         # จำกัดจำนวนหัวข้อข่าว
         return headlines[:20]  # คืนค่าแค่ 20 หัวข้อแรก
@@ -250,13 +291,22 @@ def get_data_from_website(url, use_ai=True):
         # สรุปเนื้อหาด้วย AI ถ้า use_ai เป็น True
         ai_summary = None
         ai_table = None
+        table_from_regex = None
         
         if use_ai:
-            # สรุปเนื้อหาด้วย AI
-            ai_summary = ai_helper.summarize_article_with_ai(text)
-            
-            # สร้างตารางข้อมูลด้วย AI
-            ai_table = ai_helper.extract_numerical_table_with_ai(text)
+            try:
+                # สรุปเนื้อหาด้วย AI
+                ai_summary = ai_helper.summarize_article_with_ai(text)
+                
+                # สร้างตารางข้อมูลด้วย AI
+                ai_table = ai_helper.extract_numerical_table_with_ai(text)
+            except Exception as e:
+                print(f"Error using AI for content analysis: {str(e)}")
+        
+        # ถ้า AI ไม่สามารถสร้างตารางได้ ให้ลองใช้การวิเคราะห์แบบปกติเพื่อสร้างตาราง
+        if ai_table is None:
+            # สร้างตารางด้วยการวิเคราะห์เนื้อหาแบบปกติ
+            table_from_regex = create_table_from_text(text)
         
         # วิเคราะห์หาข้อมูลตัวเลขในเนื้อหาด้วยวิธีปกติ
         numerical_data = extract_numerical_data(text)
@@ -266,7 +316,7 @@ def get_data_from_website(url, use_ai=True):
             'content': text,
             'chart_data': numerical_data,
             'ai_summary': ai_summary,
-            'ai_table': ai_table
+            'ai_table': ai_table or table_from_regex
         }
             
         return result
@@ -277,6 +327,193 @@ def get_data_from_website(url, use_ai=True):
         return "ไม่สามารถเชื่อมต่อกับเว็บไซต์"
     except Exception as e:
         return f"เกิดข้อผิดพลาด: {str(e)}"
+
+def create_table_from_text(text):
+    """
+    ฟังก์ชันสำหรับสร้างตารางข้อมูลจากเนื้อหา โดยใช้การวิเคราะห์ข้อความแบบปกติ
+    
+    Args:
+        text (str): เนื้อหาที่ต้องการวิเคราะห์
+        
+    Returns:
+        dict: ข้อมูลตารางที่สร้างจากเนื้อหา หรือ None ถ้าไม่สามารถสร้างได้
+    """
+    if not text:
+        return None
+    
+    # แบ่งเนื้อหาเป็นประโยค
+    sentences = re.split(r'[.!?]\s', text)
+    
+    # เก็บข้อมูลตัวเลขและบริบท
+    numeric_sentences = []
+    comparison_data = []
+    time_series_data = []
+    
+    # กำหนดคำสำคัญที่มักจะเกี่ยวข้องกับการเปรียบเทียบหรือข้อมูลตาราง
+    comparison_keywords = ['เปรียบเทียบ', 'ระหว่าง', 'อัตรา', 'เพิ่มขึ้น', 'ลดลง', 'เปลี่ยนแปลง',
+                           'มากกว่า', 'น้อยกว่า', 'สูงกว่า', 'ต่ำกว่า', 'อันดับ', 'ติดตาม', 'วัดผล', 'ประเมิน']
+    
+    time_keywords = ['ปี', 'เดือน', 'ไตรมาส', 'ครึ่งปี', 'ช่วงเวลา', 'พ.ศ.', 'ค.ศ.']
+    
+    category_keywords = ['ประเภท', 'หมวดหมู่', 'กลุ่ม', 'หัวข้อ', 'ชนิด', 'แบ่งเป็น', 'แบ่งตาม']
+    
+    # ค้นหาตาราง HTML ที่อาจมีในเนื้อหา (บางเว็บไซต์มีตารางที่อาจถูกดึงมาด้วย)
+    html_tables = re.findall(r'<table[^>]*>(.*?)</table>', text, re.DOTALL)
+    if html_tables:
+        # ถ้าพบตาราง HTML ให้พยายามแปลงเป็นตารางข้อมูล
+        from bs4 import BeautifulSoup
+        try:
+            soup = BeautifulSoup(html_tables[0], 'html.parser')
+            headers = [th.text.strip() for th in soup.find_all('th')]
+            
+            # ถ้าไม่มีส่วนหัวตาราง ให้ใช้คอลัมน์แรกเป็นส่วนหัว
+            if not headers:
+                first_row = soup.find('tr')
+                if first_row:
+                    headers = [td.text.strip() for td in first_row.find_all('td')]
+            
+            rows = []
+            for tr in soup.find_all('tr')[1:] if headers else soup.find_all('tr')[1:]:
+                row = [td.text.strip() for td in tr.find_all('td')]
+                if row:  # เพิ่มเฉพาะแถวที่ไม่ว่างเปล่า
+                    rows.append(row)
+            
+            if headers and rows:
+                return {
+                    'headers': headers,
+                    'rows': rows,
+                    'source': 'html_table'
+                }
+        except Exception as e:
+            print(f"Error parsing HTML table: {str(e)}")
+    
+    # ตรวจสอบประโยคที่มีข้อมูลตัวเลข
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+            
+        # ค้นหาตัวเลขในประโยค
+        numbers = re.findall(r'(\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+(?:\.\d+)?)', sentence)
+        
+        # ถ้าพบตัวเลขหลายตัวในประโยคเดียวกัน อาจเป็นข้อมูลตาราง
+        if len(numbers) >= 2:
+            # ตรวจสอบว่ามีคำสำคัญเกี่ยวกับการเปรียบเทียบหรือไม่
+            has_comparison = any(keyword in sentence.lower() for keyword in comparison_keywords)
+            has_time = any(keyword in sentence.lower() for keyword in time_keywords)
+            has_category = any(keyword in sentence.lower() for keyword in category_keywords)
+            
+            # เก็บข้อมูล
+            data = {
+                'sentence': sentence,
+                'numbers': numbers,
+                'has_comparison': has_comparison,
+                'has_time': has_time,
+                'has_category': has_category
+            }
+            
+            numeric_sentences.append(data)
+            
+            # ถ้ามีการเปรียบเทียบ เก็บไว้สำหรับสร้างตาราง
+            if has_comparison:
+                comparison_data.append(data)
+            
+            # ถ้ามีการอ้างอิงช่วงเวลา เก็บไว้สำหรับสร้างตารางข้อมูลย้อนหลัง
+            if has_time:
+                time_series_data.append(data)
+    
+    # ถ้าไม่พบข้อมูลตัวเลขที่เพียงพอสำหรับสร้างตาราง
+    if len(numeric_sentences) < 3:  # ต้องมีอย่างน้อย 3 รายการจึงจะสร้างตารางได้อย่างมีความหมาย
+        return None
+    
+    # สร้างตารางจากข้อมูลตามประเภท
+    
+    # 1. ถ้ามีข้อมูลเปรียบเทียบ ให้สร้างตารางเปรียบเทียบ
+    if comparison_data:
+        # ตรวจสอบว่ามีหัวข้อเปรียบเทียบหรือไม่
+        categories = []
+        for data in comparison_data:
+            # ลองหาคำที่อาจเป็นชื่อหมวดหมู่
+            sentence = data['sentence'].lower()
+            for keyword in category_keywords:
+                if keyword in sentence:
+                    # ดึงคำที่อยู่หลังคำสำคัญ
+                    match = re.search(f'{keyword}\\s+([\\w\\s]+)', sentence)
+                    if match:
+                        categories.append(match.group(1).strip())
+        
+        # ถ้าพบหมวดหมู่ ให้ใช้เป็นส่วนหัวตาราง
+        if categories:
+            headers = ['รายการ'] + categories
+            rows = []
+            
+            # สร้างแถวข้อมูลจากตัวเลขที่พบ
+            for i, data in enumerate(comparison_data[:5]):  # จำกัดจำนวนแถว
+                row = [f"ข้อมูล {i+1}"] + data['numbers'][:len(categories)]
+                rows.append(row)
+            
+            return {
+                'headers': headers,
+                'rows': rows,
+                'source': 'comparison_analysis'
+            }
+    
+    # 2. ถ้ามีข้อมูลย้อนหลังตามช่วงเวลา ให้สร้างตารางข้อมูลย้อนหลัง
+    if time_series_data:
+        # ค้นหาช่วงเวลาที่อาจมีในข้อมูล
+        time_periods = []
+        for data in time_series_data:
+            sentence = data['sentence']
+            # ค้นหาปีที่อยู่ในประโยค
+            years = re.findall(r'(พ\.ศ\.\s*\d{4}|ค\.ศ\.\s*\d{4}|\d{4})', sentence)
+            if years:
+                for year in years:
+                    if year not in time_periods:
+                        time_periods.append(year)
+            
+            # ค้นหาเดือนหรือไตรมาสที่อยู่ในประโยค
+            months = re.findall(r'(มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม|ไตรมาส\s*\d|Q\d)', sentence)
+            if months:
+                for month in months:
+                    if month not in time_periods:
+                        time_periods.append(month)
+        
+        # ถ้าพบช่วงเวลา ให้ใช้เป็นส่วนหัวตาราง
+        if time_periods:
+            headers = ['รายการ'] + time_periods
+            rows = []
+            
+            # สร้างแถวข้อมูลจากตัวเลขที่พบ
+            for i, data in enumerate(time_series_data[:5]):  # จำกัดจำนวนแถว
+                row = [f"ข้อมูล {i+1}"] + data['numbers'][:len(time_periods)]
+                rows.append(row)
+            
+            return {
+                'headers': headers,
+                'rows': rows,
+                'source': 'time_series_analysis'
+            }
+    
+    # 3. ถ้าไม่มีรูปแบบเฉพาะ ให้สร้างตารางทั่วไปจากข้อมูลตัวเลขที่สำคัญที่สุด
+    headers = ['ลำดับ', 'รายละเอียด', 'ค่า']
+    rows = []
+    
+    for i, data in enumerate(numeric_sentences[:10]):  # จำกัดจำนวนแถว
+        sentence = data['sentence']
+        if len(sentence) > 50:
+            sentence = sentence[:47] + '...'
+        
+        # เลือกตัวเลขที่สำคัญที่สุดในประโยค
+        number = data['numbers'][0] if data['numbers'] else "N/A"
+        
+        row = [str(i+1), sentence, number]
+        rows.append(row)
+    
+    return {
+        'headers': headers,
+        'rows': rows,
+        'source': 'general_analysis'
+    }
 
 def extract_numerical_data(text):
     """
