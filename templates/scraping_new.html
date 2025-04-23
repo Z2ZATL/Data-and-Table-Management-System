@@ -40,6 +40,9 @@
                             <i class="fas fa-chart-line me-1"></i> กรองเฉพาะข่าวเกี่ยวกับข้อมูลตัวเลข (ราคาหุ้น, อัตราแลกเปลี่ยน, สถิติ, ฯลฯ)
                         </label>
                     </div>
+                    <div class="badge bg-info p-2 mb-3">
+                        <i class="fas fa-robot me-1"></i> ใช้ Deepseek AI ช่วยวิเคราะห์และกรองข่าวที่เกี่ยวกับข้อมูลตัวเลข
+                    </div>
                     <form id="headlines-form" action="{{ url_for('scrape_headlines') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="headlines-url">
                         <input type="hidden" name="filter_numerical" id="filter-numerical-input">

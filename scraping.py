@@ -3,6 +3,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import json
+import ai_helper
 
 def get_website_text_content(url):
     """
@@ -167,6 +168,17 @@ def get_news_headlines(url, filter_numerical=False):
                     # ตรวจสอบความซ้ำซ้อน
                     if headline not in headlines:
                         headlines.append(headline)
+        
+        # ถ้าต้องการใช้ AI ในการกรองข่าวที่เกี่ยวกับข้อมูลตัวเลข
+        if filter_numerical and headlines:
+            print(f"Before AI filtering: {len(headlines)} headlines")
+            # ใช้ AI กรองหัวข้อข่าวที่เกี่ยวกับข้อมูลตัวเลข
+            ai_filtered_headlines = ai_helper.filter_headlines_with_ai(headlines)
+            
+            # ถ้า AI สามารถกรองได้ จะใช้ผลลัพธ์จาก AI
+            if ai_filtered_headlines:
+                headlines = ai_filtered_headlines
+                print(f"After AI filtering: {len(headlines)} headlines")
         
         # จำกัดจำนวนหัวข้อข่าว
         return headlines[:20]  # คืนค่าแค่ 20 หัวข้อแรก
