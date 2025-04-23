@@ -286,30 +286,43 @@ def scrape_headlines():
         # รับค่า URL จากฟอร์ม
         url = request.form.get("url", "")
         
+        # รับค่าตัวเลือกการกรองข่าวเกี่ยวกับข้อมูลตัวเลข
+        filter_numerical = request.form.get("filter_numerical") == "on"
+        
         if not url:
             return render_template("scraping_new.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
         
-        # ดึงหัวข้อข่าวจากเว็บไซต์
-        headlines = scraping.get_news_headlines(url)
+        # ดึงหัวข้อข่าวจากเว็บไซต์ พร้อมส่งตัวเลือกการกรอง
+        headlines = scraping.get_news_headlines(url, filter_numerical)
         
         if not headlines:
+            error_message = "ไม่พบหัวข้อข่าวในเว็บไซต์นี้" 
+            if filter_numerical:
+                error_message += " ที่เกี่ยวกับข้อมูลตัวเลข"
+            error_message += " หรือเว็บไซต์ไม่รองรับการดึงหัวข้อข่าว"
+            
             return render_template(
                 "scraping_new.html",
-                error="ไม่พบหัวข้อข่าวในเว็บไซต์นี้ หรือเว็บไซต์ไม่รองรับการดึงหัวข้อข่าว",
-                theme=get_theme_from_cookie(request)
+                error=error_message,
+                theme=get_theme_from_cookie(request),
+                filter_numerical=filter_numerical,
+                searched_url=url
             )
         
         # ส่งข้อมูลไปแสดงผล
         return render_template(
             "scraping_new.html", 
             headlines=headlines, 
-            searched_url=url, 
+            searched_url=url,
+            filter_numerical=filter_numerical,
             theme=get_theme_from_cookie(request)
         )
     except Exception as e:
         return render_template(
             "scraping_new.html", 
             error=f"เกิดข้อผิดพลาดในการดึงหัวข้อข่าว: {str(e)}", 
+            filter_numerical=filter_numerical if 'filter_numerical' in locals() else False,
+            searched_url=url if 'url' in locals() else "",
             theme=get_theme_from_cookie(request)
         )
 
