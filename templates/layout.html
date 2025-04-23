@@ -393,6 +393,9 @@
                         <a class="nav-link menu-link {% if request.path == '/analysis' %}active{% endif %}" href="/analysis"><i class="fas fa-chart-pie me-1"></i> วิเคราะห์ข้อมูล</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link menu-link {% if request.path == '/scraping' %}active{% endif %}" href="/scraping"><i class="fas fa-globe me-1"></i> ดึงข้อมูลเว็บ</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link menu-link {% if request.path == '/about' %}active{% endif %}" href="/about"><i class="fas fa-info-circle me-1"></i> เกี่ยวกับ</a>
                     </li>
                     <li class="nav-item">
@@ -420,6 +423,7 @@
                             <a href="/" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-home"></i></a>
                             <a href="/data" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-table"></i></a>
                             <a href="/analysis" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-chart-pie"></i></a>
+                            <a href="/scraping" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-globe"></i></a>
                             <a href="/about" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-info-circle"></i></a>
                             <a href="/settings" class="text-decoration-none" style="color: var(--text-color);"><i class="fas fa-cog"></i></a>
                         </div>
