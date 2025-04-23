@@ -52,7 +52,7 @@ def submit():
 def data():
     try:
         conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        users = conn.execute("SELECT * FROM users ORDER BY id DESC").fetchall()  # ดึงข้อมูลทั้งหมดจากตาราง users เรียงตาม id ล่าสุด
+        users = conn.execute("SELECT * FROM users ORDER BY id").fetchall()  # ดึงข้อมูลทั้งหมดจากตาราง users เรียงตาม id จากน้อยไปมาก
         total_users = len(users)  # นับจำนวนผู้ใช้ทั้งหมด
         conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
         return render_template("data.html", users=users, total_users=total_users)  # ส่งข้อมูลที่ดึงมาไปแสดงใน template data.html
