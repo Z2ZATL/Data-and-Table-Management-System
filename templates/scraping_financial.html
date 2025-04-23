@@ -164,6 +164,41 @@
             </div>
             {% endif %}
             
+            <!-- แสดงรูปภาพกราฟและชาร์ตที่ดึงมาจากเว็บไซต์ -->
+            {% if content is defined and content is mapping and content.images and content.images|length > 0 %}
+            <div class="card shadow-lg mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>กราฟและชาร์ตจากเว็บไซต์
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for image in content.images %}
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-img-top text-center p-2">
+                                    <img src="{{ image.url }}" class="img-fluid rounded" alt="{{ image.alt }}" style="max-height: 300px;">
+                                </div>
+                                {% if image.alt %}
+                                <div class="card-footer">
+                                    <small class="text-muted">{{ image.alt }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle text-primary me-2"></i>
+                        <small class="text-muted">กราฟและชาร์ตถูกดึงโดยตรงจากเว็บไซต์ {{ searched_url }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
             {% if chart_data %}
             <div class="card shadow-lg mt-4">
                 <div class="card-header">

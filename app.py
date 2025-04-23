@@ -353,11 +353,18 @@ def scrape_website():
             table_data = scraping.extract_stock_tables(url)
             
             if table_data:
+                # ตรวจสอบว่ามีรูปภาพใน table_data หรือไม่
+                images = table_data.pop('images', None) if isinstance(table_data, dict) else None
+                
                 # สร้างข้อมูลในรูปแบบที่เทมเพลตเข้าใจ
                 content = {
                     'content': f"**ข้อมูลตารางจาก** {url}",
                     'ai_table': table_data
                 }
+                
+                # ถ้ามีรูปภาพ ให้เพิ่มลงใน content
+                if images:
+                    content['images'] = images
             else:
                 return render_template(
                     "scraping_financial.html", 
@@ -376,7 +383,7 @@ def scrape_website():
                 chart_data = None
             elif isinstance(result, dict) and 'content' in result:
                 # กรณีที่ได้ข้อมูลเป็น dict ที่มีคีย์ content
-                content = result['content']
+                content = result
                 chart_data = result.get('chart_data')
             else:
                 # กรณีที่ได้ข้อมูลอื่นๆ
