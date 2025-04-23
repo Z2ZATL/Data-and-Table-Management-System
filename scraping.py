@@ -23,6 +23,41 @@ def get_website_text_content(url):
         print(f"Error extracting content from {url}: {str(e)}")
         return None
 
+def format_special_content(text):
+    """
+    จัดรูปแบบเนื้อหาพิเศษ เช่น ผลรางวัลล็อตเตอรี่ ราคาทอง เป็นต้น
+    
+    Args:
+        text (str): ข้อความที่ต้องการจัดรูปแบบ
+        
+    Returns:
+        str: ข้อความที่จัดรูปแบบแล้ว
+    """
+    # ตรวจสอบว่าเป็นเนื้อหาเกี่ยวกับล็อตเตอรี่หรือไม่
+    if "รางวัลที่ 1" in text and "เลขท้าย" in text:
+        # จัดรูปแบบผลรางวัลล็อตเตอรี่
+        for keyword in ["รางวัลที่ 1", "เลขท้าย 2 ตัว", "เลขหน้า 3 ตัว", "เลขท้าย 3 ตัว", "รางวัลข้างเคียง"]:
+            text = text.replace(keyword, "\n\n" + keyword + "\n")
+        
+        # จัดรูปแบบตัวเลขให้มีช่องว่าง
+        import re
+        text = re.sub(r'(\d{6})(\d{6})', r'\1 \2', text)  # แยกเลขรางวัลข้างเคียง 12 หลัก
+        
+    # ตรวจสอบว่าเป็นเนื้อหาเกี่ยวกับราคาทองหรือไม่
+    if "ราคาทองคำ" in text and "บาทละ" in text:
+        # จัดรูปแบบข้อมูลราคาทอง
+        for keyword in ["ราคาทองคำ", "ราคาทองคำแท่ง", "ซื้อบาทละ", "ขายบาทละ", "ราคาทองรูปพรรณ"]:
+            text = text.replace(keyword, "\n\n" + keyword + "\n")
+        
+        # แก้ไขคำผิด
+        text = text.replace("ราคาทองsูปพรรณ", "\n\nราคาทองรูปพรรณ\n")
+        
+        # อัปเดตเวลา
+        if "อัปเดตล่าสุด" in text:
+            text = text.replace("อัปเดตล่าสุด", "\n\nอัปเดตล่าสุด")
+    
+    return text.strip()
+
 def get_data_from_website(url):
     """
     ฟังก์ชันนี้ใช้สำหรับดึงข้อมูลจากเว็บไซต์และจัดรูปแบบให้เป็นคำอธิบายสั้นๆ
@@ -59,15 +94,19 @@ def get_data_from_website(url):
         # แทนที่ช่องว่างซ้ำด้วยช่องว่างเดียว
         text = ' '.join(text.split())
         
-        # แทนที่บรรทัดว่างซ้ำด้วยบรรทัดว่างเดียว
-        text = text.replace('\n\n\n', '\n\n')
-        
-        # เพิ่มบรรทัดว่างหลังจุด เพื่อให้อ่านง่ายขึ้น
-        text = text.replace('. ', '.\n')
-        
-        # แทนที่เครื่องหมายอื่นๆ เพื่อให้อ่านง่ายขึ้น
-        text = text.replace('! ', '!\n')
-        text = text.replace('? ', '?\n')
+        # ตรวจสอบว่าเป็นเนื้อหาพิเศษหรือไม่
+        if "รางวัลที่ 1" in text or "ราคาทองคำ" in text:
+            text = format_special_content(text)
+        else:
+            # แทนที่บรรทัดว่างซ้ำด้วยบรรทัดว่างเดียว
+            text = text.replace('\n\n\n', '\n\n')
+            
+            # เพิ่มบรรทัดว่างหลังจุด เพื่อให้อ่านง่ายขึ้น
+            text = text.replace('. ', '.\n\n')
+            
+            # แทนที่เครื่องหมายอื่นๆ เพื่อให้อ่านง่ายขึ้น
+            text = text.replace('! ', '!\n\n')
+            text = text.replace('? ', '?\n\n')
         
         # จำกัดความยาวของเนื้อหา
         if len(text) > 2000:
