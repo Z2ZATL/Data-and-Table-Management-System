@@ -1,64 +1,199 @@
 {% extends 'layout.html' %}
 
-{% block title %}ลงทะเบียนผู้ใช้{% endblock %}
+{% block title %}หน้าแรก{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">ลงทะเบียนข้อมูลผู้ใช้</h1>
-                <p class="lead mb-4">กรอกข้อมูลของคุณเพื่อเข้าร่วมกับฐานข้อมูลผู้ใช้ของเรา</p>
+            <div class="col-md-10 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">ยินดีต้อนรับสู่ระบบจัดการข้อมูล</h1>
+                <p class="lead mb-4">ระบบสำหรับจัดการข้อมูลผู้ใช้และวิเคราะห์ข้อมูลทางการเงิน</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('data') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-users me-2"></i> ดูข้อมูลผู้ใช้
+                    </a>
+                    <a href="{{ url_for('topics') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-edit me-2"></i> จัดการหัวข้อ
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
+{% block styles %}
+<style>
+    .shortcut-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    
+    .shortcut-link:hover {
+        transform: translateY(-5px);
+    }
+    
+    .shortcut-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--bs-primary);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .shortcut-link:hover .shortcut-icon {
+        background: var(--bs-primary-darker, #0d6efd);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+    }
+    
+    .content-link {
+        display: block;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        background: rgba(13, 110, 253, 0.1);
+        color: var(--bs-primary);
+        transition: all 0.2s ease;
+    }
+    
+    .content-link:hover {
+        background: rgba(13, 110, 253, 0.2);
+    }
+    
+    .content-highlight {
+        background: rgba(255, 193, 7, 0.1);
+        border-left: 3px solid var(--bs-warning);
+        padding: 10px 15px;
+    }
+    
+    .content-text {
+        padding: 5px 0;
+    }
+    
+    .empty-state {
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">หัวข้อทั้งหมด</h2>
+                <a href="{{ url_for('topics') }}" class="btn btn-primary">
+                    <i class="fas fa-cog me-1"></i> จัดการหัวข้อ
+                </a>
+            </div>
+            <hr>
+        </div>
+    </div>
+    
     <div class="row">
-        <div class="col-md-8 col-lg-6 mx-auto">
+        {% if topics %}
+            {% for topic in topics %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-lg h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0">{{ topic.title }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if topic.description %}
+                                <p class="card-text mb-3 text-secondary">{{ topic.description }}</p>
+                            {% endif %}
+                            
+                            {% if topic.contents %}
+                                <div class="content-items">
+                                    {% for content in topic.contents %}
+                                        <div class="content-item mb-3">
+                                            {% if content.content_type == 'link' %}
+                                                <a href="{{ content.content }}" target="_blank" class="content-link">
+                                                    <i class="fas fa-link me-2"></i> {{ content.content }}
+                                                </a>
+                                            {% elif content.content_type == 'highlight' %}
+                                                <div class="content-highlight p-2 rounded">
+                                                    {{ content.content }}
+                                                </div>
+                                            {% else %}
+                                                <div class="content-text">
+                                                    {{ content.content }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted fst-italic">ยังไม่มีเนื้อหาในหัวข้อนี้</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer text-muted d-flex justify-content-between">
+                            <small>แก้ไขล่าสุด: {{ topic.updated_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                            <a href="{{ url_for('edit_topic', topic_id=topic.id) }}" class="text-primary">
+                                <i class="fas fa-edit"></i> แก้ไข
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="empty-state mb-4">
+                    <i class="fas fa-clipboard-list fa-4x mb-3 text-secondary"></i>
+                    <h3>ยังไม่มีหัวข้อ</h3>
+                    <p class="text-muted mb-4">เริ่มสร้างหัวข้อแรกของคุณเพื่อแสดงเนื้อหาที่นี่</p>
+                    <a href="{{ url_for('add_topic') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i> สร้างหัวข้อใหม่
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-12">
             <div class="card shadow-lg">
-                <div class="card-body p-4 p-lg-5">
-                    <h2 class="card-title text-center mb-4">ฟอร์มลงทะเบียน</h2>
-                    <form action="/submit" method="post">
-                        <div class="mb-3">
-                            <label for="first_name" class="form-label">ชื่อ</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="กรุณากรอกชื่อ">
+                <div class="card-body p-4">
+                    <h4 class="mb-4">เมนูลัด</h4>
+                    <div class="row text-center g-4">
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('data') }}" class="shortcut-link">
+                                <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                                <h6>ข้อมูลผู้ใช้</h6>
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label">นามสกุล</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="กรุณากรอกนามสกุล">
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('analysis') }}" class="shortcut-link">
+                                <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-chart-pie fa-2x"></i>
+                                </div>
+                                <h6>วิเคราะห์ข้อมูล</h6>
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="gender" class="form-label">เพศ</label>
-                            <select class="form-select" name="gender" id="gender" required>
-                                <option value="" selected disabled>เลือกเพศ</option>
-                                <option value="ชาย">ชาย</option>
-                                <option value="หญิง">หญิง</option>
-                            </select>
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('scraping_page') }}" class="shortcut-link">
+                                <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-search-dollar fa-2x"></i>
+                                </div>
+                                <h6>ข้อมูลการเงิน</h6>
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="age" class="form-label">อายุ</label>
-                            <input type="number" class="form-control" id="age" name="age" required placeholder="กรุณากรอกอายุ">
+                        <div class="col-md-3 col-6">
+                            <a href="{{ url_for('topics') }}" class="shortcut-link">
+                                <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-edit fa-2x"></i>
+                                </div>
+                                <h6>จัดการหัวข้อ</h6>
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="province" class="form-label">จังหวัด</label>
-                            <input type="text" class="form-control" id="province" name="province" required placeholder="กรุณากรอกจังหวัด">
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label for="pet" class="form-label">สัตว์เลี้ยง</label>
-                            <input type="text" class="form-control" id="pet" name="pet" placeholder="กรุณากรอกชื่อหรือชนิดสัตว์เลี้ยง (ถ้ามี)">
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg">บันทึกข้อมูล</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
