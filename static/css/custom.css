@@ -1,5 +1,16 @@
 /* Custom CSS - Only adding minimal custom styling as instructed */
 
+/* Logo styling */
+.navbar-brand img {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+}
+
 /* Make the form elements stand out a bit more */
 .form-control:focus {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.4);
