@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify  # นำเข้า Flask และอื่นๆ
 import sqlite3  # นำเข้า sqlite3 สำหรับเชื่อมต่อกับฐานข้อมูล
 import os  # นำเข้า os เพื่อใช้งานตัวแปรสิ่งแวดล้อม
+import scraping  # นำเข้าโมดูล scraping ที่สร้างไว้
 
 app = Flask(__name__)  # สร้างแอป Flask
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ตั้งค่า secret key สำหรับความปลอดภัย
@@ -271,6 +272,41 @@ def delete(user_id):
     
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการลบข้อมูล: {str(e)}", 500
+
+@app.route("/scraping")  # route สำหรับหน้าการดึงข้อมูลจากเว็บไซต์
+def scraping_page():
+    # ดึงธีมจาก cookie
+    theme = get_theme_from_cookie(request)
+    return render_template("scraping.html", theme=theme)
+
+@app.route("/scrape-website", methods=["POST"])  # route สำหรับการดึงข้อมูลจากเว็บไซต์
+def scrape_website():
+    try:
+        # รับค่า URL จากฟอร์ม
+        url = request.form.get("url", "")
+        
+        if not url:
+            return render_template("scraping.html", error="กรุณาระบุ URL", theme=get_theme_from_cookie(request))
+        
+        # ดึงข้อมูลจากเว็บไซต์
+        content = scraping.get_data_from_website(url)
+        
+        # ส่งข้อมูลไปแสดงผล
+        return render_template(
+            "scraping.html", 
+            content=content, 
+            searched_url=url, 
+            isinstance=isinstance, 
+            dict=dict,
+            list=list,
+            theme=get_theme_from_cookie(request)
+        )
+    except Exception as e:
+        return render_template(
+            "scraping.html", 
+            error=f"เกิดข้อผิดพลาด: {str(e)}", 
+            theme=get_theme_from_cookie(request)
+        )
 
 if __name__ == "__main__":  # เมื่อรันไฟล์นี้โดยตรง
     app.run(debug=True)  # เริ่มต้น Flask app ในโหมด debug
