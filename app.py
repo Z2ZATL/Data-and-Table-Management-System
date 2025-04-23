@@ -7,7 +7,18 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret_key")  # ต
 
 # ฟังก์ชันช่วยสำหรับการจัดการธีม
 def get_theme_from_cookie(request):
-    return request.cookies.get('theme', 'dark')
+    theme = request.cookies.get('theme', 'dark')
+    
+    # ถ้าเป็น system_dark ให้ใช้ธีมมืด
+    if theme == 'system_dark':
+        return 'dark'
+    
+    # ถ้าเป็น system_light ให้ใช้ธีมสว่าง
+    if theme == 'system_light':
+        return 'light'
+    
+    # กรณีเป็นโหมดอื่นๆ ให้ใช้ค่าที่ได้รับจาก cookie โดยตรง
+    return theme
 
 def get_db_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล
     conn = sqlite3.connect('mock_data.db')  # เชื่อมต่อกับฐานข้อมูล mock_data.db

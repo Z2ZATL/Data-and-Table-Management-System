@@ -51,8 +51,8 @@
                         </div>
                         
                         <!-- โหมดตามระบบ -->
-                        <div class="form-check theme-option p-3 rounded" onclick="setThemeServer('auto')">
-                            <input class="form-check-input" type="radio" name="themeOptions" id="autoTheme" value="auto" {% if theme == 'auto' %}checked{% endif %}>
+                        <div class="form-check theme-option p-3 rounded" onclick="setSystemTheme()">
+                            <input class="form-check-input" type="radio" name="themeOptions" id="autoTheme" value="auto" {% if theme == 'auto' or theme == 'system_dark' or theme == 'system_light' %}checked{% endif %}>
                             <label class="form-check-label w-100 d-flex justify-content-between align-items-center" for="autoTheme">
                                 <div>
                                     <span class="fw-medium">ตามระบบ</span>
@@ -117,6 +117,46 @@
             }
         })
         .catch(error => console.error('Error:', error));
+    }
+    
+    // ฟังก์ชันสำหรับตั้งค่าธีมตามระบบ
+    function setSystemTheme() {
+        // ตรวจสอบว่าระบบใช้ธีมมืดหรือไม่
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // เลือกธีมตามการตั้งค่าของระบบ
+        const systemTheme = prefersDarkScheme ? 'system_dark' : 'system_light';
+        
+        // เปลี่ยนธีมผ่านเซิร์ฟเวอร์
+        const formData = new FormData();
+        formData.append('theme', systemTheme);
+        
+        fetch('/set-theme', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // บันทึกใน localStorage
+                localStorage.setItem('theme', 'auto');
+                
+                // ตั้งค่า theme ใน DOM
+                document.documentElement.setAttribute('data-bs-theme', prefersDarkScheme ? 'dark' : 'light');
+                
+                // รีโหลดหน้าเพื่อให้การเปลี่ยนธีมมีผล
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    // ลงทะเบียน event listener สำหรับการเปลี่ยนแปลงของระบบในกรณีที่ใช้ธีมตามระบบ
+    if (localStorage.getItem('theme') === 'auto') {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            // เรียกใช้ setSystemTheme เพื่ออัพเดทธีมเมื่อระบบเปลี่ยน
+            setSystemTheme();
+        });
     }
 </script>
 {% endblock %}
