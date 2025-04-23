@@ -26,6 +26,7 @@ def submit():
         gender = request.form["gender"]  # รับค่าเพศจากฟอร์ม
         age = request.form["age"]  # รับค่าอายุจากฟอร์ม
         province = request.form["province"]  # รับค่าจังหวัดจากฟอร์ม
+        pet = request.form["pet"]  # รับค่าสัตว์เลี้ยงจากฟอร์ม
 
         # ตรวจสอบความถูกต้องของข้อมูล
         if not first_name or not last_name or not gender or not age or not province:
@@ -39,8 +40,8 @@ def submit():
             return "อายุต้องเป็นตัวเลขเท่านั้น", 400
 
         conn = get_db_connection()  # เชื่อมต่อกับฐานข้อมูล
-        conn.execute("INSERT INTO users (first_name, last_name, gender, age, province) VALUES (?, ?, ?, ?, ?)",
-                    (first_name, last_name, gender, age, province))  # บันทึกข้อมูลลงในฐานข้อมูล
+        conn.execute("INSERT INTO users (first_name, last_name, gender, age, province, pet) VALUES (?, ?, ?, ?, ?, ?)",
+                    (first_name, last_name, gender, age, province, pet))  # บันทึกข้อมูลลงในฐานข้อมูล พร้อมสัตว์เลี้ยง
         conn.commit()  # ยืนยันการบันทึกข้อมูล
         conn.close()  # ปิดการเชื่อมต่อกับฐานข้อมูล
         return redirect(url_for('data'))  # เปลี่ยนเส้นทางไปที่หน้า /data เพื่อแสดงข้อมูล

@@ -28,7 +28,8 @@
                                     <th scope="col">นามสกุล</th>
                                     <th scope="col">เพศ</th>
                                     <th scope="col">อายุ</th>
-                                    <th scope="col" class="pe-4">จังหวัด</th>
+                                    <th scope="col">จังหวัด</th>
+                                    <th scope="col" class="pe-4">สัตว์เลี้ยง</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -39,7 +40,8 @@
                                     <td>{{ user.last_name }}</td>
                                     <td>{{ user.gender }}</td>
                                     <td>{{ user.age }}</td>
-                                    <td class="pe-4">{{ user.province }}</td>
+                                    <td>{{ user.province }}</td>
+                                    <td class="pe-4">{{ user.pet if user.pet else '-' }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

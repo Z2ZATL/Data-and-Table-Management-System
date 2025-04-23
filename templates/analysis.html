@@ -50,7 +50,7 @@
     </div>
     
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card shadow-lg h-100">
                 <div class="card-header bg-white py-4">
                     <h4 class="card-title mb-0">สัดส่วนเพศ</h4>
@@ -62,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card shadow-lg h-100">
                 <div class="card-header bg-white py-4">
                     <h4 class="card-title mb-0">ช่วงอายุ</h4>
@@ -70,6 +70,18 @@
                 <div class="card-body p-4">
                     <div class="chart-container" style="position: relative; height:300px;">
                         <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-lg h-100">
+                <div class="card-header bg-white py-4">
+                    <h4 class="card-title mb-0">สัตว์เลี้ยงยอดนิยม</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="petChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -135,6 +147,26 @@
       });
       
       return ageGroups;
+    }
+    
+    function countByPet(data) {
+      const petCounts = {};
+      
+      data.forEach(user => {
+        if (user.pet && user.pet.trim() !== '') {
+          petCounts[user.pet] = (petCounts[user.pet] || 0) + 1;
+        }
+      });
+      
+      // Sort by count and take top 5
+      const sortedPets = Object.entries(petCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      
+      return {
+        labels: sortedPets.map(item => item[0]),
+        values: sortedPets.map(item => item[1])
+      };
     }
 
     // Province Chart
