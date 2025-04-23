@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}ดึงข้อมูลจากเว็บไซต์{% endblock %}
+{% block title %}ดึงข้อมูลการเงินและราคา{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">ดึงข้อมูลเว็บไซต์</h1>
-                <p class="lead mb-0">ค้นหาและดึงข้อมูลจากเว็บไซต์ต่างๆ อย่างง่ายดาย</p>
+                <h1 class="display-4 fw-bold mb-4">ดึงข้อมูลการเงินและราคา</h1>
+                <p class="lead mb-0">ดึงข้อมูลราคาหุ้น ราคาทอง และอัตราแลกเปลี่ยนอย่างรวดเร็ว</p>
             </div>
         </div>
     </div>
@@ -34,15 +34,15 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่ต้องการดึงข้อมูล - เช่น set.or.th หรือ thairath.co.th</div>
+                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่เกี่ยวกับการเงินและราคา เช่น set.or.th, goldtraders.or.th หรือ bot.or.th</div>
                         <div class="alert alert-info p-2 mt-2" role="alert">
-                            <i class="fas fa-info-circle me-1"></i> <small>สำหรับเว็บที่มีตารางข้อมูลเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน ฯลฯ กรุณาใช้ปุ่ม "<b>ดึงตารางหุ้น/ราคา</b>" เพื่อดึงข้อมูลตารางโดยตรง</small>
+                            <i class="fas fa-info-circle me-1"></i> <small>เครื่องมือนี้เหมาะสำหรับเว็บไซต์ที่มีข้อมูลตารางการเงินเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน โดยใช้ปุ่ม "<b>ดึงตารางหุ้น/ราคา</b>" เพื่อดึงข้อมูลตารางโดยตรง</small>
                         </div>
                     </div>
                     <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox" id="filter-numerical" {% if filter_numerical %}checked{% endif %}>
+                        <input class="form-check-input" type="checkbox" id="filter-numerical" {% if filter_numerical %}checked{% endif %} checked disabled>
                         <label class="form-check-label" for="filter-numerical">
-                            <i class="fas fa-chart-line me-1"></i> กรองเฉพาะข่าวเกี่ยวกับข้อมูลตัวเลข (ราคาหุ้น, อัตราแลกเปลี่ยน, สถิติ, ฯลฯ)
+                            <i class="fas fa-chart-line me-1"></i> เน้นเฉพาะข้อมูลตัวเลขทางการเงิน (ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน)
                         </label>
                     </div>
                     <div class="form-check form-switch mb-3">
