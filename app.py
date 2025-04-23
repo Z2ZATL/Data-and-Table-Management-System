@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response, jsonify  # นำเข้า Flask และอื่นๆ
-import sqlite3  # นำเข้า sqlite3 สำหรับเชื่อมต่อกับฐานข้อมูล
 import os  # นำเข้า os เพื่อใช้งานตัวแปรสิ่งแวดล้อม
 import scraping  # นำเข้าโมดูล scraping ที่สร้างไว้
 import json  # นำเข้า json สำหรับการแปลงข้อมูล
@@ -23,11 +22,6 @@ def get_theme_from_cookie(request):
     
     # กรณีเป็นโหมดอื่นๆ ให้ใช้ค่าที่ได้รับจาก cookie โดยตรง
     return theme
-
-def get_db_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล SQLite
-    conn = sqlite3.connect('mock_data.db')  # เชื่อมต่อกับฐานข้อมูล mock_data.db
-    conn.row_factory = sqlite3.Row  # ให้ผลลัพธ์จากการดึงข้อมูลเป็น dictionary
-    return conn  # ส่งกลับการเชื่อมต่อกับฐานข้อมูล
 
 def get_pg_connection():  # ฟังก์ชันที่ใช้ในการเชื่อมต่อกับฐานข้อมูล PostgreSQL
     DATABASE_URL = os.environ.get('DATABASE_URL')
