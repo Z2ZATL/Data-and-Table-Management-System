@@ -1,0 +1,228 @@
+{% extends 'layout.html' %}
+
+{% block title %}สร้างตารางข้อมูลใหม่{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">สร้างตารางข้อมูลใหม่</h1>
+                <p class="lead mb-4">กรอกข้อมูลแบบตารางด้วยตัวเอง</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg mb-5">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table me-2"></i> ข้อมูลตารางใหม่
+                    </h5>
+                    <div>
+                        <a href="/data" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-arrow-left me-1"></i> กลับ
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    <form id="tableForm" action="/data/add-table" method="POST">
+                        <div class="mb-4">
+                            <label for="title" class="form-label">ชื่อหัวข้อ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ title or '' }}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="description" class="form-label">คำอธิบาย</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ description or '' }}</textarea>
+                        </div>
+                        
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered table-hover" id="editable_table">
+                                <thead class="table-light">
+                                    <tr id="header_row">
+                                        <th>
+                                            <input type="text" class="form-control form-control-sm header-cell" 
+                                                  value="คอลัมน์ 1" placeholder="ชื่อคอลัมน์" required>
+                                        </th>
+                                        <th>
+                                            <input type="text" class="form-control form-control-sm header-cell" 
+                                                  value="คอลัมน์ 2" placeholder="ชื่อคอลัมน์" required>
+                                        </th>
+                                        <th style="width: 100px;">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="add_column">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm data-cell" 
+                                                  value="" placeholder="ข้อมูล">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm data-cell" 
+                                                  value="" placeholder="ข้อมูล">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="add_row">
+                                <i class="fas fa-plus me-1"></i> เพิ่มแถว
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="table_data" id="table_data">
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/data" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> ยกเลิก
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> บันทึกข้อมูลตาราง
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ปุ่มเพิ่มคอลัมน์
+        const addColumnBtn = document.getElementById('add_column');
+        const headerRow = document.getElementById('header_row');
+        
+        addColumnBtn.addEventListener('click', function() {
+            const newHeader = document.createElement('th');
+            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์" required>`;
+            
+            // แทรกคอลัมน์ใหม่ก่อนปุ่ม
+            headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+            
+            // เพิ่มเซลล์ในแต่ละแถวข้อมูล
+            const dataRows = document.querySelectorAll('#editable_table tbody tr');
+            dataRows.forEach(row => {
+                const newCell = document.createElement('td');
+                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                row.insertBefore(newCell, row.lastElementChild);
+            });
+        });
+        
+        // ปุ่มเพิ่มแถว
+        const addRowBtn = document.getElementById('add_row');
+        const tableBody = document.querySelector('#editable_table tbody');
+        
+        addRowBtn.addEventListener('click', function() {
+            const headerColumns = headerRow.cells.length - 1; // ไม่รวมคอลัมน์ปุ่ม
+            const newRow = document.createElement('tr');
+            
+            for (let i = 0; i < headerColumns; i++) {
+                const cell = document.createElement('td');
+                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                newRow.appendChild(cell);
+            }
+            
+            // เพิ่มปุ่มลบแถว
+            const actionCell = document.createElement('td');
+            actionCell.innerHTML = `<button type="button" class="btn btn-sm btn-outline-danger remove-row">
+                                      <i class="fas fa-times"></i>
+                                   </button>`;
+            newRow.appendChild(actionCell);
+            
+            tableBody.appendChild(newRow);
+            
+            // เพิ่ม event listener สำหรับปุ่มลบแถวที่เพิ่มใหม่
+            attachRemoveRowEvents();
+        });
+        
+        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบแถว
+        function attachRemoveRowEvents() {
+            const removeButtons = document.querySelectorAll('.remove-row');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // ตรวจสอบว่ามีมากกว่า 1 แถวหรือไม่
+                    const rows = tableBody.querySelectorAll('tr');
+                    if (rows.length > 1) {
+                        this.closest('tr').remove();
+                    } else {
+                        alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
+                    }
+                });
+            });
+        }
+        
+        // เรียกใช้ฟังก์ชันเพื่อเพิ่ม event listener แรกเริ่ม
+        attachRemoveRowEvents();
+        
+        // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
+        const form = document.getElementById('tableForm');
+        const tableDataInput = document.getElementById('table_data');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // อ่านข้อมูลส่วนหัวตาราง
+            const headers = [];
+            const headerInputs = document.querySelectorAll('.header-cell');
+            headerInputs.forEach(input => {
+                headers.push(input.value || '');
+            });
+            
+            // ตรวจสอบว่ามีส่วนหัวครบทุกช่องหรือไม่
+            const emptyHeaders = headers.filter(h => h.trim() === '');
+            if (emptyHeaders.length > 0) {
+                alert('กรุณากรอกชื่อคอลัมน์ให้ครบทุกช่อง');
+                return;
+            }
+            
+            // อ่านข้อมูลในตาราง
+            const rows = [];
+            const dataRows = document.querySelectorAll('#editable_table tbody tr');
+            
+            dataRows.forEach(row => {
+                const rowData = [];
+                const cells = row.querySelectorAll('.data-cell');
+                cells.forEach(cell => {
+                    rowData.push(cell.value || '');
+                });
+                rows.push(rowData);
+            });
+            
+            // เก็บข้อมูลในฟิลด์ซ่อน
+            const tableData = {
+                headers: headers,
+                rows: rows
+            };
+            
+            tableDataInput.value = JSON.stringify(tableData);
+            
+            // ส่งฟอร์ม
+            form.submit();
+        });
+    });
+</script>
+{% endblock %}

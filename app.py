@@ -422,6 +422,194 @@ def data():
     
     return render_template("data.html", theme=theme, topics=topics)
 
+@app.route("/data/edit-table/<int:content_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลตาราง
+def edit_table_data(content_id):
+    theme = get_theme_from_cookie(request)
+    
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # ดึงข้อมูลเนื้อหาตาราง
+        cur.execute("""
+            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.topic_id, 
+                   t.title, t.description, t.created_at as topic_created_at, t.updated_at as topic_updated_at
+            FROM topic_content tc
+            JOIN topics t ON tc.topic_id = t.id
+            WHERE tc.id = %s AND tc.content_type = 'table'
+        """, (content_id,))
+        
+        result = cur.fetchone()
+        
+        if not result:
+            return "ไม่พบข้อมูลตารางที่ต้องการแก้ไข", 404
+        
+        topic = {
+            'id': result['topic_id'],
+            'title': result['title'],
+            'description': result['description'],
+            'created_at': result['topic_created_at'],
+            'updated_at': result['topic_updated_at']
+        }
+        
+        # หากเป็นการส่งฟอร์ม POST เพื่อบันทึกการแก้ไข
+        if request.method == "POST":
+            table_data_str = request.form.get("table_data", "")
+            
+            if not table_data_str:
+                return render_template("edit_table_data.html", 
+                                      theme=theme, 
+                                      error="ไม่มีข้อมูลตาราง", 
+                                      topic=topic,
+                                      content_id=content_id,
+                                      table_data=json.loads(result['content']))
+            
+            try:
+                table_data = json.loads(table_data_str)
+                
+                # ตรวจสอบความถูกต้องของข้อมูล
+                if 'headers' not in table_data or 'rows' not in table_data:
+                    return render_template("edit_table_data.html", 
+                                          theme=theme, 
+                                          error="รูปแบบข้อมูลตารางไม่ถูกต้อง", 
+                                          topic=topic,
+                                          content_id=content_id,
+                                          table_data=json.loads(result['content']))
+                
+                # แปลงข้อมูลเป็น JSON string
+                content = json.dumps(table_data)
+                
+                # บันทึกการเปลี่ยนแปลง
+                cur.execute("""
+                    UPDATE topic_content 
+                    SET content = %s
+                    WHERE id = %s
+                """, (content, content_id))
+                
+                # อัพเดทเวลาแก้ไขล่าสุดของหัวข้อ
+                cur.execute("""
+                    UPDATE topics 
+                    SET updated_at = CURRENT_TIMESTAMP
+                    WHERE id = %s
+                """, (result['topic_id'],))
+                
+                conn.commit()
+                
+                return redirect(url_for('data'))
+                
+            except Exception as e:
+                return render_template("edit_table_data.html", 
+                                      theme=theme, 
+                                      error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}", 
+                                      topic=topic,
+                                      content_id=content_id,
+                                      table_data=json.loads(result['content']))
+        
+        # แสดงฟอร์มแก้ไข (GET)
+        table_data = json.loads(result['content'])
+        
+        cur.close()
+        conn.close()
+        
+        return render_template("edit_table_data.html", 
+                              theme=theme, 
+                              topic=topic,
+                              content_id=content_id,
+                              table_data=table_data)
+        
+    except Exception as e:
+        return f"เกิดข้อผิดพลาดในการดึงข้อมูลตาราง: {str(e)}", 500
+
+@app.route("/data/add-table", methods=["GET", "POST"])  # route สำหรับเพิ่มข้อมูลตาราง
+def add_table_data():
+    theme = get_theme_from_cookie(request)
+    
+    if request.method == "POST":
+        # รับข้อมูลจากฟอร์ม
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        table_data_str = request.form.get("table_data", "")
+        
+        if not title:
+            return render_template("edit_table_data.html", 
+                                  theme=theme, 
+                                  error="กรุณาระบุชื่อหัวข้อ")
+        
+        if not table_data_str:
+            return render_template("edit_table_data.html", 
+                                  theme=theme, 
+                                  error="ไม่มีข้อมูลตาราง",
+                                  title=title,
+                                  description=description)
+        
+        try:
+            # แปลงข้อมูลตารางจาก JSON string
+            table_data = json.loads(table_data_str)
+            
+            # ตรวจสอบความถูกต้องของข้อมูล
+            if 'headers' not in table_data or 'rows' not in table_data:
+                return render_template("edit_table_data.html", 
+                                      theme=theme, 
+                                      error="รูปแบบข้อมูลตารางไม่ถูกต้อง",
+                                      title=title,
+                                      description=description)
+            
+            # เริ่มต้นบันทึกข้อมูล
+            conn = get_pg_connection()
+            cur = conn.cursor()
+            
+            # สร้างหัวข้อใหม่
+            cur.execute("""
+                INSERT INTO topics (title, description)
+                VALUES (%s, %s)
+                RETURNING id
+            """, (title, description))
+            
+            new_topic_id = cur.fetchone()[0]
+            
+            # บันทึกข้อมูลตาราง
+            content = json.dumps(table_data)
+            
+            cur.execute("""
+                INSERT INTO topic_content (topic_id, content, content_type)
+                VALUES (%s, %s, %s)
+            """, (new_topic_id, content, "table"))
+            
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return redirect(url_for('data'))
+            
+        except Exception as e:
+            return render_template("edit_table_data.html", 
+                                  theme=theme, 
+                                  error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}",
+                                  title=title,
+                                  description=description)
+    
+    # สร้างตารางเปล่า
+    empty_table = {
+        "headers": ["คอลัมน์ 1", "คอลัมน์ 2"],
+        "rows": [[""]]
+    }
+    
+    # สร้างหัวข้อเปล่า
+    topic = {
+        'id': None,
+        'title': '',
+        'description': '',
+        'created_at': None,
+        'updated_at': None
+    }
+    
+    return render_template("edit_table_data.html", 
+                          theme=theme, 
+                          topic=topic,
+                          content_id=None,
+                          table_data=empty_table,
+                          is_new=True)
+
 
 
 @app.route("/analysis")  # route สำหรับหน้าการวิเคราะห์ข้อมูล
