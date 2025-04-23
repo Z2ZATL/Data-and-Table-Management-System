@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}ข้อมูลผู้ใช้{% endblock %}
+{% block title %}จัดการข้อมูล{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">ข้อมูลผู้ใช้ทั้งหมด</h1>
-                <p class="lead mb-0">แสดงรายการข้อมูลผู้ใช้ที่ลงทะเบียนในระบบ</p>
+                <h1 class="display-4 fw-bold mb-4">จัดการข้อมูลผู้ใช้</h1>
+                <p class="lead mb-0">จัดการรายการข้อมูลผู้ใช้ในระบบ</p>
             </div>
         </div>
     </div>
@@ -46,7 +46,13 @@
                                     <td class="pe-4">
                                         <div class="d-flex gap-2">
                                             <a href="/view/{{ user.id }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i> ดูรายละเอียด
+                                                <i class="fas fa-eye me-1"></i> ดู
+                                            </a>
+                                            <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit me-1"></i> แก้ไข
+                                            </a>
+                                            <a href="/delete/{{ user.id }}" onclick="return confirm('คุณต้องการลบข้อมูลผู้ใช้นี้ใช่หรือไม่?')" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt me-1"></i> ลบ
                                             </a>
                                         </div>
                                     </td>
@@ -92,9 +98,14 @@
                         </nav>
                         {% endif %}
                         
-                        <a href="/analysis" class="btn btn-primary">
-                            <i class="fas fa-chart-bar me-1"></i> วิเคราะห์ข้อมูล
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="/" class="btn btn-success">
+                                <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลใหม่
+                            </a>
+                            <a href="/analysis" class="btn btn-primary">
+                                <i class="fas fa-chart-bar me-1"></i> วิเคราะห์ข้อมูล
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
