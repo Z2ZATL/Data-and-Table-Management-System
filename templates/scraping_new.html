@@ -70,8 +70,48 @@
             </div>
             {% endif %}
             
-            <!-- คำแนะนำ -->
+            <!-- เว็บไซต์ที่แนะนำ -->
             {% if not content and not error %}
+            <div class="card shadow-lg mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>เว็บไซต์ที่แนะนำ</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-3">เว็บเพจในระบบของเรา</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <button type="button" class="btn btn-outline-primary btn-sm website-shortcut" data-url="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i> หน้าแรก
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm website-shortcut" data-url="{{ url_for('data') }}">
+                            <i class="fas fa-table me-1"></i> ข้อมูลผู้ใช้
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm website-shortcut" data-url="{{ url_for('analysis') }}">
+                            <i class="fas fa-chart-pie me-1"></i> วิเคราะห์ข้อมูล
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm website-shortcut" data-url="{{ url_for('about') }}">
+                            <i class="fas fa-info-circle me-1"></i> เกี่ยวกับ
+                        </button>
+                    </div>
+                    
+                    <h6 class="mb-3">เว็บไซต์ข่าวไทย</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.thairath.co.th">
+                            <i class="fas fa-newspaper me-1"></i> ไทยรัฐ
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.dailynews.co.th">
+                            <i class="fas fa-newspaper me-1"></i> เดลินิวส์
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.matichon.co.th">
+                            <i class="fas fa-newspaper me-1"></i> มติชน
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm website-shortcut" data-url="https://www.prachachat.net">
+                            <i class="fas fa-newspaper me-1"></i> ประชาชาติธุรกิจ
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- คำแนะนำ -->
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>คำแนะนำ</h5>
@@ -128,8 +168,31 @@
                 white-space: pre-wrap;
                 word-break: break-word;
             }
+            
+            .website-shortcut {
+                transition: all 0.25s ease;
+                margin-bottom: 5px;
+            }
+            
+            .website-shortcut:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
         `;
         document.head.appendChild(styleElement);
+        
+        // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
+        const shortcutButtons = document.querySelectorAll('.website-shortcut');
+        shortcutButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // นำ URL จาก data-url ไปใส่ในช่องกรอก
+                const url = this.getAttribute('data-url');
+                document.getElementById('url').value = url;
+                
+                // ส่งฟอร์มอัตโนมัติ
+                document.querySelector('form').submit();
+            });
+        });
     });
 </script>
 {% endblock %}
