@@ -355,7 +355,14 @@
         document.getElementById('get-headlines-btn').addEventListener('click', function() {
             const url = document.getElementById('url').value;
             if (url) {
+                // ส่ง URL ไปยังฟอร์ม
                 document.getElementById('headlines-url').value = url;
+                
+                // ส่งค่าตัวเลือกการกรองข่าว
+                const filterNumerical = document.getElementById('filter-numerical').checked;
+                document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
+                
+                // ส่งฟอร์ม
                 document.getElementById('headlines-form').submit();
             }
         });
@@ -382,6 +389,11 @@
                 if (this.classList.contains('headline-site')) {
                     // ส่งฟอร์มดึงหัวข้อข่าว
                     document.getElementById('headlines-url').value = url;
+                    
+                    // ส่งค่าตัวเลือกการกรองข่าว
+                    const filterNumerical = document.getElementById('filter-numerical').checked;
+                    document.getElementById('filter-numerical-input').value = filterNumerical ? "on" : "off";
+                    
                     document.getElementById('headlines-form').submit();
                 } else {
                     // ส่งฟอร์มดึงเนื้อหา
