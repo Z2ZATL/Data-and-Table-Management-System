@@ -29,7 +29,8 @@
                                     <th scope="col">เพศ</th>
                                     <th scope="col">อายุ</th>
                                     <th scope="col">จังหวัด</th>
-                                    <th scope="col" class="pe-4">สัตว์เลี้ยง</th>
+                                    <th scope="col">สัตว์เลี้ยง</th>
+                                    <th scope="col" class="pe-4">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,7 +42,10 @@
                                     <td>{{ user.gender }}</td>
                                     <td>{{ user.age }}</td>
                                     <td>{{ user.province }}</td>
-                                    <td class="pe-4">{{ user.pet if user.pet else '-' }}</td>
+                                    <td>{{ user.pet if user.pet else '-' }}</td>
+                                    <td class="pe-4">
+                                        <a href="/edit/{{ user.id }}" class="btn btn-sm btn-outline-primary">แก้ไข</a>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -49,8 +53,41 @@
                     </div>
                 </div>
                 <div class="card-footer bg-light py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>พบผู้ใช้ทั้งหมด {{ users|length }} คน</div>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <div>พบผู้ใช้ทั้งหมด {{ total_users }} คน (แสดงหน้า {{ page }} จาก {{ total_pages }})</div>
+                        
+                        <!-- ปุ่มเปลี่ยนหน้า -->
+                        {% if total_pages > 1 %}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination mb-0">
+                                {% if page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('data', page=page-1) }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                
+                                {% set start = [1, page-2]|max %}
+                                {% set end = [total_pages, page+2]|min %}
+                                
+                                {% for p in range(start, end+1) %}
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('data', page=p) }}">{{ p }}</a>
+                                </li>
+                                {% endfor %}
+                                
+                                {% if page < total_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('data', page=page+1) }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                        
                         <a href="/" class="btn btn-primary">เพิ่มข้อมูลใหม่</a>
                     </div>
                 </div>
