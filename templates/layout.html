@@ -247,6 +247,15 @@
             border-top: 1px solid rgba(94, 96, 206, 0.3);
             padding: 2rem 0 !important;
             margin-top: 4rem !important;
+            color: var(--light-text) !important;
+        }
+        
+        footer a {
+            color: var(--light-text) !important;
+        }
+        
+        footer a:hover {
+            color: var(--accent-color) !important;
         }
         
         /* Animation */
@@ -288,7 +297,7 @@
 
     {% block content %}{% endblock %}
 
-    <footer class="text-white text-center">
+    <footer class="text-white text-center" style="background-color: var(--darker-color); border-top: 1px solid rgba(94, 96, 206, 0.3);">
         <div class="container">
             <div class="py-4">
                 <div class="mb-4">
@@ -307,7 +316,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="mb-0">© 2025 ระบบจัดการข้อมูลผู้ใช้ | <i class="fab fa-python me-1"></i> พัฒนาด้วย Flask</p>
+                <p class="mb-0 text-light">© 2025 ระบบจัดการข้อมูลผู้ใช้ | <i class="fab fa-python me-1"></i> พัฒนาด้วย Flask</p>
             </div>
         </div>
     </footer>
