@@ -432,7 +432,7 @@ def edit_table_data(content_id):
         
         # ดึงข้อมูลเนื้อหาตาราง
         cur.execute("""
-            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.topic_id, 
+            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.topic_id, tc.name,
                    t.title, t.description, t.created_at as topic_created_at, t.updated_at as topic_updated_at
             FROM topic_content tc
             JOIN topics t ON tc.topic_id = t.id
@@ -455,6 +455,16 @@ def edit_table_data(content_id):
         # หากเป็นการส่งฟอร์ม POST เพื่อบันทึกการแก้ไข
         if request.method == "POST":
             table_data_str = request.form.get("table_data", "")
+            data_name = request.form.get("data_name", "").strip()
+            
+            if not data_name:
+                return render_template("edit_table_data.html", 
+                                      theme=theme, 
+                                      error="กรุณาระบุชื่อไฟล์ข้อมูล", 
+                                      topic=topic,
+                                      content_id=content_id,
+                                      content_name=result['name'],
+                                      table_data=json.loads(result['content']))
             
             if not table_data_str:
                 return render_template("edit_table_data.html", 
@@ -462,6 +472,8 @@ def edit_table_data(content_id):
                                       error="ไม่มีข้อมูลตาราง", 
                                       topic=topic,
                                       content_id=content_id,
+                                      content_name=result['name'],
+                                      data_name=data_name,
                                       table_data=json.loads(result['content']))
             
             try:
@@ -474,6 +486,8 @@ def edit_table_data(content_id):
                                           error="รูปแบบข้อมูลตารางไม่ถูกต้อง", 
                                           topic=topic,
                                           content_id=content_id,
+                                          content_name=result['name'],
+                                          data_name=data_name,
                                           table_data=json.loads(result['content']))
                 
                 # แปลงข้อมูลเป็น JSON string
@@ -482,9 +496,9 @@ def edit_table_data(content_id):
                 # บันทึกการเปลี่ยนแปลง
                 cur.execute("""
                     UPDATE topic_content 
-                    SET content = %s
+                    SET content = %s, name = %s
                     WHERE id = %s
-                """, (content, content_id))
+                """, (content, data_name, content_id))
                 
                 # อัพเดทเวลาแก้ไขล่าสุดของหัวข้อ
                 cur.execute("""
@@ -503,6 +517,8 @@ def edit_table_data(content_id):
                                       error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}", 
                                       topic=topic,
                                       content_id=content_id,
+                                      content_name=result['name'],
+                                      data_name=data_name,
                                       table_data=json.loads(result['content']))
         
         # แสดงฟอร์มแก้ไข (GET)
@@ -515,6 +531,7 @@ def edit_table_data(content_id):
                               theme=theme, 
                               topic=topic,
                               content_id=content_id,
+                              content_name=result['name'],
                               table_data=table_data)
         
     except Exception as e:
@@ -529,18 +546,28 @@ def add_table_data():
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         table_data_str = request.form.get("table_data", "")
+        data_name = request.form.get("data_name", "").strip()
         
         if not title:
             return render_template("edit_table_data.html", 
                                   theme=theme, 
                                   error="กรุณาระบุชื่อหัวข้อ")
         
+        if not data_name:
+            return render_template("edit_table_data.html", 
+                                  theme=theme, 
+                                  error="กรุณาระบุชื่อไฟล์ข้อมูล",
+                                  title=title,
+                                  description=description,
+                                  data_name=data_name)
+        
         if not table_data_str:
             return render_template("edit_table_data.html", 
                                   theme=theme, 
                                   error="ไม่มีข้อมูลตาราง",
                                   title=title,
-                                  description=description)
+                                  description=description,
+                                  data_name=data_name)
         
         try:
             # แปลงข้อมูลตารางจาก JSON string
@@ -552,7 +579,8 @@ def add_table_data():
                                       theme=theme, 
                                       error="รูปแบบข้อมูลตารางไม่ถูกต้อง",
                                       title=title,
-                                      description=description)
+                                      description=description,
+                                      data_name=data_name)
             
             # เริ่มต้นบันทึกข้อมูล
             conn = get_pg_connection()
@@ -571,9 +599,9 @@ def add_table_data():
             content = json.dumps(table_data)
             
             cur.execute("""
-                INSERT INTO topic_content (topic_id, content, content_type)
-                VALUES (%s, %s, %s)
-            """, (new_topic_id, content, "table"))
+                INSERT INTO topic_content (topic_id, content, content_type, name)
+                VALUES (%s, %s, %s, %s)
+            """, (new_topic_id, content, "table", data_name))
             
             conn.commit()
             cur.close()
@@ -586,7 +614,8 @@ def add_table_data():
                                   theme=theme, 
                                   error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}",
                                   title=title,
-                                  description=description)
+                                  description=description,
+                                  data_name=data_name)
     
     # สร้างตารางเปล่า
     empty_table = {
