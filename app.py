@@ -543,31 +543,21 @@ def add_table_data():
     
     if request.method == "POST":
         # รับข้อมูลจากฟอร์ม
-        title = request.form.get("title", "").strip()
-        description = request.form.get("description", "").strip()
-        table_data_str = request.form.get("table_data", "")
         data_name = request.form.get("data_name", "").strip()
-        
-        if not title:
-            return render_template("edit_table_data.html", 
-                                  theme=theme, 
-                                  error="กรุณาระบุชื่อหัวข้อ")
+        table_data_str = request.form.get("table_data", "")
         
         if not data_name:
             return render_template("edit_table_data.html", 
                                   theme=theme, 
                                   error="กรุณาระบุชื่อไฟล์ข้อมูล",
-                                  title=title,
-                                  description=description,
-                                  data_name=data_name)
+                                  is_new=True)
         
         if not table_data_str:
             return render_template("edit_table_data.html", 
                                   theme=theme, 
                                   error="ไม่มีข้อมูลตาราง",
-                                  title=title,
-                                  description=description,
-                                  data_name=data_name)
+                                  data_name=data_name,
+                                  is_new=True)
         
         try:
             # แปลงข้อมูลตารางจาก JSON string
@@ -578,13 +568,16 @@ def add_table_data():
                 return render_template("edit_table_data.html", 
                                       theme=theme, 
                                       error="รูปแบบข้อมูลตารางไม่ถูกต้อง",
-                                      title=title,
-                                      description=description,
-                                      data_name=data_name)
+                                      data_name=data_name,
+                                      is_new=True)
             
             # เริ่มต้นบันทึกข้อมูล
             conn = get_pg_connection()
             cur = conn.cursor()
+            
+            # ใช้ชื่อไฟล์ข้อมูลเป็นชื่อหัวข้อ
+            title = data_name
+            description = f"ข้อมูล {data_name} ที่สร้างเมื่อ {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M')}"
             
             # สร้างหัวข้อใหม่
             cur.execute("""
@@ -613,9 +606,8 @@ def add_table_data():
             return render_template("edit_table_data.html", 
                                   theme=theme, 
                                   error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}",
-                                  title=title,
-                                  description=description,
-                                  data_name=data_name)
+                                  data_name=data_name,
+                                  is_new=True)
     
     # สร้างตารางเปล่า
     empty_table = {
