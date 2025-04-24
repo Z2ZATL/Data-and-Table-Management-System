@@ -1,20 +1,20 @@
 {% extends 'layout.html' %}
 
-{% block title %}หน้าแรก{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-10 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">ยินดีต้อนรับสู่ระบบจัดการข้อมูล</h1>
-                <p class="lead mb-4">ระบบสำหรับจัดการข้อมูลผู้ใช้และวิเคราะห์ข้อมูลทางการเงิน</p>
+                <h1 class="display-4 fw-bold mb-4">Welcome to Data Management System</h1>
+                <p class="lead mb-4">System for managing user data and analyzing financial information</p>
                 <div class="d-flex justify-content-center gap-3">
                     <a href="{{ url_for('data') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-users me-2"></i> ดูข้อมูลผู้ใช้
+                        <i class="fas fa-users me-2"></i> View User Data
                     </a>
                     <a href="{{ url_for('add_table_data') }}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-plus-circle me-2"></i> สร้างข้อมูลใหม่
+                        <i class="fas fa-plus-circle me-2"></i> Create New Data
                     </a>
                 </div>
             </div>
@@ -84,9 +84,9 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">ข้อมูลตารางทั้งหมด</h2>
+                <h2 class="mb-0">All Table Data</h2>
                 <a href="{{ url_for('add_table_data') }}" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-1"></i> สร้างข้อมูลใหม่
+                    <i class="fas fa-plus-circle me-1"></i> Create New Data
                 </a>
             </div>
             <hr>
@@ -111,15 +111,15 @@
                                     <div class="d-flex justify-content-center align-items-center p-4 bg-light rounded-3 mb-3">
                                         <div class="text-center">
                                             <i class="fas fa-table fa-3x text-primary mb-3"></i>
-                                            <p class="mb-0">ตารางข้อมูล: {{ table.table_data.headers|length }} คอลัมน์, {{ table.table_data.rows|length }} แถว</p>
+                                            <p class="mb-0">Data Table: {{ table.table_data.headers|length }} columns, {{ table.table_data.rows|length }} rows</p>
                                             <div class="mt-3">
                                                 <button type="button" class="btn btn-sm btn-primary me-2" 
                                                         data-bs-toggle="modal" data-bs-target="#tableModal{{ table.id }}">
-                                                    <i class="fas fa-table me-1"></i> แสดงตาราง
+                                                    <i class="fas fa-table me-1"></i> Show Table
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-outline-primary show-chart-btn" 
                                                         data-chart-id="chart-{{ table.id }}">
-                                                    <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                                    <i class="fas fa-chart-bar me-1"></i> Show Chart
                                                 </button>
                                             </div>
                                         </div>
@@ -127,12 +127,12 @@
                                     <div id="chart-{{ table.id }}" class="mt-3" style="height: 300px; display: none;"></div>
                                 </div>
                                 
-                                <!-- Modal สำหรับแสดงตาราง -->
+                                <!-- Modal for displaying table -->
                                 <div class="modal fade" id="tableModal{{ table.id }}" tabindex="-1" aria-labelledby="tableModalLabel{{ table.id }}" aria-hidden="true">
                                     <div class="modal-dialog modal-xl">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="tableModalLabel{{ table.id }}">ตารางข้อมูล: {{ table.name }}</h5>
+                                                <h5 class="modal-title" id="tableModalLabel{{ table.id }}">Data Table: {{ table.name }}</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -160,19 +160,19 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             {% else %}
-                                <p class="text-muted fst-italic">ไม่สามารถแสดงข้อมูลตารางนี้ได้</p>
+                                <p class="text-muted fst-italic">Unable to display this table data</p>
                             {% endif %}
                         </div>
                         <div class="card-footer text-muted d-flex justify-content-between">
-                            <small>เพิ่มเมื่อ: {{ table.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                            <small>Added: {{ table.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
                             <a href="{{ url_for('edit_table_data', content_id=table.id) }}" class="text-primary">
-                                <i class="fas fa-edit"></i> แก้ไข
+                                <i class="fas fa-edit"></i> Edit
                             </a>
                         </div>
                     </div>
@@ -182,10 +182,10 @@
             <div class="col-12 text-center py-5">
                 <div class="empty-state mb-4">
                     <i class="fas fa-table fa-4x mb-3 text-secondary"></i>
-                    <h3>ยังไม่มีข้อมูลตาราง</h3>
-                    <p class="text-muted mb-4">เริ่มสร้างข้อมูลตารางแรกของคุณเพื่อแสดงที่นี่</p>
+                    <h3>No Table Data Available</h3>
+                    <p class="text-muted mb-4">Create your first data table to display here</p>
                     <a href="{{ url_for('add_table_data') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus-circle me-2"></i> สร้างข้อมูลใหม่
+                        <i class="fas fa-plus-circle me-2"></i> Create New Data
                     </a>
                 </div>
             </div>
@@ -198,14 +198,14 @@
         <div class="col-12">
             <div class="card shadow-lg">
                 <div class="card-body p-4">
-                    <h4 class="mb-4">เมนูลัด</h4>
+                    <h4 class="mb-4">Quick Menu</h4>
                     <div class="row text-center g-4">
                         <div class="col-md-3 col-6">
                             <a href="{{ url_for('data') }}" class="shortcut-link">
                                 <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
                                     <i class="fas fa-users fa-2x"></i>
                                 </div>
-                                <h6>ข้อมูลผู้ใช้</h6>
+                                <h6>User Data</h6>
                             </a>
                         </div>
                         <div class="col-md-3 col-6">
@@ -213,7 +213,7 @@
                                 <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
                                     <i class="fas fa-chart-pie fa-2x"></i>
                                 </div>
-                                <h6>วิเคราะห์ข้อมูล</h6>
+                                <h6>Data Analysis</h6>
                             </a>
                         </div>
                         <div class="col-md-3 col-6">
@@ -221,7 +221,7 @@
                                 <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
                                     <i class="fas fa-search-dollar fa-2x"></i>
                                 </div>
-                                <h6>ข้อมูลการเงิน</h6>
+                                <h6>Financial Data</h6>
                             </a>
                         </div>
                         <div class="col-md-3 col-6">
@@ -230,11 +230,11 @@
                                     <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
                                         <i class="fas fa-plus-circle fa-2x"></i>
                                     </div>
-                                    <h6>เพิ่มข้อมูลใหม่</h6>
+                                    <h6>Add New Data</h6>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="createDataDropdown">
-                                    <li><a class="dropdown-item" href="{{ url_for('add_table_data') }}"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('upload_data') }}"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('add_table_data') }}"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('upload_data') }}"><i class="fas fa-file-upload me-1"></i> Upload Data from File</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -250,7 +250,7 @@
 <script src="{{ url_for('static', filename='js/chart-utils.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // เตรียมข้อมูลทั้งหมดสำหรับสร้างกราฟ
+        // Prepare all data for charts
         const allTableData = {};
         
         {% for table in tables %}
@@ -259,34 +259,34 @@
             {% endif %}
         {% endfor %}
 
-        // จัดการปุ่มแสดงกราฟ
+        // Handle show chart buttons
         document.querySelectorAll('.show-chart-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const chartId = this.getAttribute('data-chart-id');
                 const chartContainer = document.getElementById(chartId);
                 
-                // ตรวจสอบสถานะปัจจุบันของกราฟ
+                // Check current chart state
                 if (chartContainer.style.display === 'none') {
-                    // เคลียร์ Chart เดิมก่อนสร้างใหม่
+                    // Clear previous chart before creating a new one
                     chartContainer.innerHTML = '<canvas></canvas>';
                     
-                    // สร้างกราฟจากข้อมูล
+                    // Create chart from data
                     const data = allTableData[chartId];
                     if (data) {
                         const canvas = chartContainer.querySelector('canvas');
                         const ctx = canvas.getContext('2d');
                         
-                        // สร้าง labels (คอลัมน์แรก) และ data (คอลัมน์ที่สอง)
+                        // Create labels (first column) and data (second column)
                         const labels = data.rows.map(row => row[0]);
                         const values = data.rows.map(row => parseFloat(row[1]) || 0);
                         
-                        // สร้าง Chart ใหม่
+                        // Create new Chart
                         window[chartId] = new Chart(ctx, {
                             type: 'bar',
                             data: {
                                 labels: labels,
                                 datasets: [{
-                                    label: data.headers[1] || 'ข้อมูล',
+                                    label: data.headers[1] || 'Data',
                                     data: values,
                                     backgroundColor: 'rgba(75, 192, 192, 0.7)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -305,19 +305,19 @@
                         });
                     }
                     
-                    // แสดงกราฟ
+                    // Show chart
                     chartContainer.style.display = 'block';
-                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> ซ่อนกราฟ';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> Hide Chart';
                 } else {
-                    // ทำลาย Chart instance ก่อนซ่อน
+                    // Destroy Chart instance before hiding
                     if (window[chartId]) {
                         window[chartId].destroy();
                         window[chartId] = null;
                     }
                     
-                    // ซ่อนกราฟ
+                    // Hide chart
                     chartContainer.style.display = 'none';
-                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> แสดงกราฟ';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> Show Chart';
                 }
             });
         });
