@@ -85,7 +85,7 @@ def set_theme():
     response.set_cookie("theme", theme, max_age=60*60*24*365)  # ตั้งคุกกี้เก็บไว้ 1 ปี
     return response
 
-@app.route("/upload", methods=["GET", "POST"])  # route สำหรับอัพโหลดไฟล์ข้อมูล
+@app.route("/upload-data", methods=["GET", "POST"])  # route สำหรับอัพโหลดไฟล์ข้อมูล
 def upload_data():
     theme = get_theme_from_cookie(request)
     
