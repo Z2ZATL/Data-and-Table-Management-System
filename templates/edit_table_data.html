@@ -20,7 +20,7 @@
             <div class="card shadow-lg mb-5">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-table me-2"></i> {% if is_new %}สร้างข้อมูลตารางใหม่{% else %}{{ topic.title }}{% endif %}
+                        <i class="fas fa-table me-2"></i> {% if is_new %}สร้างข้อมูลตารางใหม่{% else %}แก้ไขตารางข้อมูล: {{ data_name }}{% endif %}
                     </h5>
                     <div>
                         <a href="/data" class="btn btn-sm btn-outline-primary">
@@ -45,20 +45,20 @@
                     <div class="mb-4">
                         <p class="mb-2">
                             <i class="fas fa-info-circle me-2 text-primary"></i> <strong>คำอธิบาย:</strong> 
-                            {{ topic.description or 'ไม่มีคำอธิบาย' }}
+                            {{ description or 'ไม่มีคำอธิบาย' }}
                         </p>
                         <p class="mb-0 small">
-                            <i class="fas fa-clock me-1"></i> สร้างเมื่อ: {{ topic.created_at.strftime('%d/%m/%Y %H:%M') if topic.created_at else '-' }} | 
-                            <i class="fas fa-edit me-1"></i> แก้ไขล่าสุด: {{ topic.updated_at.strftime('%d/%m/%Y %H:%M') if topic.updated_at else '-' }}
+                            <i class="fas fa-clock me-1"></i> สร้างเมื่อ: {{ created_at.strftime('%d/%m/%Y %H:%M') if created_at else '-' }} | 
+                            <i class="fas fa-edit me-1"></i> แก้ไขล่าสุด: {{ updated_at.strftime('%d/%m/%Y %H:%M') if updated_at else '-' }}
                         </p>
                     </div>
                     {% endif %}
                     
                     <form id="tableForm" action="/data/edit-table/{{ content_id }}" method="POST">
                         <div class="mb-4">
-                            <label for="data_name" class="form-label">ชื่อไฟล์ข้อมูล <span class="text-danger">*</span></label>
+                            <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or content_name or '' }}" placeholder="เช่น ราคาทอง, อัตราเงินเฟ้อ, ยอดขาย" required>
-                            <small class="form-text text-muted">ระบุชื่อสำหรับชุดข้อมูลนี้เพื่อให้ง่ายต่อการอ้างอิง</small>
+                            <small class="form-text text-muted">ระบุชื่อสำหรับตารางข้อมูลนี้เพื่อให้ง่ายต่อการอ้างอิง</small>
                         </div>
                         
                         <div class="table-responsive mb-4">

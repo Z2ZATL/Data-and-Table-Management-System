@@ -325,8 +325,10 @@ def edit_table_data(content_id):
         return render_template("edit_table_data.html", 
                               theme=theme, 
                               content_id=content_id,
-                              content_name=result['name'],
+                              data_name=result['name'],
                               description=result['description'],
+                              created_at=result['created_at'],
+                              updated_at=result['updated_at'],
                               table_data=table_data)
         
     except Exception as e:
