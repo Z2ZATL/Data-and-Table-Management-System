@@ -133,7 +133,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            </div>
                                             
                                             <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
                                             <div class="chart-container" id="chart-{{ table.id }}" style="display: none; height: 400px;">
@@ -176,31 +175,63 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // เพิ่มการจัดการปุ่ม "แสดงกราฟ"
+        // เตรียมข้อมูลทั้งหมดสำหรับสร้างกราฟ
+        const allTableData = {};
+        
+        {% for table in tables %}
+            {% if table.table_data %}
+                allTableData["chart-{{ table.id }}"] = {{ table.table_data|tojson|safe }};
+            {% endif %}
+        {% endfor %}
+
+        // จัดการปุ่มแสดงกราฟ
         document.querySelectorAll('.show-chart-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const tableId = this.getAttribute('data-table-id');
                 const chartId = this.getAttribute('data-chart-id');
-                const tableElement = document.getElementById(tableId);
                 const chartContainer = document.getElementById(chartId);
                 
                 if (chartContainer.style.display === 'none') {
-                    // สร้างกราฟจากข้อมูลตาราง
-                    createChart(chartId, tableElement);
+                    // สร้างกราฟจากข้อมูล
+                    const data = allTableData[chartId];
+                    if (data) {
+                        const canvas = chartContainer.querySelector('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // สร้าง labels (คอลัมน์แรก) และ data (คอลัมน์ที่สอง)
+                        const labels = data.rows.map(row => row[0]);
+                        const values = data.rows.map(row => parseFloat(row[1]) || 0);
+                        
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: data.headers[1],
+                                    data: values,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    }
                     
-                    // แสดงกราฟ และเปลี่ยนข้อความปุ่ม
+                    // แสดงกราฟ
                     chartContainer.style.display = 'block';
-                    this.innerHTML = '<i class="fas fa-table me-1"></i> แสดงตาราง';
-                    
-                    // ซ่อนตาราง
-                    tableElement.closest('.table-responsive').style.display = 'none';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> ซ่อนกราฟ';
                 } else {
-                    // ซ่อนกราฟ และเปลี่ยนข้อความปุ่ม
+                    // ซ่อนกราฟ
                     chartContainer.style.display = 'none';
                     this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> แสดงกราฟ';
-                    
-                    // แสดงตาราง
-                    tableElement.closest('.table-responsive').style.display = 'block';
                 }
             });
         });
