@@ -190,7 +190,11 @@
                 const chartId = this.getAttribute('data-chart-id');
                 const chartContainer = document.getElementById(chartId);
                 
+                // ตรวจสอบสถานะปัจจุบันของกราฟ
                 if (chartContainer.style.display === 'none') {
+                    // เคลียร์ Chart เดิมก่อนสร้างใหม่
+                    chartContainer.innerHTML = '<canvas></canvas>';
+                    
                     // สร้างกราฟจากข้อมูล
                     const data = allTableData[chartId];
                     if (data) {
@@ -201,12 +205,13 @@
                         const labels = data.rows.map(row => row[0]);
                         const values = data.rows.map(row => parseFloat(row[1]) || 0);
                         
-                        new Chart(ctx, {
+                        // สร้าง Chart ใหม่
+                        window[chartId] = new Chart(ctx, {
                             type: 'bar',
                             data: {
                                 labels: labels,
                                 datasets: [{
-                                    label: data.headers[1],
+                                    label: data.headers[1] || 'ข้อมูล',
                                     data: values,
                                     backgroundColor: 'rgba(75, 192, 192, 0.7)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -229,6 +234,12 @@
                     chartContainer.style.display = 'block';
                     this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> ซ่อนกราฟ';
                 } else {
+                    // ทำลาย Chart instance ก่อนซ่อน
+                    if (window[chartId]) {
+                        window[chartId].destroy();
+                        window[chartId] = null;
+                    }
+                    
                     // ซ่อนกราฟ
                     chartContainer.style.display = 'none';
                     this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> แสดงกราฟ';
