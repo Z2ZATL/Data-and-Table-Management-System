@@ -36,34 +36,35 @@ def get_pg_connection():  # ฟังก์ชันที่ใช้ในก�
 def index():
     theme = get_theme_from_cookie(request)
     
-    # ดึงหัวข้อทั้งหมดจากฐานข้อมูล PostgreSQL
+    # ดึงข้อมูลตารางทั้งหมดจากฐานข้อมูล PostgreSQL
     try:
         conn = get_pg_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("""
-            SELECT id, title, description, created_at, updated_at
-            FROM topics
-            ORDER BY updated_at DESC
+            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.name,
+                   t.title, t.description, t.created_at as topic_created_at, t.updated_at as topic_updated_at
+            FROM topic_content tc
+            JOIN topics t ON tc.topic_id = t.id
+            WHERE tc.content_type = 'table'
+            ORDER BY t.updated_at DESC
         """)
-        topics = cur.fetchall()
+        tables = cur.fetchall()
         
-        # ดึงเนื้อหาของแต่ละหัวข้อ
-        for topic in topics:
-            cur.execute("""
-                SELECT id, content, content_type, created_at
-                FROM topic_content
-                WHERE topic_id = %s
-                ORDER BY created_at DESC
-            """, (topic['id'],))
-            topic['contents'] = cur.fetchall()
-        
+        # แปลงข้อมูล JSON เป็น dictionary
+        for table in tables:
+            if table['content']:
+                try:
+                    table['table_data'] = json.loads(table['content'])
+                except:
+                    table['table_data'] = None
+                    
         cur.close()
         conn.close()
     except Exception as e:
-        topics = []
-        print(f"Error fetching topics: {str(e)}")
+        tables = []
+        print(f"Error fetching tables: {str(e)}")
     
-    return render_template("index.html", theme=theme, topics=topics)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลธีมและหัวข้อ
+    return render_template("index.html", theme=theme, tables=tables)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลตาราง
 
 @app.route("/topics", methods=["GET"])  # route สำหรับหน้าจัดการหัวข้อ
 def topics():
