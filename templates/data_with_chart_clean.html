@@ -109,7 +109,7 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // เตรียมข้อมูลทั้งหมดสำหรับสร้างกราฟ
+        // Prepare all data for creating charts
         const allTableData = {};
         
         {% for table in tables %}
@@ -118,34 +118,34 @@
             {% endif %}
         {% endfor %}
 
-        // จัดการปุ่มแสดงกราฟ
+        // Handle chart display buttons
         document.querySelectorAll('.show-chart-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const chartId = this.getAttribute('data-chart-id');
                 const chartContainer = document.getElementById(chartId);
                 
-                // ตรวจสอบสถานะปัจจุบันของกราฟ
+                // Check current chart status
                 if (chartContainer.style.display === 'none') {
-                    // เคลียร์ Chart เดิมก่อนสร้างใหม่
+                    // Clear previous chart before creating a new one
                     chartContainer.innerHTML = '<canvas></canvas>';
                     
-                    // สร้างกราฟจากข้อมูล
+                    // Create chart from data
                     const data = allTableData[chartId];
                     if (data) {
                         const canvas = chartContainer.querySelector('canvas');
                         const ctx = canvas.getContext('2d');
                         
-                        // สร้าง labels (คอลัมน์แรก) และ data (คอลัมน์ที่สอง)
+                        // Create labels (first column) and data (second column)
                         const labels = data.rows.map(row => row[0]);
                         const values = data.rows.map(row => parseFloat(row[1]) || 0);
                         
-                        // สร้าง Chart ใหม่
+                        // Create new chart
                         window[chartId] = new Chart(ctx, {
                             type: 'bar',
                             data: {
                                 labels: labels,
                                 datasets: [{
-                                    label: data.headers[1] || 'ข้อมูล',
+                                    label: data.headers[1] || 'Data',
                                     data: values,
                                     backgroundColor: 'rgba(75, 192, 192, 0.7)',
                                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -164,19 +164,19 @@
                         });
                     }
                     
-                    // แสดงกราฟ
+                    // Show chart
                     chartContainer.style.display = 'block';
-                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> ซ่อนกราฟ';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> Hide Chart';
                 } else {
-                    // ทำลาย Chart instance ก่อนซ่อน
+                    // Destroy Chart instance before hiding
                     if (window[chartId]) {
                         window[chartId].destroy();
                         window[chartId] = null;
                     }
                     
-                    // ซ่อนกราฟ
+                    // Hide chart
                     chartContainer.style.display = 'none';
-                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> แสดงกราฟ';
+                    this.innerHTML = '<i class="fas fa-chart-bar me-1"></i> Show Chart';
                 }
             });
         });
