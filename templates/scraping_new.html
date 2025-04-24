@@ -492,22 +492,22 @@
         const generateChartBtn = document.getElementById('generate-chart-btn');
         if (generateChartBtn) {
             generateChartBtn.addEventListener('click', function() {
-                // ดึงข้อมูลจากตาราง
+                // Extract data from table
                 const tableData = extractTableData();
                 
-                // ตรวจสอบว่ามีข้อมูลหรือไม่
+                // Check if data exists
                 if (!tableData || !tableData.rows || tableData.rows.length === 0) {
                     alert('No data found in the table to create a chart');
                     return;
                 }
                 
-                // สร้างกราฟ
+                // Create chart
                 createChart(tableData);
                 
-                // แสดงส่วนกราฟ
+                // Show chart container
                 document.querySelector('.chart-container').style.display = 'block';
                 
-                // เลื่อนไปที่กราฟ
+                // Scroll to the chart
                 document.querySelector('.chart-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         }
@@ -547,11 +547,11 @@
         
         // Function for creating chart from data
         function createChart(tableData) {
-            // ตรวจสอบว่ามี canvas สำหรับกราฟหรือไม่
+            // Check if canvas for chart exists
             const chartCanvas = document.getElementById('data-chart');
             if (!chartCanvas) return;
             
-            // หาคอลัมน์ที่เป็นตัวเลขและคอลัมน์ที่เป็นข้อความ
+            // Find numeric columns and text columns
             const dataColumns = findNumericColumns(tableData);
             
             if (dataColumns.length === 0) {
@@ -559,13 +559,13 @@
                 return;
             }
             
-            // ใช้คอลัมน์แรกเป็นชื่อ/label
+            // Use first column as label
             const labelsColumnIndex = 0;
             
-            // ดึงข้อมูลสำหรับกราฟ
+            // Extract data for chart
             const labels = tableData.rows.map(row => row[labelsColumnIndex]);
             
-            // สร้างชุดข้อมูลสำหรับแต่ละคอลัมน์ตัวเลข
+            // Create dataset for each numeric column
             const datasets = dataColumns.map((colIndex, index) => {
                 // ดึงข้อมูลตัวเลขจากคอลัมน์นี้
                 const data = tableData.rows.map(row => {
