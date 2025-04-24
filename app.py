@@ -408,7 +408,7 @@ def add_table_data():
     
     # สร้างตารางเปล่า
     empty_table = {
-        "headers": ["คอลัมน์ 1", "คอลัมน์ 2"],
+        "headers": ["คอลัมน์ 1"],
         "rows": [[""]]
     }
     

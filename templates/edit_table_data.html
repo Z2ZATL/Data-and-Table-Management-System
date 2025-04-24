@@ -54,7 +54,7 @@
                     </div>
                     {% endif %}
                     
-                    <form id="tableForm" action="/data/edit-table/{{ content_id }}" method="POST">
+                    <form id="tableForm" action="{% if is_new %}/data/add-table{% else %}/data/edit-table/{{ content_id }}{% endif %}" method="POST">
                         <div class="mb-4">
                             <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or content_name or '' }}" placeholder="เช่น ราคาทอง, อัตราเงินเฟ้อ, ยอดขาย" required>
