@@ -31,21 +31,18 @@
                         {% for table in tables %}
                             {% if table.table_data %}
                                 <div class="table-container mb-4">
-                                    <h3 class="h5 mb-3">
-                                        <i class="fas fa-table me-2 text-primary"></i>
-                                        {{ table.name }}
-                                    </h3>
-                                    
-                                    {% if table.description %}
-                                        <p class="text-muted mb-3">{{ table.description }}</p>
-                                    {% endif %}
-                                    
-                                <div class="table-content mb-4">
                                     <div class="card shadow-sm">
                                         <div class="card-header py-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <div class="small text-muted">
+                                                    <h5 class="mb-1">
+                                                        <i class="fas fa-table me-2 text-primary"></i>
+                                                        {{ table.name }}
+                                                    </h5>
+                                                    {% if table.description %}
+                                                        <div class="small text-muted">{{ table.description }}</div>
+                                                    {% endif %}
+                                                    <div class="small text-muted mt-1">
                                                         สร้างเมื่อ {{ table.created_at.strftime('%d/%m/%Y %H:%M') if table.created_at else '-' }}
                                                         {% if table.updated_at and table.created_at != table.updated_at %}
                                                         | อัพเดทล่าสุด {{ table.updated_at.strftime('%d/%m/%Y %H:%M') }}
