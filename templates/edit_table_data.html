@@ -179,19 +179,25 @@
         
         // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบแถว
         function attachRemoveRowEvents() {
+            // ลบ event listener เดิมก่อน (ป้องกันการเรียกซ้ำ)
+            const oldButtons = document.querySelectorAll('.remove-row');
+            oldButtons.forEach(button => {
+                button.replaceWith(button.cloneNode(true));
+            });
+            
+            // เพิ่ม event listener ใหม่
             const removeButtons = document.querySelectorAll('.remove-row');
             removeButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบจำนวนแถวทั้งหมดที่มีอยู่
+                    // ตรวจสอบจำนวนแถวก่อนลบ
                     const allRows = tableBody.querySelectorAll('tr');
                     
-                    // ถ้ามีเพียงแถวเดียว จะไม่อนุญาตให้ลบ
                     if (allRows.length <= 1) {
                         alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
                         return;
                     }
                     
-                    // ถ้ามีมากกว่า 1 แถว สามารถลบได้
+                    // ลบแถวที่ต้องการโดยไม่ต้องแจ้งเตือน
                     this.closest('tr').remove();
                 });
             });
