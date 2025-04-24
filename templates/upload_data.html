@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}อัพโหลดข้อมูลจากไฟล์{% endblock %}
+{% block title %}Upload Data from File{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">อัพโหลดข้อมูลจากไฟล์</h1>
-                <p class="lead mb-4">อัพโหลดไฟล์ Excel หรือ CSV เพื่อนำเข้าข้อมูลตาราง</p>
+                <h1 class="display-4 fw-bold mb-4">Upload Data from File</h1>
+                <p class="lead mb-4">Upload Excel or CSV files to import table data</p>
             </div>
         </div>
     </div>
@@ -20,11 +20,11 @@
             <div class="card shadow-lg mb-5">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-file-upload me-2"></i> อัพโหลดไฟล์ข้อมูล
+                        <i class="fas fa-file-upload me-2"></i> Upload Data File
                     </h5>
                     <div>
                         <a href="/data" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-arrow-left me-1"></i> กลับ
+                            <i class="fas fa-arrow-left me-1"></i> Back
                         </a>
                     </div>
                 </div>
@@ -45,38 +45,38 @@
                     
                     <form action="/upload-data" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         <div class="mb-4">
-                            <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="data_name" name="data_name" placeholder="เช่น ราคาทองคำ, ดัชนีหุ้น, ยอดขายรายเดือน" required>
-                            <small class="form-text text-muted">ระบุชื่อที่ต้องการใช้เรียกข้อมูลนี้</small>
+                            <label for="data_name" class="form-label">Table Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="data_name" name="data_name" placeholder="e.g., Gold Prices, Stock Index, Monthly Sales" required>
+                            <small class="form-text text-muted">Specify a name for this data table</small>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="description" class="form-label">คำอธิบาย</label>
-                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="เช่น ข้อมูลราคาทองคำรายวันประจำเดือนมกราคม 2567"></textarea>
-                            <small class="form-text text-muted">ระบุรายละเอียดเพิ่มเติมเกี่ยวกับข้อมูล (ไม่บังคับ)</small>
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="e.g., Daily gold price data for January 2024"></textarea>
+                            <small class="form-text text-muted">Provide additional details about this data (optional)</small>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="file" class="form-label">เลือกไฟล์ <span class="text-danger">*</span></label>
+                            <label for="file" class="form-label">Select File <span class="text-danger">*</span></label>
                             <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls,.csv" required>
-                            <small class="form-text text-muted">รองรับไฟล์นามสกุล .xlsx, .xls, .csv เท่านั้น</small>
+                            <small class="form-text text-muted">Supports .xlsx, .xls, .csv file formats only</small>
                         </div>
                         
                         <div class="mb-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="has_header" name="has_header" value="1" checked>
                                 <label class="form-check-label" for="has_header">
-                                    แถวแรกเป็นส่วนหัวตาราง
+                                    First row contains column headers
                                 </label>
                             </div>
                         </div>
                         
                         <div class="d-flex justify-content-between mt-4">
                             <a href="/data" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> ยกเลิก
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-upload me-1"></i> อัพโหลดข้อมูล
+                                <i class="fas fa-upload me-1"></i> Upload Data
                             </button>
                         </div>
                     </form>
@@ -86,42 +86,42 @@
             <div class="card shadow-lg">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i> วิธีการเตรียมไฟล์ข้อมูล
+                        <i class="fas fa-info-circle me-2"></i> How to Prepare Your Data File
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">ข้อแนะนำในการเตรียมไฟล์ Excel</h6>
+                            <h6 class="fw-bold mb-3">Excel File Recommendations</h6>
                             <ul class="list-group list-group-flush mb-4">
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> แถวแรกควรเป็นชื่อคอลัมน์
+                                    <i class="fas fa-check-circle text-success me-2"></i> First row should contain column headers
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> ควรมีแต่ข้อมูลที่ต้องการนำเข้าเท่านั้น
+                                    <i class="fas fa-check-circle text-success me-2"></i> Include only the data you want to import
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> ควรลบแถวและคอลัมน์ที่ไม่ต้องการออกก่อนอัพโหลด
+                                    <i class="fas fa-check-circle text-success me-2"></i> Remove unwanted rows and columns before uploading
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> ไม่ควรมีเซลล์ที่รวมกันหรือตกแต่งพิเศษ
+                                    <i class="fas fa-check-circle text-success me-2"></i> Avoid merged cells or special formatting
                                 </li>
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <h6 class="fw-bold mb-3">ข้อแนะนำในการเตรียมไฟล์ CSV</h6>
+                            <h6 class="fw-bold mb-3">CSV File Recommendations</h6>
                             <ul class="list-group list-group-flush mb-4">
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> ควรใช้เครื่องหมายจุลภาค (,) เป็นตัวคั่น
+                                    <i class="fas fa-check-circle text-success me-2"></i> Use comma (,) as the delimiter
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> ตรวจสอบการเข้ารหัสให้เป็น UTF-8
+                                    <i class="fas fa-check-circle text-success me-2"></i> Ensure UTF-8 encoding
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> หากมีเครื่องหมายจุลภาคในข้อมูล ควรอยู่ในเครื่องหมายคำพูด (" ")
+                                    <i class="fas fa-check-circle text-success me-2"></i> If data contains commas, enclose in double quotes (" ")
                                 </li>
                                 <li class="list-group-item bg-transparent">
-                                    <i class="fas fa-check-circle text-success me-2"></i> บันทึกเป็น CSV (Comma delimited) (*.csv)
+                                    <i class="fas fa-check-circle text-success me-2"></i> Save as CSV (Comma delimited) (*.csv)
                                 </li>
                             </ul>
                         </div>
@@ -135,9 +135,9 @@
 
 {% block scripts %}
 <script>
-    // เพิ่ม JavaScript สำหรับการตรวจสอบฟอร์ม
+    // Add JavaScript for form validation
     document.addEventListener('DOMContentLoaded', function() {
-        // ตรวจสอบความถูกต้องของฟอร์ม
+        // Check form validity
         const forms = document.querySelectorAll('.needs-validation');
         
         Array.prototype.slice.call(forms).forEach(function(form) {
@@ -151,7 +151,7 @@
             }, false);
         });
         
-        // ตรวจสอบขนาดและนามสกุลไฟล์
+        // Check file size and extension
         const fileInput = document.getElementById('file');
         fileInput.addEventListener('change', function() {
             const maxSize = 10 * 1024 * 1024; // 10MB
@@ -161,19 +161,19 @@
             if (this.files.length > 0) {
                 const file = this.files[0];
                 
-                // ตรวจสอบนามสกุลไฟล์
+                // Check file extension
                 const fileName = file.name;
                 const fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
                 
                 if (!allowedExtensions.includes(fileExt)) {
-                    alert('รองรับเฉพาะไฟล์ .xlsx, .xls, .csv เท่านั้น');
+                    alert('Only .xlsx, .xls, .csv files are supported');
                     this.value = '';
                     return;
                 }
                 
-                // ตรวจสอบขนาดไฟล์
+                // Check file size
                 if (file.size > maxSize) {
-                    alert('ขนาดไฟล์ต้องไม่เกิน 10MB');
+                    alert('File size must not exceed 10MB');
                     this.value = '';
                     return;
                 }

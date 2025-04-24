@@ -139,7 +139,7 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ปุ่มเพิ่มคอลัมน์
+        // Add column button
         const addColumnBtn = document.getElementById('add_column');
         const headerRow = document.getElementById('header_row');
         
@@ -147,10 +147,10 @@
             const newHeader = document.createElement('th');
             newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="Column Name" required>`;
             
-            // แทรกคอลัมน์ใหม่ก่อนปุ่ม
+            // Insert new column before the button
             headerRow.insertBefore(newHeader, headerRow.lastElementChild);
             
-            // เพิ่มเซลล์ในแต่ละแถวข้อมูล
+            // Add cells in each data row
             const dataRows = document.querySelectorAll('#editable_table tbody tr');
             dataRows.forEach(row => {
                 const newCell = document.createElement('td');
@@ -159,12 +159,12 @@
             });
         });
         
-        // ปุ่มเพิ่มแถว
+        // Add row button
         const addRowBtn = document.getElementById('add_row');
         const tableBody = document.querySelector('#editable_table tbody');
         
         addRowBtn.addEventListener('click', function() {
-            const headerColumns = headerRow.cells.length - 1; // ไม่รวมคอลัมน์ปุ่ม
+            const headerColumns = headerRow.cells.length - 1; // Not including button column
             const newRow = document.createElement('tr');
             
             for (let i = 0; i < headerColumns; i++) {
@@ -173,7 +173,7 @@
                 newRow.appendChild(cell);
             }
             
-            // เพิ่มปุ่มลบแถว
+            // Add row remove button
             const actionCell = document.createElement('td');
             actionCell.innerHTML = `<button type="button" class="btn btn-sm btn-outline-danger remove-row">
                                       <i class="fas fa-times"></i>
@@ -182,23 +182,23 @@
             
             tableBody.appendChild(newRow);
             
-            // เพิ่ม event listener สำหรับปุ่มลบแถวที่เพิ่มใหม่
+            // Add event listener for the newly added row's remove button
             attachRemoveRowEvents();
         });
         
-        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบแถว
+        // Function to add event listeners for row removal buttons
         function attachRemoveRowEvents() {
-            // ลบ event listener เดิมก่อน (ป้องกันการเรียกซ้ำ)
+            // Remove old event listeners first (prevent duplicates)
             const oldButtons = document.querySelectorAll('.remove-row');
             oldButtons.forEach(button => {
                 button.replaceWith(button.cloneNode(true));
             });
             
-            // เพิ่ม event listener ใหม่
+            // Add new event listeners
             const removeButtons = document.querySelectorAll('.remove-row');
             removeButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบจำนวนแถวก่อนลบ
+                    // Check row count before deletion
                     const allRows = tableBody.querySelectorAll('tr');
                     
                     if (allRows.length <= 1) {
@@ -206,34 +206,34 @@
                         return;
                     }
                     
-                    // ลบแถวที่ต้องการโดยไม่ต้องแจ้งเตือน
+                    // Remove the row without confirmation
                     this.closest('tr').remove();
                 });
             });
         }
         
-        // เรียกใช้ฟังก์ชันเพื่อเพิ่ม event listener แรกเริ่ม
+        // Call function to add initial event listeners
         attachRemoveRowEvents();
         
-        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบคอลัมน์
+        // Function to add event listeners for column removal buttons
         function attachRemoveColumnEvents() {
             const removeColumnButtons = document.querySelectorAll('.remove-column');
             removeColumnButtons.forEach((button, index) => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบว่ามีมากกว่า 1 คอลัมน์หรือไม่
+                    // Check if there's more than 1 column
                     const headerCells = headerRow.querySelectorAll('th');
                     if (headerCells.length <= 2) { // Including button column
                         alert('Table must have at least one column');
                         return;
                     }
                     
-                    // หาลำดับของคอลัมน์
+                    // Find column index
                     const columnIndex = Array.from(headerRow.children).indexOf(this.closest('th'));
                     
-                    // ลบ header
+                    // Remove header
                     headerRow.children[columnIndex].remove();
                     
-                    // ลบข้อมูลในแต่ละแถว
+                    // Remove data in each row
                     const rows = document.querySelectorAll('#editable_table tbody tr');
                     rows.forEach(row => {
                         row.children[columnIndex].remove();
@@ -242,50 +242,50 @@
             });
         }
         
-        // เรียกใช้ฟังก์ชันลบคอลัมน์
+        // Call column removal function
         attachRemoveColumnEvents();
         
-        // เพิ่ม event listener สำหรับคอลัมน์ใหม่
+        // Add event listener for new columns
         addColumnBtn.addEventListener('click', function() {
-            // หลังจากเพิ่มคอลัมน์ใหม่
+            // After adding a new column
             setTimeout(() => {
                 const newColumnButton = document.createElement('button');
                 newColumnButton.className = 'btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1';
                 newColumnButton.style.cssText = 'font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;';
                 newColumnButton.innerHTML = '<i class="fas fa-times"></i>';
                 
-                // เพิ่มปุ่มลบในคอลัมน์ที่เพิ่มใหม่
-                const newColumn = headerRow.children[headerRow.children.length - 2]; // ก่อนคอลัมน์ปุ่มสุดท้าย
+                // Add remove button to the new column
+                const newColumn = headerRow.children[headerRow.children.length - 2]; // Before the last button column
                 newColumn.classList.add('position-relative');
                 newColumn.appendChild(newColumnButton);
                 
-                // เพิ่ม event listener
+                // Add event listener
                 attachRemoveColumnEvents();
             }, 100);
         });
         
-        // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
+        // Gather table data before submitting the form
         const form = document.getElementById('tableForm');
         const tableDataInput = document.getElementById('table_data');
         
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // อ่านข้อมูลส่วนหัวตาราง
+            // Read table headers
             const headers = [];
             const headerInputs = document.querySelectorAll('.header-cell');
             headerInputs.forEach(input => {
                 headers.push(input.value || '');
             });
             
-            // ตรวจสอบว่ามีส่วนหัวครบทุกช่องหรือไม่
+            // Check if all headers are filled
             const emptyHeaders = headers.filter(h => h.trim() === '');
             if (emptyHeaders.length > 0) {
                 alert('Please fill in all column headers');
                 return;
             }
             
-            // อ่านข้อมูลในตาราง
+            // Read table data
             const rows = [];
             const dataRows = document.querySelectorAll('#editable_table tbody tr');
             
@@ -298,7 +298,7 @@
                 rows.push(rowData);
             });
             
-            // เก็บข้อมูลในฟิลด์ซ่อน
+            // Store data in hidden field
             const tableData = {
                 headers: headers,
                 rows: rows
@@ -306,7 +306,7 @@
             
             tableDataInput.value = JSON.stringify(tableData);
             
-            // ส่งฟอร์ม
+            // Submit the form
             form.submit();
         });
     });
