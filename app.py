@@ -242,7 +242,7 @@ def data():
         tables = []
         print(f"Error fetching table data: {str(e)}")
     
-    return render_template("data_with_chart_updated.html", theme=theme, tables=tables)
+    return render_template("data_with_chart_clean.html", theme=theme, tables=tables)
 
 @app.route("/data/edit-table/<int:content_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลตาราง
 def edit_table_data(content_id):
