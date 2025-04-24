@@ -203,34 +203,39 @@ def upload_data():
 def data():
     theme = get_theme_from_cookie(request)
     
-    # ดึงหัวข้อทั้งหมดจากฐานข้อมูล PostgreSQL
+    # ดึงข้อมูลตารางทั้งหมดโดยตรงจากฐานข้อมูล PostgreSQL
     try:
         conn = get_pg_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("""
-            SELECT id, title, description, created_at, updated_at
-            FROM topics
-            ORDER BY updated_at DESC
-        """)
-        topics = cur.fetchall()
         
-        # ดึงเนื้อหาของแต่ละหัวข้อที่เป็นตาราง
-        for topic in topics:
-            cur.execute("""
-                SELECT id, content, content_type, created_at
-                FROM topic_content
-                WHERE topic_id = %s AND content_type = 'table'
-                ORDER BY created_at DESC
-            """, (topic['id'],))
-            topic['table_contents'] = cur.fetchall()
+        # ดึงเนื้อหาประเภทตารางทั้งหมด
+        cur.execute("""
+            SELECT id, name, description, content, content_type, created_at, updated_at
+            FROM topic_content
+            WHERE content_type = 'table'
+            ORDER BY created_at DESC
+        """)
+        
+        tables = cur.fetchall()
+        
+        # เพิ่มข้อมูลตารางที่แปลงจาก JSON สำหรับแต่ละรายการ
+        for table in tables:
+            if table['content']:
+                try:
+                    table['table_data'] = json.loads(table['content'])
+                except Exception as e:
+                    print(f"Error parsing table data for ID {table['id']}: {str(e)}")
+                    table['table_data'] = None
+            else:
+                table['table_data'] = None
         
         cur.close()
         conn.close()
     except Exception as e:
-        topics = []
-        print(f"Error fetching topics data: {str(e)}")
+        tables = []
+        print(f"Error fetching table data: {str(e)}")
     
-    return render_template("data.html", theme=theme, topics=topics)
+    return render_template("data.html", theme=theme, tables=tables)
 
 @app.route("/data/edit-table/<int:content_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลตาราง
 def edit_table_data(content_id):
@@ -242,11 +247,9 @@ def edit_table_data(content_id):
         
         # ดึงข้อมูลเนื้อหาตาราง
         cur.execute("""
-            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.topic_id, tc.name,
-                   t.title, t.description, t.created_at as topic_created_at, t.updated_at as topic_updated_at
-            FROM topic_content tc
-            JOIN topics t ON tc.topic_id = t.id
-            WHERE tc.id = %s AND tc.content_type = 'table'
+            SELECT id, content, content_type, created_at, name, description, updated_at
+            FROM topic_content
+            WHERE id = %s AND content_type = 'table'
         """, (content_id,))
         
         result = cur.fetchone()
@@ -254,36 +257,29 @@ def edit_table_data(content_id):
         if not result:
             return "ไม่พบข้อมูลตารางที่ต้องการแก้ไข", 404
         
-        topic = {
-            'id': result['topic_id'],
-            'title': result['title'],
-            'description': result['description'],
-            'created_at': result['topic_created_at'],
-            'updated_at': result['topic_updated_at']
-        }
-        
         # หากเป็นการส่งฟอร์ม POST เพื่อบันทึกการแก้ไข
         if request.method == "POST":
             table_data_str = request.form.get("table_data", "")
             data_name = request.form.get("data_name", "").strip()
+            description = request.form.get("description", "").strip()
             
             if not data_name:
                 return render_template("edit_table_data.html", 
                                       theme=theme, 
-                                      error="กรุณาระบุชื่อไฟล์ข้อมูล", 
-                                      topic=topic,
+                                      error="กรุณาระบุชื่อตารางข้อมูล", 
                                       content_id=content_id,
                                       content_name=result['name'],
+                                      description=result['description'],
                                       table_data=json.loads(result['content']))
             
             if not table_data_str:
                 return render_template("edit_table_data.html", 
                                       theme=theme, 
                                       error="ไม่มีข้อมูลตาราง", 
-                                      topic=topic,
                                       content_id=content_id,
                                       content_name=result['name'],
                                       data_name=data_name,
+                                      description=description or result['description'],
                                       table_data=json.loads(result['content']))
             
             try:
@@ -294,28 +290,25 @@ def edit_table_data(content_id):
                     return render_template("edit_table_data.html", 
                                           theme=theme, 
                                           error="รูปแบบข้อมูลตารางไม่ถูกต้อง", 
-                                          topic=topic,
                                           content_id=content_id,
                                           content_name=result['name'],
                                           data_name=data_name,
+                                          description=description or result['description'],
                                           table_data=json.loads(result['content']))
                 
                 # แปลงข้อมูลเป็น JSON string
                 content = json.dumps(table_data)
                 
+                # ถ้าไม่มีคำอธิบาย ให้ใช้คำอธิบายเดิม
+                if not description:
+                    description = result['description']
+                
                 # บันทึกการเปลี่ยนแปลง
                 cur.execute("""
                     UPDATE topic_content 
-                    SET content = %s, name = %s
+                    SET content = %s, name = %s, description = %s, updated_at = CURRENT_TIMESTAMP
                     WHERE id = %s
-                """, (content, data_name, content_id))
-                
-                # อัพเดทเวลาแก้ไขล่าสุดของหัวข้อ
-                cur.execute("""
-                    UPDATE topics 
-                    SET updated_at = CURRENT_TIMESTAMP
-                    WHERE id = %s
-                """, (result['topic_id'],))
+                """, (content, data_name, description, content_id))
                 
                 conn.commit()
                 
@@ -325,10 +318,10 @@ def edit_table_data(content_id):
                 return render_template("edit_table_data.html", 
                                       theme=theme, 
                                       error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}", 
-                                      topic=topic,
                                       content_id=content_id,
                                       content_name=result['name'],
                                       data_name=data_name,
+                                      description=description or result['description'],
                                       table_data=json.loads(result['content']))
         
         # แสดงฟอร์มแก้ไข (GET)
@@ -339,9 +332,9 @@ def edit_table_data(content_id):
         
         return render_template("edit_table_data.html", 
                               theme=theme, 
-                              topic=topic,
                               content_id=content_id,
                               content_name=result['name'],
+                              description=result['description'],
                               table_data=table_data)
         
     except Exception as e:
@@ -438,45 +431,35 @@ def analysis():
         # ดึงธีมจาก cookie
         theme = get_theme_from_cookie(request)
         
-        # ดึงหัวข้อที่มีข้อมูลตารางจากฐานข้อมูล PostgreSQL
+        # ดึงข้อมูลตารางทั้งหมดจากฐานข้อมูล PostgreSQL
         conn = get_pg_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # ดึงหัวข้อที่มีเนื้อหาประเภทตาราง
+        # ดึงเนื้อหาประเภทตารางทั้งหมด
         cur.execute("""
-            SELECT t.id, t.title, t.description 
-            FROM topics t
-            JOIN topic_content tc ON t.id = tc.topic_id
-            WHERE tc.content_type = 'table'
-            GROUP BY t.id, t.title, t.description
-            ORDER BY t.updated_at DESC
+            SELECT id, name, description, content, content_type, created_at, updated_at
+            FROM topic_content
+            WHERE content_type = 'table'
+            ORDER BY created_at DESC
         """)
-        topics_with_tables = cur.fetchall()
         
-        # สำหรับแต่ละหัวข้อ ดึงเนื้อหาประเภทตารางล่าสุด
-        for topic in topics_with_tables:
-            cur.execute("""
-                SELECT id, content, created_at
-                FROM topic_content
-                WHERE topic_id = %s AND content_type = 'table'
-                ORDER BY created_at DESC
-                LIMIT 1
-            """, (topic['id'],))
-            latest_table = cur.fetchone()
-            
-            if latest_table:
-                # แปลงข้อมูล JSON เป็น dictionary
+        tables = cur.fetchall()
+        
+        # เพิ่มข้อมูลตารางที่แปลงจาก JSON สำหรับแต่ละรายการ
+        for table in tables:
+            if table['content']:
                 try:
-                    table_data = json.loads(latest_table['content'])
-                    topic['table_data'] = table_data
+                    table['table_data'] = json.loads(table['content'])
                 except Exception as e:
-                    print(f"Error parsing table data: {str(e)}")
-                    topic['table_data'] = None
+                    print(f"Error parsing table data for ID {table['id']}: {str(e)}")
+                    table['table_data'] = None
+            else:
+                table['table_data'] = None
         
         cur.close()
         conn.close()
         
-        return render_template("analysis.html", topics=topics_with_tables, theme=theme)
+        return render_template("analysis.html", tables=tables, theme=theme)
     except Exception as e:
         return f"เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล: {str(e)}", 500
 
