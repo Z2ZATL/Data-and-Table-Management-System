@@ -131,9 +131,9 @@ def upload_data():
                     elif file_ext == '.tsv':
                         df = pd.read_csv(file, sep='\t', header=0 if has_header else None)
                     
-                    # ถ้าไม่มีส่วนหัว ให้สร้างชื่อคอลัมน์เป็น "คอลัมน์ 1", "คอลัมน์ 2", ...
+                    # If no header exists, create column names as "Column 1", "Column 2", ...
                     if not has_header:
-                        df.columns = [f"คอลัมน์ {i+1}" for i in range(len(df.columns))]
+                        df.columns = [f"Column {i+1}" for i in range(len(df.columns))]
                     
                     # แปลงข้อมูลเป็นรูปแบบที่ต้องการ
                     headers = df.columns.tolist()
