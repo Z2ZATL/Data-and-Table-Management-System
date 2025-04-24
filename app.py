@@ -104,36 +104,51 @@ def upload_data():
             
             if import_method == "file":
                 # อัพโหลดไฟล์
-                if 'data_file' not in request.files:
+                if 'file' not in request.files:
                     return render_template("upload_data.html", theme=theme, error="ไม่พบไฟล์ที่อัพโหลด")
                 
-                data_file = request.files['data_file']
+                file = request.files['file']
                 
-                if data_file.filename == '':
+                if file.filename == '':
                     return render_template("upload_data.html", theme=theme, error="ไม่ได้เลือกไฟล์")
                 
                 # ตรวจสอบนามสกุลไฟล์
-                filename = secure_filename(data_file.filename)
+                filename = secure_filename(file.filename)
                 file_ext = os.path.splitext(filename)[1].lower()
                 
                 if file_ext not in ['.csv', '.xlsx', '.xls', '.tsv']:
                     return render_template("upload_data.html", theme=theme, error="รูปแบบไฟล์ไม่รองรับ (รองรับเฉพาะ .csv, .xlsx, .xls และ .tsv)")
                 
+                # ตรวจสอบว่าแถวแรกเป็นส่วนหัวตารางหรือไม่
+                has_header = request.form.get("has_header") == "1"
+                
                 # อ่านข้อมูลจากไฟล์
                 try:
                     if file_ext in ['.xlsx', '.xls']:
-                        df = pd.read_excel(data_file)
+                        df = pd.read_excel(file, header=0 if has_header else None)
                     elif file_ext == '.csv':
-                        df = pd.read_csv(data_file)
+                        df = pd.read_csv(file, header=0 if has_header else None)
                     elif file_ext == '.tsv':
-                        df = pd.read_csv(data_file, sep='\t')
+                        df = pd.read_csv(file, sep='\t', header=0 if has_header else None)
+                    
+                    # ถ้าไม่มีส่วนหัว ให้สร้างชื่อคอลัมน์เป็น "คอลัมน์ 1", "คอลัมน์ 2", ...
+                    if not has_header:
+                        df.columns = [f"คอลัมน์ {i+1}" for i in range(len(df.columns))]
                     
                     # แปลงข้อมูลเป็นรูปแบบที่ต้องการ
                     headers = df.columns.tolist()
-                    rows = df.values.tolist()
                     
-                    # แปลงเซลล์ที่เป็น NaN ให้เป็นค่าว่าง
-                    rows = [['' if pd.isna(cell) else cell for cell in row] for row in rows]
+                    # แปลงข้อมูลให้เป็น string ทั้งหมดเพื่อป้องกันปัญหา JSON encoding
+                    # และเปลี่ยน NaN เป็น empty string
+                    rows = []
+                    for _, row in df.iterrows():
+                        new_row = []
+                        for val in row:
+                            if pd.isna(val):
+                                new_row.append("")
+                            else:
+                                new_row.append(str(val))
+                        rows.append(new_row)
                     
                     table_data = {
                         'headers': headers,

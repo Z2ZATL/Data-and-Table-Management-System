@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}อัพโหลดข้อมูล{% endblock %}
+{% block title %}อัพโหลดข้อมูลจากไฟล์{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">อัพโหลดข้อมูลตาราง</h1>
-                <p class="lead mb-4">อัพโหลดไฟล์ CSV, Excel หรือกรอกข้อมูลตารางโดยตรงเพื่อสร้างตารางข้อมูลใหม่</p>
+                <h1 class="display-4 fw-bold mb-4">อัพโหลดข้อมูลจากไฟล์</h1>
+                <p class="lead mb-4">อัพโหลดไฟล์ Excel หรือ CSV เพื่อนำเข้าข้อมูลตาราง</p>
             </div>
         </div>
     </div>
@@ -16,105 +16,116 @@
 
 <div class="container py-5">
     <div class="row">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-12">
             <div class="card shadow-lg mb-5">
-                <div class="card-header">
-                    <h5 class="mb-0">อัพโหลดไฟล์ข้อมูล</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-upload me-2"></i> อัพโหลดไฟล์ข้อมูล
+                    </h5>
+                    <div>
+                        <a href="/data" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-arrow-left me-1"></i> กลับ
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if error %}
-                        <div class="alert alert-danger mb-4">
-                            <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
-                        </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     {% endif %}
                     
                     {% if success %}
-                        <div class="alert alert-success mb-4">
-                            <i class="fas fa-check-circle me-2"></i> {{ success }}
-                        </div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> {{ success }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     {% endif %}
                     
-                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                    <form action="/upload-data" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         <div class="mb-4">
                             <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="data_name" name="data_name" placeholder="ชื่อตารางข้อมูลของคุณ" required>
+                            <input type="text" class="form-control" id="data_name" name="data_name" placeholder="เช่น ราคาทองคำ, ดัชนีหุ้น, ยอดขายรายเดือน" required>
+                            <small class="form-text text-muted">ระบุชื่อที่ต้องการใช้เรียกข้อมูลนี้</small>
                         </div>
                         
                         <div class="mb-4">
                             <label for="description" class="form-label">คำอธิบาย</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="อธิบายเกี่ยวกับชุดข้อมูลนี้"></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="เช่น ข้อมูลราคาทองคำรายวันประจำเดือนมกราคม 2567"></textarea>
+                            <small class="form-text text-muted">ระบุรายละเอียดเพิ่มเติมเกี่ยวกับข้อมูล (ไม่บังคับ)</small>
                         </div>
                         
                         <div class="mb-4">
-                            <label class="form-label">วิธีการนำเข้าข้อมูล</label>
-                            <div class="d-flex gap-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="import_method" id="method_file" value="file" checked>
-                                    <label class="form-check-label" for="method_file">
-                                        <i class="fas fa-file-upload me-1"></i> อัพโหลดไฟล์
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="import_method" id="method_manual" value="manual">
-                                    <label class="form-check-label" for="method_manual">
-                                        <i class="fas fa-edit me-1"></i> กรอกข้อมูลเอง
-                                    </label>
-                                </div>
-                            </div>
+                            <label for="file" class="form-label">เลือกไฟล์ <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls,.csv" required>
+                            <small class="form-text text-muted">รองรับไฟล์นามสกุล .xlsx, .xls, .csv เท่านั้น</small>
                         </div>
                         
-                        <div id="file_upload_section" class="mb-4">
-                            <label for="data_file" class="form-label">ไฟล์ข้อมูล (CSV, Excel, TSV) <span class="text-danger">*</span></label>
-                            <input type="file" class="form-control" id="data_file" name="data_file" accept=".csv,.xlsx,.xls,.tsv">
-                            <div class="form-text mt-2">
-                                <i class="fas fa-info-circle me-1"></i> รองรับไฟล์ .csv, .xlsx, .xls และ .tsv ขนาดไม่เกิน 5MB
-                            </div>
-                        </div>
-                        
-                        <div id="manual_entry_section" class="mb-4" style="display: none;">
-                            <label class="form-label">ข้อมูลตาราง <span class="text-danger">*</span></label>
-                            <div class="manual-table-container">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="manual_table">
-                                        <thead>
-                                            <tr id="header_row">
-                                                <th><input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ 1" required></th>
-                                                <th><input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ 2" required></th>
-                                                <th>
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add_column">
-                                                        <i class="fas fa-plus"></i>
-                                                    </button>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล"></td>
-                                                <td><input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล"></td>
-                                                <td></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="mt-2 d-flex gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="add_row">
-                                        <i class="fas fa-plus me-1"></i> เพิ่มแถว
-                                    </button>
-                                </div>
-                                
-                                <input type="hidden" name="table_data" id="table_data">
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="has_header" name="has_header" value="1" checked>
+                                <label class="form-check-label" for="has_header">
+                                    แถวแรกเป็นส่วนหัวตาราง
+                                </label>
                             </div>
                         </div>
                         
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="/" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> กลับ
+                            <a href="/data" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> ยกเลิก
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-cloud-upload-alt me-1"></i> อัพโหลดและสร้างตารางข้อมูล
+                                <i class="fas fa-upload me-1"></i> อัพโหลดข้อมูล
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i> วิธีการเตรียมไฟล์ข้อมูล
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">ข้อแนะนำในการเตรียมไฟล์ Excel</h6>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> แถวแรกควรเป็นชื่อคอลัมน์
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> ควรมีแต่ข้อมูลที่ต้องการนำเข้าเท่านั้น
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> ควรลบแถวและคอลัมน์ที่ไม่ต้องการออกก่อนอัพโหลด
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> ไม่ควรมีเซลล์ที่รวมกันหรือตกแต่งพิเศษ
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">ข้อแนะนำในการเตรียมไฟล์ CSV</h6>
+                            <ul class="list-group list-group-flush mb-4">
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> ควรใช้เครื่องหมายจุลภาค (,) เป็นตัวคั่น
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> ตรวจสอบการเข้ารหัสให้เป็น UTF-8
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> หากมีเครื่องหมายจุลภาคในข้อมูล ควรอยู่ในเครื่องหมายคำพูด (" ")
+                                </li>
+                                <li class="list-group-item bg-transparent">
+                                    <i class="fas fa-check-circle text-success me-2"></i> บันทึกเป็น CSV (Comma delimited) (*.csv)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -124,103 +135,48 @@
 
 {% block scripts %}
 <script>
+    // เพิ่ม JavaScript สำหรับการตรวจสอบฟอร์ม
     document.addEventListener('DOMContentLoaded', function() {
-        // สลับการแสดงส่วนอัพโหลดไฟล์/กรอกข้อมูลเอง
-        const methodFile = document.getElementById('method_file');
-        const methodManual = document.getElementById('method_manual');
-        const fileUploadSection = document.getElementById('file_upload_section');
-        const manualEntrySection = document.getElementById('manual_entry_section');
+        // ตรวจสอบความถูกต้องของฟอร์ม
+        const forms = document.querySelectorAll('.needs-validation');
         
-        methodFile.addEventListener('change', function() {
-            fileUploadSection.style.display = 'block';
-            manualEntrySection.style.display = 'none';
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
         });
         
-        methodManual.addEventListener('change', function() {
-            fileUploadSection.style.display = 'none';
-            manualEntrySection.style.display = 'block';
-        });
-        
-        // ปุ่มเพิ่มคอลัมน์
-        const addColumnBtn = document.getElementById('add_column');
-        const headerRow = document.getElementById('header_row');
-        
-        addColumnBtn.addEventListener('click', function() {
-            const newHeader = document.createElement('th');
-            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์ ${headerRow.cells.length}">`;
+        // ตรวจสอบขนาดและนามสกุลไฟล์
+        const fileInput = document.getElementById('file');
+        fileInput.addEventListener('change', function() {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
+            const allowedExtensions = ['.xlsx', '.xls', '.csv'];
             
-            // แทรกคอลัมน์ใหม่ก่อนปุ่ม
-            headerRow.insertBefore(newHeader, headerRow.lastElementChild);
-            
-            // เพิ่มเซลล์ในแต่ละแถวข้อมูล
-            const dataRows = document.querySelectorAll('#manual_table tbody tr');
-            dataRows.forEach(row => {
-                const newCell = document.createElement('td');
-                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
-                row.insertBefore(newCell, row.lastElementChild);
-            });
-        });
-        
-        // ปุ่มเพิ่มแถว
-        const addRowBtn = document.getElementById('add_row');
-        const tableBody = document.querySelector('#manual_table tbody');
-        
-        addRowBtn.addEventListener('click', function() {
-            const headerColumns = headerRow.cells.length - 1; // ไม่รวมคอลัมน์ปุ่ม
-            const newRow = document.createElement('tr');
-            
-            for (let i = 0; i < headerColumns; i++) {
-                const cell = document.createElement('td');
-                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
-                newRow.appendChild(cell);
-            }
-            
-            // เพิ่มเซลล์ว่างสำหรับความสมดุล
-            const emptyCell = document.createElement('td');
-            newRow.appendChild(emptyCell);
-            
-            tableBody.appendChild(newRow);
-        });
-        
-        // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
-        const form = document.querySelector('form');
-        const tableDataInput = document.getElementById('table_data');
-        
-        form.addEventListener('submit', function(e) {
-            // ตรวจสอบว่าเลือกวิธีกรอกข้อมูลเอง
-            if (methodManual.checked) {
-                e.preventDefault();
+            if (this.files.length > 0) {
+                const file = this.files[0];
                 
-                // อ่านข้อมูลส่วนหัวตาราง
-                const headers = [];
-                const headerInputs = document.querySelectorAll('.header-cell');
-                headerInputs.forEach(input => {
-                    headers.push(input.value || '');
-                });
+                // ตรวจสอบนามสกุลไฟล์
+                const fileName = file.name;
+                const fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
                 
-                // อ่านข้อมูลในตาราง
-                const rows = [];
-                const dataRows = document.querySelectorAll('#manual_table tbody tr');
+                if (!allowedExtensions.includes(fileExt)) {
+                    alert('รองรับเฉพาะไฟล์ .xlsx, .xls, .csv เท่านั้น');
+                    this.value = '';
+                    return;
+                }
                 
-                dataRows.forEach(row => {
-                    const rowData = [];
-                    const cells = row.querySelectorAll('.data-cell');
-                    cells.forEach(cell => {
-                        rowData.push(cell.value || '');
-                    });
-                    rows.push(rowData);
-                });
-                
-                // เก็บข้อมูลในฟิลด์ซ่อน
-                const tableData = {
-                    headers: headers,
-                    rows: rows
-                };
-                
-                tableDataInput.value = JSON.stringify(tableData);
-                
-                // ส่งฟอร์ม
-                form.submit();
+                // ตรวจสอบขนาดไฟล์
+                if (file.size > maxSize) {
+                    alert('ขนาดไฟล์ต้องไม่เกิน 10MB');
+                    this.value = '';
+                    return;
+                }
             }
         });
     });
