@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}สร้างตารางข้อมูลใหม่{% endblock %}
+{% block title %}Create New Table Data{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">สร้างตารางข้อมูลใหม่</h1>
-                <p class="lead mb-4">กรอกข้อมูลแบบตารางด้วยตัวเอง</p>
+                <h1 class="display-4 fw-bold mb-4">Create New Table Data</h1>
+                <p class="lead mb-4">Enter table data manually</p>
             </div>
         </div>
     </div>
@@ -20,11 +20,11 @@
             <div class="card shadow-lg mb-5">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-table me-2"></i> ข้อมูลตารางใหม่
+                        <i class="fas fa-table me-2"></i> New Table Data
                     </h5>
                     <div>
                         <a href="/data" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-arrow-left me-1"></i> กลับ
+                            <i class="fas fa-arrow-left me-1"></i> Back
                         </a>
                     </div>
                 </div>
@@ -37,19 +37,19 @@
                     
                     <form id="tableForm" action="/data/add-table" method="POST">
                         <div class="mb-4">
-                            <label for="title" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
+                            <label for="title" class="form-label">Table Title <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="title" name="title" value="{{ title or '' }}" required>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="description" class="form-label">คำอธิบาย</label>
+                            <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" rows="3">{{ description or '' }}</textarea>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or '' }}" placeholder="เช่น ราคาทอง, อัตราเงินเฟ้อ, ยอดขาย" required>
-                            <small class="form-text text-muted">ระบุชื่อสำหรับตารางข้อมูลนี้เพื่อให้ง่ายต่อการอ้างอิง</small>
+                            <label for="data_name" class="form-label">Table Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or '' }}" placeholder="e.g., Gold Prices, Inflation Rate, Sales Data" required>
+                            <small class="form-text text-muted">Specify a name for this table to make it easy to reference</small>
                         </div>
                         
                         <div class="table-responsive mb-4">
@@ -58,11 +58,11 @@
                                     <tr id="header_row">
                                         <th class="position-relative">
                                             <input type="text" class="form-control form-control-sm header-cell" 
-                                                  value="คอลัมน์ 1" placeholder="ชื่อคอลัมน์" required>
+                                                  value="Column 1" placeholder="Column Header" required>
                                         </th>
                                         <th class="position-relative">
                                             <input type="text" class="form-control form-control-sm header-cell" 
-                                                  value="คอลัมน์ 2" placeholder="ชื่อคอลัมน์" required>
+                                                  value="Column 2" placeholder="Column Header" required>
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1" style="font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;">
                                                 <i class="fas fa-times"></i>
                                             </button>
@@ -78,11 +78,11 @@
                                     <tr>
                                         <td>
                                             <input type="text" class="form-control form-control-sm data-cell" 
-                                                  value="" placeholder="ข้อมูล">
+                                                  value="" placeholder="Data">
                                         </td>
                                         <td>
                                             <input type="text" class="form-control form-control-sm data-cell" 
-                                                  value="" placeholder="ข้อมูล">
+                                                  value="" placeholder="Data">
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-row">
@@ -96,7 +96,7 @@
                         
                         <div class="mb-4">
                             <button type="button" class="btn btn-sm btn-outline-primary" id="add_row">
-                                <i class="fas fa-plus me-1"></i> เพิ่มแถว
+                                <i class="fas fa-plus me-1"></i> Add Row
                             </button>
                         </div>
                         
@@ -104,10 +104,10 @@
                         
                         <div class="d-flex justify-content-between mt-4">
                             <a href="/data" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> ยกเลิก
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> บันทึกข้อมูลตาราง
+                                <i class="fas fa-save me-1"></i> Save Table Data
                             </button>
                         </div>
                     </form>
@@ -178,7 +178,7 @@
                     if (rows.length > 1) {
                         this.closest('tr').remove();
                     } else {
-                        alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
+                        alert('Table must have at least one row');
                     }
                 });
             });
@@ -194,8 +194,8 @@
                 button.addEventListener('click', function() {
                     // ตรวจสอบว่ามีมากกว่า 2 คอลัมน์หรือไม่
                     const headerCells = headerRow.querySelectorAll('th');
-                    if (headerCells.length <= 3) { // รวมคอลัมน์ปุ่มด้วย
-                        alert('ต้องมีอย่างน้อย 2 คอลัมน์ในตาราง');
+                    if (headerCells.length <= 3) { // Including button column
+                        alert('Table must have at least 2 columns');
                         return;
                     }
                     
@@ -253,7 +253,7 @@
             // ตรวจสอบว่ามีส่วนหัวครบทุกช่องหรือไม่
             const emptyHeaders = headers.filter(h => h.trim() === '');
             if (emptyHeaders.length > 0) {
-                alert('กรุณากรอกชื่อคอลัมน์ให้ครบทุกช่อง');
+                alert('Please fill in all column headers');
                 return;
             }
             
