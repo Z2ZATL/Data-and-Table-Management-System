@@ -49,9 +49,9 @@
                                                         <div class="small text-muted">{{ table.description }}</div>
                                                     {% endif %}
                                                     <div class="small text-muted mt-1">
-                                                        Created: {{ table.created_at.strftime('%d/%m/%Y %H:%M') if table.created_at else '-' }}
+                                                        Created: {{ table.created_at.strftime('%Y-%m-%d %H:%M') if table.created_at else '-' }}
                                                         {% if table.updated_at and table.created_at != table.updated_at %}
-                                                        | Last updated: {{ table.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                                                        | Last updated: {{ table.updated_at.strftime('%Y-%m-%d %H:%M') }}
                                                         {% endif %}
                                                     </div>
                                                 </div>
