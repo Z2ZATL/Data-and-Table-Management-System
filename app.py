@@ -355,11 +355,12 @@ def add_table_data():
         # รับข้อมูลจากฟอร์ม
         data_name = request.form.get("data_name", "").strip()
         table_data_str = request.form.get("table_data", "")
+        description = request.form.get("description", "").strip()
         
         if not data_name:
             return render_template("edit_table_data.html", 
                                   theme=theme, 
-                                  error="กรุณาระบุชื่อไฟล์ข้อมูล",
+                                  error="กรุณาระบุชื่อตารางข้อมูล",
                                   is_new=True)
         
         if not table_data_str:
@@ -367,6 +368,7 @@ def add_table_data():
                                   theme=theme, 
                                   error="ไม่มีข้อมูลตาราง",
                                   data_name=data_name,
+                                  description=description,
                                   is_new=True)
         
         try:
@@ -379,32 +381,28 @@ def add_table_data():
                                       theme=theme, 
                                       error="รูปแบบข้อมูลตารางไม่ถูกต้อง",
                                       data_name=data_name,
+                                      description=description,
                                       is_new=True)
             
             # เริ่มต้นบันทึกข้อมูล
             conn = get_pg_connection()
             cur = conn.cursor()
             
-            # ใช้ชื่อไฟล์ข้อมูลเป็นชื่อหัวข้อ
-            title = data_name
-            description = f"ข้อมูล {data_name} ที่สร้างเมื่อ {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M')}"
+            # ถ้าไม่มีคำอธิบาย สร้างขึ้นเองอัตโนมัติ
+            if not description:
+                from datetime import datetime
+                description = f"ข้อมูล {data_name} ที่สร้างเมื่อ {datetime.now().strftime('%d/%m/%Y %H:%M')}"
             
-            # สร้างหัวข้อใหม่
-            cur.execute("""
-                INSERT INTO topics (title, description)
-                VALUES (%s, %s)
-                RETURNING id
-            """, (title, description))
-            
-            new_topic_id = cur.fetchone()[0]
-            
-            # บันทึกข้อมูลตาราง
+            # บันทึกข้อมูลตารางโดยตรง (ไม่ต้องสร้างหัวข้อ)
             content = json.dumps(table_data)
             
             cur.execute("""
-                INSERT INTO topic_content (topic_id, content, content_type, name)
+                INSERT INTO topic_content (content, content_type, name, description)
                 VALUES (%s, %s, %s, %s)
-            """, (new_topic_id, content, "table", data_name))
+                RETURNING id
+            """, (content, "table", data_name, description))
+            
+            new_content_id = cur.fetchone()[0]
             
             conn.commit()
             cur.close()
@@ -417,6 +415,7 @@ def add_table_data():
                                   theme=theme, 
                                   error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}",
                                   data_name=data_name,
+                                  description=description,
                                   is_new=True)
     
     # สร้างตารางเปล่า
@@ -425,18 +424,8 @@ def add_table_data():
         "rows": [[""]]
     }
     
-    # สร้างหัวข้อเปล่า
-    topic = {
-        'id': None,
-        'title': '',
-        'description': '',
-        'created_at': None,
-        'updated_at': None
-    }
-    
     return render_template("edit_table_data.html", 
                           theme=theme, 
-                          topic=topic,
                           content_id=None,
                           table_data=empty_table,
                           is_new=True)
