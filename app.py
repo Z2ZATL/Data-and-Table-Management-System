@@ -158,22 +158,22 @@ def upload_data():
                     return render_template("upload_data.html", theme=theme, error=f"ไม่สามารถอ่านข้อมูลจากไฟล์ได้: {str(e)}")
             
             else:  # method == "manual"
-                # กรอกข้อมูลเอง
+                # Manual data entry
                 table_data_str = request.form.get("table_data", "")
                 
                 if not table_data_str:
-                    return render_template("upload_data.html", theme=theme, error="ไม่มีข้อมูลตาราง")
+                    return render_template("upload_data.html", theme=theme, error="No table data provided")
                 
                 try:
                     table_data = json.loads(table_data_str)
                 except:
-                    return render_template("upload_data.html", theme=theme, error="ข้อมูลตารางไม่ถูกต้อง")
+                    return render_template("upload_data.html", theme=theme, error="Invalid table data format")
             
-            # เพิ่มข้อมูลตาราง
+            # Add table data
             if table_data:
-                # ตรวจสอบความถูกต้องของข้อมูล
+                # Validate data format
                 if 'headers' not in table_data or 'rows' not in table_data:
-                    return render_template("upload_data.html", theme=theme, error="รูปแบบข้อมูลตารางไม่ถูกต้อง")
+                    return render_template("upload_data.html", theme=theme, error="Invalid table data format")
                 
                 # แปลงข้อมูลเป็น JSON string
                 content = json.dumps(table_data)
