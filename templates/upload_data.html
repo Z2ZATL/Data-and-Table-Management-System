@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
                 <h1 class="display-4 fw-bold mb-4">อัพโหลดข้อมูลตาราง</h1>
-                <p class="lead mb-4">อัพโหลดไฟล์ CSV, Excel หรือกรอกข้อมูลตารางโดยตรงเพื่อสร้างชุดข้อมูลใหม่</p>
+                <p class="lead mb-4">อัพโหลดไฟล์ CSV, Excel หรือกรอกข้อมูลตารางโดยตรงเพื่อสร้างตารางข้อมูลใหม่</p>
             </div>
         </div>
     </div>
@@ -36,8 +36,8 @@
                     
                     <form action="/upload" method="POST" enctype="multipart/form-data">
                         <div class="mb-4">
-                            <label for="title" class="form-label">ชื่อหัวข้อ <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="title" name="title" placeholder="ชื่อชุดข้อมูลของคุณ" required>
+                            <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="data_name" name="data_name" placeholder="ชื่อตารางข้อมูลของคุณ" required>
                         </div>
                         
                         <div class="mb-4">
@@ -111,7 +111,7 @@
                                 <i class="fas fa-arrow-left me-1"></i> กลับ
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-cloud-upload-alt me-1"></i> อัพโหลดและสร้างตาราง
+                                <i class="fas fa-cloud-upload-alt me-1"></i> อัพโหลดและสร้างตารางข้อมูล
                             </button>
                         </div>
                     </form>

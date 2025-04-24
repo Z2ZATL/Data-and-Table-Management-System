@@ -91,25 +91,14 @@ def upload_data():
     
     if request.method == "POST":
         # รับข้อมูลจากฟอร์ม
-        title = request.form.get("title", "").strip()
+        data_name = request.form.get("data_name", "").strip()
         description = request.form.get("description", "").strip()
         import_method = request.form.get("import_method", "file")
         
-        if not title:
-            return render_template("upload_data.html", theme=theme, error="กรุณาระบุชื่อหัวข้อ")
+        if not data_name:
+            return render_template("upload_data.html", theme=theme, error="กรุณาระบุชื่อตารางข้อมูล")
         
         try:
-            # เริ่มสร้างหัวข้อใหม่
-            conn = get_pg_connection()
-            cur = conn.cursor()
-            cur.execute("""
-                INSERT INTO topics (title, description)
-                VALUES (%s, %s)
-                RETURNING id
-            """, (title, description))
-            
-            new_topic_id = cur.fetchone()[0]
-            
             # ตรวจสอบวิธีการนำเข้า
             table_data = None
             
@@ -151,9 +140,6 @@ def upload_data():
                         'rows': rows
                     }
                 except Exception as e:
-                    conn.rollback()
-                    cur.execute("DELETE FROM topics WHERE id = %s", (new_topic_id,))
-                    conn.commit()
                     return render_template("upload_data.html", theme=theme, error=f"ไม่สามารถอ่านข้อมูลจากไฟล์ได้: {str(e)}")
             
             else:  # method == "manual"
@@ -168,7 +154,7 @@ def upload_data():
                 except:
                     return render_template("upload_data.html", theme=theme, error="ข้อมูลตารางไม่ถูกต้อง")
             
-            # เพิ่มเนื้อหาตารางในหัวข้อ
+            # เพิ่มข้อมูลตาราง
             if table_data:
                 # ตรวจสอบความถูกต้องของข้อมูล
                 if 'headers' not in table_data or 'rows' not in table_data:
@@ -177,21 +163,27 @@ def upload_data():
                 # แปลงข้อมูลเป็น JSON string
                 content = json.dumps(table_data)
                 
-                # บันทึกลงฐานข้อมูล
+                # ถ้าไม่มีคำอธิบาย สร้างขึ้นเองอัตโนมัติ
+                if not description:
+                    from datetime import datetime
+                    description = f"ข้อมูล {data_name} ที่อัพโหลดเมื่อ {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+                
+                # เริ่มต้นบันทึกข้อมูล
+                conn = get_pg_connection()
+                cur = conn.cursor()
+                
+                # บันทึกข้อมูลตารางโดยตรง (ไม่ต้องสร้างหัวข้อ)
                 cur.execute("""
-                    INSERT INTO topic_content (topic_id, content, content_type)
-                    VALUES (%s, %s, %s)
-                """, (new_topic_id, content, "table"))
+                    INSERT INTO topic_content (content, content_type, name, description)
+                    VALUES (%s, %s, %s, %s)
+                """, (content, "table", data_name, description))
                 
                 conn.commit()
                 cur.close()
                 conn.close()
                 
-                return render_template("upload_data.html", theme=theme, success=f"สร้างหัวข้อและข้อมูลตารางสำเร็จแล้ว")
+                return render_template("upload_data.html", theme=theme, success=f"สร้างข้อมูลตารางสำเร็จแล้ว")
             else:
-                conn.rollback()
-                cur.execute("DELETE FROM topics WHERE id = %s", (new_topic_id,))
-                conn.commit()
                 return render_template("upload_data.html", theme=theme, error="ไม่มีข้อมูลตารางที่จะบันทึก")
             
         except Exception as e:
