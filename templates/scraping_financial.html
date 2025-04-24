@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
-{% block title %}ดึงข้อมูลการเงินและราคา{% endblock %}
+{% block title %}Extract Financial Data and Prices{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="container">
         <div class="row">
             <div class="col-md-8 mx-auto text-center text-white">
-                <h1 class="display-4 fw-bold mb-4">ดึงข้อมูลการเงินและราคา</h1>
-                <p class="lead mb-0">ดึงข้อมูลราคาหุ้น ราคาทอง และอัตราแลกเปลี่ยนอย่างรวดเร็ว</p>
+                <h1 class="display-4 fw-bold mb-4">Extract Financial Data and Prices</h1>
+                <p class="lead mb-0">Quickly extract stock prices, gold prices, and exchange rates</p>
             </div>
         </div>
     </div>
@@ -17,49 +17,49 @@
 <div class="container mb-5">
     <div class="row">
         <div class="col-md-10 mx-auto">
-            <!-- ส่วนค้นหา -->
+            <!-- Search Section -->
             <div class="card shadow-lg mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0"><i class="fas fa-search me-2"></i>ค้นหาข้อมูล</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-search me-2"></i>Search Data</h5>
                     <div class="dropdown">
                         <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataOptionsBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-cog me-1"></i> จัดการข้อมูล
+                            <i class="fas fa-cog me-1"></i> Manage Data
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dataOptionsBtn">
-                            <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
-                            <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                            <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                            <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> Upload Data from File</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="url" class="form-label">URL เว็บไซต์</label>
+                        <label for="url" class="form-label">Website URL</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-globe"></i></span>
                             <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" required value="{{ searched_url|default('') }}">
                             <button type="button" class="btn btn-info btn-lg" id="table-btn">
-                                <i class="fas fa-table me-1"></i> ดึงตารางหุ้น/ราคา
+                                <i class="fas fa-table me-1"></i> Extract Stock/Price Tables
                             </button>
                         </div>
-                        <div class="form-text">ป้อน URL ของเว็บไซต์ที่เกี่ยวกับการเงินและราคา เช่น set.or.th, goldtraders.or.th หรือ bot.or.th</div>
+                        <div class="form-text">Enter URL of financial and pricing websites, such as set.or.th, goldtraders.or.th, or bot.or.th</div>
                         <div class="alert alert-info p-2 mt-2" role="alert">
-                            <i class="fas fa-info-circle me-1"></i> <small>เครื่องมือนี้เหมาะสำหรับเว็บไซต์ที่มีข้อมูลตารางการเงินเช่น ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน</small>
+                            <i class="fas fa-info-circle me-1"></i> <small>This tool is ideal for websites with financial tables such as stock prices, gold prices, and exchange rates</small>
                         </div>
                     </div>
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="filter-numerical" {% if filter_numerical %}checked{% endif %} checked disabled>
                         <label class="form-check-label" for="filter-numerical">
-                            <i class="fas fa-chart-line me-1"></i> เน้นเฉพาะข้อมูลตัวเลขทางการเงิน (ราคาหุ้น, ราคาทอง, อัตราแลกเปลี่ยน)
+                            <i class="fas fa-chart-line me-1"></i> Focus on financial numerical data (stock prices, gold prices, exchange rates)
                         </label>
                     </div>
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="use-ai" checked>
                         <label class="form-check-label" for="use-ai">
-                            <i class="fas fa-robot me-1"></i> ใช้ AI วิเคราะห์และสรุปเนื้อหา
+                            <i class="fas fa-robot me-1"></i> Use AI to analyze and summarize content
                         </label>
                     </div>
                     <div class="badge bg-info p-2 mb-3">
-                        <i class="fas fa-robot me-1"></i> ใช้ Gemini AI ช่วยวิเคราะห์ข้อมูลจากเนื้อหาบทความ
+                        <i class="fas fa-robot me-1"></i> Using Gemini AI to analyze data from article content
                     </div>
                     <form id="content-form" action="{{ url_for('scrape_website') }}" method="post" style="display: none;">
                         <input type="hidden" name="url" id="content-url">
@@ -69,12 +69,12 @@
                 </div>
             </div>
             
-            <!-- ส่วนผลลัพธ์ -->            
+            <!-- Results Section -->            
             {% if content %}
             <div class="card shadow-lg">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-file-alt me-2"></i>เนื้อหาจาก 
+                        <i class="fas fa-file-alt me-2"></i>Content from 
                         <a href="{{ searched_url }}" target="_blank" class="text-primary">{{ searched_url }}</a>
                     </h5>
                 </div>
@@ -87,7 +87,7 @@
                                     {{ content.ai_summary|safe|replace('\n', '<br>')|replace('  ', '&nbsp;&nbsp;') }}
                                 </div>
                                 <div class="text-end">
-                                    <span class="badge bg-primary"><i class="fas fa-robot me-1"></i> สรุปโดย Gemini AI</span>
+                                    <span class="badge bg-primary"><i class="fas fa-robot me-1"></i> Summarized by Gemini AI</span>
                                 </div>
                             </div>
                             <hr>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="card-footer text-muted">
-                    <small>* เนื้อหาอาจถูกตัดทอนหรือถูกจัดรูปแบบใหม่ตามความเหมาะสม</small>
+                    <small>* Content may be truncated or reformatted as appropriate</small>
                 </div>
             </div>
             {% endif %}
