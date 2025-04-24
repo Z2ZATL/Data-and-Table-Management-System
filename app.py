@@ -63,7 +63,7 @@ def index():
         tables = []
         print(f"Error fetching tables: {str(e)}")
     
-    return render_template("index.html", theme=theme, tables=tables)  # ส่งไฟล์ HTML ที่ชื่อ "index.html" พร้อมข้อมูลตาราง
+    return render_template("data_with_chart_clean.html", theme=theme, tables=tables)  # ส่งไฟล์ HTML ที่ชื่อ "data_with_chart_clean.html" เพื่อแก้ปัญหาจอมืด
 
 # ลบฟังก์ชันการจัดการหัวข้อออกแล้ว เพื่อให้เหลือเพียงการจัดการข้อมูลตารางโดยตรง
 
