@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}จัดการข้อมูล{% endblock %}
+{% block title %}Manage Data{% endblock %}
 
 {% block content %}
 <div class="container py-5">
@@ -8,15 +8,15 @@
         <div class="col-12">
             <div class="card shadow-lg">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">ข้อมูลตารางทั้งหมด</h5>
+                    <h5 class="mb-0">All Data Tables</h5>
                     <div>
                         <div class="dropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลตาราง
+                                <i class="fas fa-plus-circle me-1"></i> Add Data Table
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
-                                <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                                <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                                <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> Upload from File</a></li>
                             </ul>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                             <p class="text-muted mb-4">คุณยังไม่มีข้อมูลตารางในระบบ</p>
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลตาราง
+                                    <i class="fas fa-plus-circle me-1"></i> Add Data Table
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
                                     <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
