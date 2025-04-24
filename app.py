@@ -311,9 +311,10 @@ def edit_table_data(content_id):
                                       theme=theme, 
                                       error=f"เกิดข้อผิดพลาดในการบันทึกข้อมูล: {str(e)}", 
                                       content_id=content_id,
-                                      content_name=result['name'],
                                       data_name=data_name,
                                       description=description or result['description'],
+                                      created_at=result['created_at'],
+                                      updated_at=result['updated_at'],
                                       table_data=json.loads(result['content']))
         
         # แสดงฟอร์มแก้ไข (GET)
