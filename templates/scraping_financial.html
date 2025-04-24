@@ -373,7 +373,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // เพิ่ม CSS สำหรับผลลัพธ์
+        // Add CSS for results
         const styleElement = document.createElement('style');
         styleElement.textContent = `
             .content-result {
@@ -417,72 +417,72 @@
         `;
         document.head.appendChild(styleElement);
         
-        // ปุ่มดึงตารางหุ้น/ราคา
+        // Stock/Price table extraction button
         document.getElementById('table-btn').addEventListener('click', function() {
             const url = document.getElementById('url').value;
             if (url) {
-                // ส่ง URL ไปยังฟอร์ม
+                // Send URL to form
                 document.getElementById('content-url').value = url;
                 
-                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                // Set extraction mode to table
                 document.getElementById('extract-mode-input').value = "table";
                 
-                // ตรวจสอบว่าใช้ AI หรือไม่
+                // Check if AI should be used
                 const useAi = document.getElementById('use-ai').checked;
                 document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
                 
-                // ส่งฟอร์ม
+                // Submit form
                 document.getElementById('content-form').submit();
             }
         });
         
-        // ปุ่มสร้างกราฟ
+        // Chart creation button
         const chartBtn = document.getElementById('chart-btn');
         if (chartBtn) {
             chartBtn.addEventListener('click', function() {
-                // ดึงข้อมูลจากตาราง
+                // Extract data from table
                 const tableData = extractTableData();
                 
-                // ตรวจสอบว่ามีข้อมูลหรือไม่
+                // Check if data exists
                 if (!tableData || !tableData.rows || tableData.rows.length === 0) {
-                    alert('ไม่พบข้อมูลในตารางที่จะสร้างกราฟ');
+                    alert('No data found in table to create chart');
                     return;
                 }
                 
-                // สร้างกราฟ
+                // Create chart
                 createChart(tableData);
                 
-                // แสดงส่วนกราฟ
+                // Show chart container
                 document.querySelector('.chart-container').style.display = 'block';
                 
-                // เลื่อนไปที่กราฟ
+                // Scroll to chart
                 document.querySelector('.chart-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         }
         
-        // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
+        // Add event listeners for website shortcut buttons
         const shortcutBtns = document.querySelectorAll('.shortcut-btn');
         shortcutBtns.forEach(function(btn) {
             btn.addEventListener('click', function() {
                 const url = this.getAttribute('data-url');
                 document.getElementById('url').value = url;
                 
-                // ส่ง URL ไปยังฟอร์ม
+                // Send URL to form
                 document.getElementById('content-url').value = url;
                 
-                // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
+                // Set extraction mode to table
                 document.getElementById('extract-mode-input').value = "table";
                 
-                // ตรวจสอบว่าใช้ AI หรือไม่
+                // Check if AI should be used
                 const useAi = document.getElementById('use-ai').checked;
                 document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
                 
-                // ส่งฟอร์ม
+                // Submit form
                 document.getElementById('content-form').submit();
             });
         });
         
-        // ฟังก์ชันดึงข้อมูลจากตาราง
+        // Function to extract data from table
         function extractTableData() {
             try {
                 const table = document.querySelector('.table-responsive table');
@@ -515,37 +515,37 @@
             }
         }
         
-        // ฟังก์ชันสร้างกราฟจากข้อมูล
+        // Function to create chart from table data
         function createChart(tableData) {
-            // ตรวจสอบว่ามี canvas สำหรับกราฟหรือไม่
+            // Check if canvas for chart exists
             const chartCanvas = document.getElementById('data-chart');
             if (!chartCanvas) return;
             
-            // หาคอลัมน์ที่เป็นตัวเลขและคอลัมน์ที่เป็นข้อความ
+            // Find columns with numeric data
             const dataColumns = findNumericColumns(tableData);
             
             if (dataColumns.length === 0) {
-                alert('ไม่พบข้อมูลตัวเลขในตารางที่เหมาะสำหรับการสร้างกราฟ');
+                alert('No numeric data found in table suitable for chart creation');
                 return;
             }
             
-            // ใช้คอลัมน์แรกเป็นชื่อ/label
+            // Use first column as labels
             const labelsColumnIndex = 0;
             
-            // ดึงข้อมูลสำหรับกราฟ
+            // Get data for chart
             const labels = tableData.rows.map(row => row[labelsColumnIndex]);
             
-            // สร้างชุดข้อมูลสำหรับแต่ละคอลัมน์ตัวเลข
+            // Create datasets for each numeric column
             const datasets = dataColumns.map((colIndex, index) => {
-                // ดึงข้อมูลตัวเลขจากคอลัมน์นี้
+                // Get numeric data from this column
                 const data = tableData.rows.map(row => {
                     const value = row[colIndex];
-                    // แปลงข้อความเป็นตัวเลข (ลบเครื่องหมาย + - % และ คอมม่า)
+                    // Convert text to numbers (remove +, -, %, and commas)
                     return parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, '')) || 0;
                 });
                 
-                // กำหนดสีแบบสุ่ม
-                const hue = (index * 137) % 360; // ใช้ golden angle เพื่อให้สีกระจายตัว
+                // Generate random color
+                const hue = (index * 137) % 360; // Using golden angle for color distribution
                 
                 return {
                     label: tableData.headers[colIndex],
@@ -556,15 +556,15 @@
                 };
             });
             
-            // ทำความสะอาดกราฟเดิม (ถ้ามี)
+            // Clean up previous chart (if any)
             if (window.dataChart) {
                 window.dataChart.destroy();
             }
             
-            // สร้างกราฟ
+            // Create chart
             const ctx = chartCanvas.getContext('2d');
             window.dataChart = new Chart(ctx, {
-                type: 'bar', // หรือเลือกประเภทกราฟอื่น เช่น 'line'
+                type: 'bar', // or other chart types like 'line'
                 data: {
                     labels: labels,
                     datasets: datasets
@@ -580,7 +580,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'ข้อมูลจากตาราง',
+                            text: 'Data from Table',
                             color: '#fff',
                             font: {
                                 size: 18
@@ -595,20 +595,20 @@
             });
         }
         
-        // ฟังก์ชันค้นหาคอลัมน์ที่เป็นตัวเลข
+        // Function to find numeric columns in table data
         function findNumericColumns(tableData) {
             const numericColumns = [];
             
-            // ตรวจสอบแต่ละคอลัมน์ (ยกเว้นคอลัมน์แรกที่เป็นชื่อ)
+            // Check each column (except first column which is usually labels)
             for (let colIndex = 1; colIndex < tableData.headers.length; colIndex++) {
                 let numericCount = 0;
                 
-                // ตรวจสอบแต่ละแถวในคอลัมน์นี้
+                // Check each row in this column
                 for (let rowIndex = 0; rowIndex < tableData.rows.length; rowIndex++) {
                     if (tableData.rows[rowIndex][colIndex]) {
                         const value = tableData.rows[rowIndex][colIndex];
                         
-                        // ทดสอบว่าเป็นตัวเลขหรือไม่ (หลังจากลบเครื่องหมายพิเศษและคอมม่า)
+                        // Test if value is numeric (after removing special characters and commas)
                         const numericValue = parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, ''));
                         if (!isNaN(numericValue)) {
                             numericCount++;
@@ -616,7 +616,7 @@
                     }
                 }
                 
-                // ถ้ามีค่าตัวเลขมากกว่า 60% ของข้อมูลทั้งหมดในคอลัมน์ ถือว่าเป็นคอลัมน์ตัวเลข
+                // If more than 60% of values in the column are numeric, consider it a numeric column
                 if (numericCount / tableData.rows.length > 0.6) {
                     numericColumns.push(colIndex);
                 }
