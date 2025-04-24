@@ -37,14 +37,14 @@
                                                     <div class="small text-muted">{{ table.description }}</div>
                                                 {% endif %}
                                                 <div class="small text-muted mt-1">
-                                                    สร้างเมื่อ {{ table.created_at.strftime('%d/%m/%Y %H:%M') if table.created_at else '-' }}
+                                                    Created on {{ table.created_at.strftime('%d/%m/%Y %H:%M') if table.created_at else '-' }}
                                                     {% if table.updated_at and table.created_at != table.updated_at %}
-                                                    | อัพเดทล่าสุด {{ table.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                                                    | Last updated {{ table.updated_at.strftime('%d/%m/%Y %H:%M') }}
                                                     {% endif %}
                                                 </div>
                                                 {% if table.table_data and table.table_data.headers and table.table_data.rows %}
                                                 <div class="small text-muted mt-1">
-                                                    {{ table.table_data.headers|length }} คอลัมน์, {{ table.table_data.rows|length }} แถว
+                                                    {{ table.table_data.headers|length }} columns, {{ table.table_data.rows|length }} rows
                                                 </div>
                                                 {% endif %}
                                             </div>
@@ -53,11 +53,11 @@
                                                     {% if table.table_data and table.table_data.headers and table.table_data.rows %}
                                                     <button type="button" class="btn btn-sm btn-outline-primary show-chart-btn" 
                                                             data-chart-id="chart-{{ table.id }}">
-                                                        <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                                        <i class="fas fa-chart-bar me-1"></i> Show Chart
                                                     </button>
                                                     {% endif %}
                                                     <a href="/data/edit-table/{{ table.id }}" class="btn btn-sm btn-outline-secondary">
-                                                        <i class="fas fa-edit me-1"></i> แก้ไข
+                                                        <i class="fas fa-edit me-1"></i> Edit
                                                     </a>
                                                 </div>
                                             </div>
@@ -70,7 +70,7 @@
                                             </div>
                                         {% else %}
                                             <div class="alert alert-info">
-                                                ไม่สามารถแสดงตารางได้ เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง
+                                                Cannot display table due to invalid data format
                                             </div>
                                         {% endif %}
                                     </div>
@@ -86,15 +86,15 @@
                             <div class="mb-4">
                                 <i class="fas fa-table fa-4x text-muted"></i>
                             </div>
-                            <h4>ยังไม่มีข้อมูลตาราง</h4>
-                            <p class="text-muted mb-4">คุณยังไม่มีข้อมูลตารางในระบบ</p>
+                            <h4>No Data Tables Yet</h4>
+                            <p class="text-muted mb-4">You don't have any data tables in the system yet</p>
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-plus-circle me-1"></i> Add Data Table
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                    <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
-                                    <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                                    <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                                    <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> Upload from File</a></li>
                                 </ul>
                             </div>
                         </div>
