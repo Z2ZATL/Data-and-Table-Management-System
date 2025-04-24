@@ -23,7 +23,16 @@
                         <i class="fas fa-table me-2"></i> {% if is_new %}สร้างข้อมูลตารางใหม่{% else %}แก้ไขตารางข้อมูล: {{ data_name }}{% endif %}
                     </h5>
                     <div>
-                        <a href="/data" class="btn btn-sm btn-outline-primary">
+                        <div class="dropdown d-inline-block me-2">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dataOptionsBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-cog me-1"></i> ตัวเลือก
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dataOptionsBtn">
+                                <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างตารางใหม่</a></li>
+                                <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> อัพโหลดไฟล์</a></li>
+                            </ul>
+                        </div>
+                        <a href="/data" class="btn btn-sm btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i> กลับ
                         </a>
                     </div>

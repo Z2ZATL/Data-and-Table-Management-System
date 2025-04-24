@@ -198,12 +198,18 @@
                             </a>
                         </div>
                         <div class="col-md-3 col-6">
-                            <a href="{{ url_for('add_table_data') }}" class="shortcut-link">
-                                <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-plus-circle fa-2x"></i>
-                                </div>
-                                <h6>สร้างข้อมูลใหม่</h6>
-                            </a>
+                            <div class="dropdown">
+                                <a href="#" class="dropdown-toggle shortcut-link" role="button" id="createDataDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-plus-circle fa-2x"></i>
+                                    </div>
+                                    <h6>เพิ่มข้อมูลใหม่</h6>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="createDataDropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('add_table_data') }}"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('upload_data') }}"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
