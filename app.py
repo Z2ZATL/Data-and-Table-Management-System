@@ -421,9 +421,9 @@ def add_table_data():
                                   description=description,
                                   is_new=True)
     
-    # สร้างตารางเปล่า
+    # Create empty table
     empty_table = {
-        "headers": ["คอลัมน์ 1"],
+        "headers": ["Column 1"],
         "rows": [[""]]
     }
     
