@@ -53,21 +53,21 @@
                     {% if not is_new %}
                     <div class="mb-4">
                         <p class="mb-2">
-                            <i class="fas fa-info-circle me-2 text-primary"></i> <strong>คำอธิบาย:</strong> 
-                            {{ description or 'ไม่มีคำอธิบาย' }}
+                            <i class="fas fa-info-circle me-2 text-primary"></i> <strong>Description:</strong> 
+                            {{ description or 'No description available' }}
                         </p>
                         <p class="mb-0 small">
-                            <i class="fas fa-clock me-1"></i> สร้างเมื่อ: {{ created_at.strftime('%d/%m/%Y %H:%M') if created_at else '-' }} | 
-                            <i class="fas fa-edit me-1"></i> แก้ไขล่าสุด: {{ updated_at.strftime('%d/%m/%Y %H:%M') if updated_at else '-' }}
+                            <i class="fas fa-clock me-1"></i> Created: {{ created_at.strftime('%d/%m/%Y %H:%M') if created_at else '-' }} | 
+                            <i class="fas fa-edit me-1"></i> Last modified: {{ updated_at.strftime('%d/%m/%Y %H:%M') if updated_at else '-' }}
                         </p>
                     </div>
                     {% endif %}
                     
                     <form id="tableForm" action="{% if is_new %}/data/add-table{% else %}/data/edit-table/{{ content_id }}{% endif %}" method="POST">
                         <div class="mb-4">
-                            <label for="data_name" class="form-label">ชื่อตารางข้อมูล <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or content_name or '' }}" placeholder="เช่น ราคาทอง, อัตราเงินเฟ้อ, ยอดขาย" required>
-                            <small class="form-text text-muted">ระบุชื่อสำหรับตารางข้อมูลนี้เพื่อให้ง่ายต่อการอ้างอิง</small>
+                            <label for="data_name" class="form-label">Table Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="data_name" name="data_name" value="{{ data_name or content_name or '' }}" placeholder="e.g., Gold Prices, Inflation Rate, Sales Data" required>
+                            <small class="form-text text-muted">Specify a name for this table to make it easy to reference</small>
                         </div>
                         
                         <div class="table-responsive mb-4">
@@ -77,7 +77,7 @@
                                         {% for header in table_data.headers %}
                                         <th class="position-relative">
                                             <input type="text" class="form-control form-control-sm header-cell" 
-                                                  value="{{ header }}" placeholder="ชื่อคอลัมน์" required>
+                                                  value="{{ header }}" placeholder="Column Name" required>
                                             {% if table_data.headers|length > 1 %}
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1" style="font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;">
                                                 <i class="fas fa-times"></i>
@@ -98,7 +98,7 @@
                                         {% for cell in row %}
                                         <td>
                                             <input type="text" class="form-control form-control-sm data-cell" 
-                                                  value="{{ cell }}" placeholder="ข้อมูล">
+                                                  value="{{ cell }}" placeholder="Data">
                                         </td>
                                         {% endfor %}
                                         <td>
@@ -114,7 +114,7 @@
                         
                         <div class="mb-4">
                             <button type="button" class="btn btn-sm btn-outline-primary" id="add_row">
-                                <i class="fas fa-plus me-1"></i> เพิ่มแถว
+                                <i class="fas fa-plus me-1"></i> Add Row
                             </button>
                         </div>
                         
@@ -122,10 +122,10 @@
                         
                         <div class="d-flex justify-content-between mt-4">
                             <a href="/data" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> ยกเลิก
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> บันทึกการเปลี่ยนแปลง
+                                <i class="fas fa-save me-1"></i> Save Changes
                             </button>
                         </div>
                     </form>
@@ -145,7 +145,7 @@
         
         addColumnBtn.addEventListener('click', function() {
             const newHeader = document.createElement('th');
-            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์" required>`;
+            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="Column Name" required>`;
             
             // แทรกคอลัมน์ใหม่ก่อนปุ่ม
             headerRow.insertBefore(newHeader, headerRow.lastElementChild);
@@ -154,7 +154,7 @@
             const dataRows = document.querySelectorAll('#editable_table tbody tr');
             dataRows.forEach(row => {
                 const newCell = document.createElement('td');
-                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="Data">`;
                 row.insertBefore(newCell, row.lastElementChild);
             });
         });
@@ -169,7 +169,7 @@
             
             for (let i = 0; i < headerColumns; i++) {
                 const cell = document.createElement('td');
-                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="Data">`;
                 newRow.appendChild(cell);
             }
             
@@ -202,7 +202,7 @@
                     const allRows = tableBody.querySelectorAll('tr');
                     
                     if (allRows.length <= 1) {
-                        alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
+                        alert('Table must have at least one row');
                         return;
                     }
                     
@@ -222,8 +222,8 @@
                 button.addEventListener('click', function() {
                     // ตรวจสอบว่ามีมากกว่า 1 คอลัมน์หรือไม่
                     const headerCells = headerRow.querySelectorAll('th');
-                    if (headerCells.length <= 2) { // รวมคอลัมน์ปุ่มด้วย
-                        alert('ต้องมีอย่างน้อย 1 คอลัมน์ในตาราง');
+                    if (headerCells.length <= 2) { // Including button column
+                        alert('Table must have at least one column');
                         return;
                     }
                     
@@ -281,7 +281,7 @@
             // ตรวจสอบว่ามีส่วนหัวครบทุกช่องหรือไม่
             const emptyHeaders = headers.filter(h => h.trim() === '');
             if (emptyHeaders.length > 0) {
-                alert('กรุณากรอกชื่อคอลัมน์ให้ครบทุกช่อง');
+                alert('Please fill in all column headers');
                 return;
             }
             
