@@ -356,7 +356,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // เพิ่ม CSS สำหรับผลลัพธ์
+        // Add CSS for results
         const styleElement = document.createElement('style');
         styleElement.textContent = `
             .content-result {
@@ -398,7 +398,7 @@
                 content: "";
             }
             
-            /* สไตล์สำหรับรายการหัวข้อข่าว */
+            /* Style for headline list */
             .headline-list {
                 max-height: 600px;
                 overflow-y: auto;
@@ -452,7 +452,7 @@
         `;
         document.head.appendChild(styleElement);
         
-        // สำหรับปุ่มดึงตารางหุ้น/ราคา
+        // For stock/price table extraction button
         const tableBtn = document.getElementById('get-table-btn');
         if (tableBtn) {
             tableBtn.addEventListener('click', function() {
@@ -470,7 +470,7 @@
             });
         }
         
-        // สำหรับปุ่มดึงเนื้อหาจากหัวข้อข่าว
+        // For article content extraction button
         const fetchArticleButtons = document.querySelectorAll('.fetch-article');
         fetchArticleButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -488,7 +488,7 @@
             });
         });
         
-        // สำหรับปุ่มสร้างกราฟจากตารางข้อมูล
+        // For chart generation button from table data
         const generateChartBtn = document.getElementById('generate-chart-btn');
         if (generateChartBtn) {
             generateChartBtn.addEventListener('click', function() {
@@ -512,7 +512,7 @@
             });
         }
         
-        // ฟังก์ชันดึงข้อมูลจากตาราง
+        // Function for extracting data from table
         function extractTableData() {
             try {
                 const table = document.querySelector('.table-responsive table');
@@ -545,7 +545,7 @@
             }
         }
         
-        // ฟังก์ชันสร้างกราฟจากข้อมูล
+        // Function for creating chart from data
         function createChart(tableData) {
             // ตรวจสอบว่ามี canvas สำหรับกราฟหรือไม่
             const chartCanvas = document.getElementById('data-chart');
@@ -610,7 +610,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'ข้อมูลจากตาราง',
+                            text: 'Data from Table',
                             color: '#fff',
                             font: {
                                 size: 18
@@ -625,7 +625,7 @@
             });
         }
         
-        // ฟังก์ชันค้นหาคอลัมน์ที่เป็นตัวเลข
+        // Function for finding numeric columns
         function findNumericColumns(tableData) {
             const numericColumns = [];
             
@@ -655,7 +655,7 @@
             return numericColumns;
         }
         
-        // เพิ่ม event listener สำหรับปุ่มลัดเว็บไซต์
+        // Add event listener for website shortcut buttons
         const shortcutButtons = document.querySelectorAll('.website-shortcut');
         shortcutButtons.forEach(button => {
             button.addEventListener('click', function() {
