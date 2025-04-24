@@ -13,8 +13,8 @@
                     <a href="{{ url_for('data') }}" class="btn btn-primary btn-lg">
                         <i class="fas fa-users me-2"></i> ดูข้อมูลผู้ใช้
                     </a>
-                    <a href="{{ url_for('topics') }}" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-edit me-2"></i> จัดการหัวข้อ
+                    <a href="{{ url_for('add_table_data') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i> สร้างข้อมูลใหม่
                     </a>
                 </div>
             </div>
@@ -84,9 +84,9 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">หัวข้อทั้งหมด</h2>
-                <a href="{{ url_for('topics') }}" class="btn btn-primary">
-                    <i class="fas fa-cog me-1"></i> จัดการหัวข้อ
+                <h2 class="mb-0">ข้อมูลตารางทั้งหมด</h2>
+                <a href="{{ url_for('add_table_data') }}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-1"></i> สร้างข้อมูลใหม่
                 </a>
             </div>
             <hr>
@@ -94,79 +94,57 @@
     </div>
     
     <div class="row">
-        {% if topics %}
-            {% for topic in topics %}
+        {% if tables %}
+            {% for table in tables %}
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card shadow-lg h-100">
                         <div class="card-header">
-                            <h5 class="mb-0">{{ topic.title }}</h5>
+                            <h5 class="mb-0">{{ table.name or table.title }}</h5>
                         </div>
                         <div class="card-body">
-                            {% if topic.description %}
-                                <p class="card-text mb-3 text-secondary">{{ topic.description }}</p>
+                            {% if table.description %}
+                                <p class="card-text mb-3 text-secondary">{{ table.description }}</p>
                             {% endif %}
                             
-                            {% if topic.contents %}
-                                <div class="content-items">
-                                    {% for content in topic.contents %}
-                                        <div class="content-item mb-3">
-                                            {% if content.content_type == 'link' %}
-                                                <a href="{{ content.content }}" target="_blank" class="content-link">
-                                                    <i class="fas fa-link me-2"></i> {{ content.content }}
-                                                </a>
-                                            {% elif content.content_type == 'highlight' %}
-                                                <div class="content-highlight p-2 rounded">
-                                                    {{ content.content }}
-                                                </div>
-                                            {% elif content.content_type == 'table' %}
-                                                <div class="table-container mb-3">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-sm table-bordered table-hover">
-                                                            {% set table_data = content.content|tojson|safe|fromjson %}
-                                                            
-                                                            {% if table_data and table_data.headers %}
-                                                            <thead>
-                                                                <tr>
-                                                                    {% for header in table_data.headers %}
-                                                                    <th>{{ header }}</th>
-                                                                    {% endfor %}
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {% for row in table_data.rows %}
-                                                                <tr>
-                                                                    {% for cell in row %}
-                                                                    <td>{{ cell }}</td>
-                                                                    {% endfor %}
-                                                                </tr>
-                                                                {% endfor %}
-                                                            </tbody>
-                                                            {% endif %}
-                                                        </table>
-                                                    </div>
-                                                    <div class="text-end mt-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                                onclick="createChart('chart-{{ content.id }}', {{ content.content|safe }})">
-                                                            <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
-                                                        </button>
-                                                    </div>
-                                                    <div id="chart-{{ content.id }}" class="mt-3" style="height: 300px; display: none;"></div>
-                                                </div>
-                                            {% else %}
-                                                <div class="content-text">
-                                                    {{ content.content }}
-                                                </div>
+                            {% if table.table_data %}
+                                <div class="table-container mb-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-hover">
+                                            {% if table.table_data and table.table_data.headers %}
+                                            <thead>
+                                                <tr>
+                                                    {% for header in table.table_data.headers %}
+                                                    <th>{{ header }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for row in table.table_data.rows %}
+                                                <tr>
+                                                    {% for cell in row %}
+                                                    <td>{{ cell }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
                                             {% endif %}
-                                        </div>
-                                    {% endfor %}
+                                        </table>
+                                    </div>
+                                    <div class="text-end mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="createChart('chart-{{ table.id }}', {{ table.content|safe }})">
+                                            <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                        </button>
+                                    </div>
+                                    <div id="chart-{{ table.id }}" class="mt-3" style="height: 300px; display: none;"></div>
                                 </div>
                             {% else %}
-                                <p class="text-muted fst-italic">ยังไม่มีเนื้อหาในหัวข้อนี้</p>
+                                <p class="text-muted fst-italic">ไม่สามารถแสดงข้อมูลตารางนี้ได้</p>
                             {% endif %}
                         </div>
                         <div class="card-footer text-muted d-flex justify-content-between">
-                            <small>แก้ไขล่าสุด: {{ topic.updated_at.strftime('%d/%m/%Y %H:%M') }}</small>
-                            <a href="{{ url_for('edit_topic', topic_id=topic.id) }}" class="text-primary">
+                            <small>เพิ่มเมื่อ: {{ table.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                            <a href="{{ url_for('edit_table_data', content_id=table.id) }}" class="text-primary">
                                 <i class="fas fa-edit"></i> แก้ไข
                             </a>
                         </div>
@@ -176,11 +154,11 @@
         {% else %}
             <div class="col-12 text-center py-5">
                 <div class="empty-state mb-4">
-                    <i class="fas fa-clipboard-list fa-4x mb-3 text-secondary"></i>
-                    <h3>ยังไม่มีหัวข้อ</h3>
-                    <p class="text-muted mb-4">เริ่มสร้างหัวข้อแรกของคุณเพื่อแสดงเนื้อหาที่นี่</p>
-                    <a href="{{ url_for('add_topic') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-plus-circle me-2"></i> สร้างหัวข้อใหม่
+                    <i class="fas fa-table fa-4x mb-3 text-secondary"></i>
+                    <h3>ยังไม่มีข้อมูลตาราง</h3>
+                    <p class="text-muted mb-4">เริ่มสร้างข้อมูลตารางแรกของคุณเพื่อแสดงที่นี่</p>
+                    <a href="{{ url_for('add_table_data') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i> สร้างข้อมูลใหม่
                     </a>
                 </div>
             </div>
@@ -220,11 +198,11 @@
                             </a>
                         </div>
                         <div class="col-md-3 col-6">
-                            <a href="{{ url_for('topics') }}" class="shortcut-link">
+                            <a href="{{ url_for('add_table_data') }}" class="shortcut-link">
                                 <div class="p-3 mb-2 rounded-circle shortcut-icon mx-auto d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-edit fa-2x"></i>
+                                    <i class="fas fa-plus-circle fa-2x"></i>
                                 </div>
-                                <h6>จัดการหัวข้อ</h6>
+                                <h6>สร้างข้อมูลใหม่</h6>
                             </a>
                         </div>
                     </div>
