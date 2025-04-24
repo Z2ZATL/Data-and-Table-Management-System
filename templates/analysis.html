@@ -64,7 +64,16 @@
                             </div>
                             <h4>ยังไม่มีตารางข้อมูลสำหรับวิเคราะห์</h4>
                             <p class="text-muted mb-4">คุณต้องสร้างข้อมูลตารางก่อน</p>
-                            <a href="/" class="btn btn-primary">
+                            <div class="dropdown mb-3">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลตาราง
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> สร้างข้อมูลตารางใหม่</a></li>
+                                    <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> อัพโหลดข้อมูลจากไฟล์</a></li>
+                                </ul>
+                            </div>
+                            <a href="/" class="btn btn-outline-secondary">
                                 <i class="fas fa-home me-1"></i> ไปยังหน้าหลัก
                             </a>
                         </div>
