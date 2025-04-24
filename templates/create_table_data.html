@@ -127,35 +127,35 @@
         
         addColumnBtn.addEventListener('click', function() {
             const newHeader = document.createElement('th');
-            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="ชื่อคอลัมน์" required>`;
+            newHeader.innerHTML = `<input type="text" class="form-control form-control-sm header-cell" placeholder="Column Name" required>`;
             
-            // แทรกคอลัมน์ใหม่ก่อนปุ่ม
+            // Insert new column before button
             headerRow.insertBefore(newHeader, headerRow.lastElementChild);
             
-            // เพิ่มเซลล์ในแต่ละแถวข้อมูล
+            // Add cells in each data row
             const dataRows = document.querySelectorAll('#editable_table tbody tr');
             dataRows.forEach(row => {
                 const newCell = document.createElement('td');
-                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                newCell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="Data">`;
                 row.insertBefore(newCell, row.lastElementChild);
             });
         });
         
-        // ปุ่มเพิ่มแถว
+        // Add row button
         const addRowBtn = document.getElementById('add_row');
         const tableBody = document.querySelector('#editable_table tbody');
         
         addRowBtn.addEventListener('click', function() {
-            const headerColumns = headerRow.cells.length - 1; // ไม่รวมคอลัมน์ปุ่ม
+            const headerColumns = headerRow.cells.length - 1; // Not including button column
             const newRow = document.createElement('tr');
             
             for (let i = 0; i < headerColumns; i++) {
                 const cell = document.createElement('td');
-                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="ข้อมูล">`;
+                cell.innerHTML = `<input type="text" class="form-control form-control-sm data-cell" placeholder="Data">`;
                 newRow.appendChild(cell);
             }
             
-            // เพิ่มปุ่มลบแถว
+            // Add remove row button
             const actionCell = document.createElement('td');
             actionCell.innerHTML = `<button type="button" class="btn btn-sm btn-outline-danger remove-row">
                                       <i class="fas fa-times"></i>
@@ -164,16 +164,16 @@
             
             tableBody.appendChild(newRow);
             
-            // เพิ่ม event listener สำหรับปุ่มลบแถวที่เพิ่มใหม่
+            // Add event listener for the new remove row button
             attachRemoveRowEvents();
         });
         
-        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบแถว
+        // Function to add event listener for remove row buttons
         function attachRemoveRowEvents() {
             const removeButtons = document.querySelectorAll('.remove-row');
             removeButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบว่ามีมากกว่า 1 แถวหรือไม่
+                    // Check if there's more than 1 row
                     const rows = tableBody.querySelectorAll('tr');
                     if (rows.length > 1) {
                         this.closest('tr').remove();
@@ -184,28 +184,28 @@
             });
         }
         
-        // เรียกใช้ฟังก์ชันเพื่อเพิ่ม event listener แรกเริ่ม
+        // Call function to add initial event listeners
         attachRemoveRowEvents();
         
-        // ฟังก์ชันเพิ่ม event listener สำหรับปุ่มลบคอลัมน์
+        // Function to add event listener for remove column buttons
         function attachRemoveColumnEvents() {
             const removeColumnButtons = document.querySelectorAll('.remove-column');
             removeColumnButtons.forEach((button, index) => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบว่ามีมากกว่า 2 คอลัมน์หรือไม่
+                    // Check if there are more than 2 columns
                     const headerCells = headerRow.querySelectorAll('th');
                     if (headerCells.length <= 3) { // Including button column
                         alert('Table must have at least 2 columns');
                         return;
                     }
                     
-                    // หาลำดับของคอลัมน์
+                    // Find column index
                     const columnIndex = Array.from(headerRow.children).indexOf(this.closest('th'));
                     
-                    // ลบ header
+                    // Remove header
                     headerRow.children[columnIndex].remove();
                     
-                    // ลบข้อมูลในแต่ละแถว
+                    // Remove data in each row
                     const rows = document.querySelectorAll('#editable_table tbody tr');
                     rows.forEach(row => {
                         row.children[columnIndex].remove();
@@ -214,50 +214,50 @@
             });
         }
         
-        // เรียกใช้ฟังก์ชันลบคอลัมน์
+        // Call column removal function
         attachRemoveColumnEvents();
         
-        // เพิ่ม event listener สำหรับคอลัมน์ใหม่
+        // Add event listener for new columns
         addColumnBtn.addEventListener('click', function() {
-            // หลังจากเพิ่มคอลัมน์ใหม่
+            // After adding new column
             setTimeout(() => {
                 const newColumnButton = document.createElement('button');
                 newColumnButton.className = 'btn btn-sm btn-outline-danger remove-column position-absolute top-0 end-0 m-1';
                 newColumnButton.style.cssText = 'font-size: 0.7rem; width: 20px; height: 20px; padding: 0; border-radius: 50%;';
                 newColumnButton.innerHTML = '<i class="fas fa-times"></i>';
                 
-                // เพิ่มปุ่มลบในคอลัมน์ที่เพิ่มใหม่
-                const newColumn = headerRow.children[headerRow.children.length - 2]; // ก่อนคอลัมน์ปุ่มสุดท้าย
+                // Add remove button in the new column
+                const newColumn = headerRow.children[headerRow.children.length - 2]; // Before the last button column
                 newColumn.classList.add('position-relative');
                 newColumn.appendChild(newColumnButton);
                 
-                // เพิ่ม event listener
+                // Add event listener
                 attachRemoveColumnEvents();
             }, 100);
         });
         
-        // รวบรวมข้อมูลตารางก่อนส่งฟอร์ม
+        // Collect table data before submitting the form
         const form = document.getElementById('tableForm');
         const tableDataInput = document.getElementById('table_data');
         
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // อ่านข้อมูลส่วนหัวตาราง
+            // Read table header data
             const headers = [];
             const headerInputs = document.querySelectorAll('.header-cell');
             headerInputs.forEach(input => {
                 headers.push(input.value || '');
             });
             
-            // ตรวจสอบว่ามีส่วนหัวครบทุกช่องหรือไม่
+            // Check if all headers are filled
             const emptyHeaders = headers.filter(h => h.trim() === '');
             if (emptyHeaders.length > 0) {
                 alert('Please fill in all column headers');
                 return;
             }
             
-            // อ่านข้อมูลในตาราง
+            // Read data in the table
             const rows = [];
             const dataRows = document.querySelectorAll('#editable_table tbody tr');
             
@@ -270,7 +270,7 @@
                 rows.push(rowData);
             });
             
-            // เก็บข้อมูลในฟิลด์ซ่อน
+            // Store data in hidden field
             const tableData = {
                 headers: headers,
                 rows: rows
@@ -278,7 +278,7 @@
             
             tableDataInput.value = JSON.stringify(tableData);
             
-            // ส่งฟอร์ม
+            // Submit the form
             form.submit();
         });
     });
