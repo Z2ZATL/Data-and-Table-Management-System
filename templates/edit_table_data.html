@@ -182,11 +182,14 @@
             const removeButtons = document.querySelectorAll('.remove-row');
             removeButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // ตรวจสอบว่ามีมากกว่า 1 แถวหรือไม่
-                    const rows = tableBody.querySelectorAll('tr');
-                    if (rows.length > 1) {
+                    // ตรวจสอบว่าหลังจากลบแล้วจะยังมีแถวเหลืออยู่หรือไม่
+                    const allRows = tableBody.querySelectorAll('tr');
+                    
+                    if (allRows.length > 1) {
+                        // สามารถลบได้เพราะยังมีแถวอื่นเหลืออยู่
                         this.closest('tr').remove();
                     } else {
+                        // ถ้าเหลือแถวเดียว ไม่อนุญาตให้ลบ
                         alert('ต้องมีอย่างน้อย 1 แถวในตาราง');
                     }
                 });
