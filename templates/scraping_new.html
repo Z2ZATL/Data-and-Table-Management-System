@@ -659,12 +659,12 @@
         const shortcutButtons = document.querySelectorAll('.website-shortcut');
         shortcutButtons.forEach(button => {
             button.addEventListener('click', function() {
-                // นำ URL จาก data-url ไปใส่ในช่องกรอก
+                // Get URL from data-url attribute and set to input field
                 const url = this.getAttribute('data-url');
                 document.getElementById('url').value = url;
                 
                 if (this.classList.contains('table-site')) {
-                    // ส่งฟอร์มดึงตารางข้อมูล
+                    // Submit form to extract table data
                     document.getElementById('content-url').value = url;
                     
                     // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
@@ -672,10 +672,10 @@
                     
                     document.getElementById('content-form').submit();
                 } else {
-                    // ส่งฟอร์มดึงเนื้อหาทั่วไป
+                    // Submit form to extract general content
                     document.getElementById('content-url').value = url;
                     
-                    // อัปเดตค่า use_ai ตามการตั้งค่าของ checkbox
+                    // Update use_ai value based on checkbox setting
                     const useAi = document.getElementById('use-ai').checked;
                     document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
                     
