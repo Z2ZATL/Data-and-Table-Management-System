@@ -32,25 +32,24 @@ def get_pg_connection():  # ฟังก์ชันที่ใช้ในก�
     conn = psycopg2.connect(DATABASE_URL)
     return conn  # ส่งกลับการเชื่อมต่อกับฐานข้อมูล
 
-@app.route("/")  # route สำหรับหน้าแรก
+@app.route("/")  # route for home page
 def index():
     theme = get_theme_from_cookie(request)
     
-    # ดึงข้อมูลตารางทั้งหมดจากฐานข้อมูล PostgreSQL
+    # Fetch all table data from PostgreSQL database
     try:
         conn = get_pg_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("""
-            SELECT tc.id, tc.content, tc.content_type, tc.created_at, tc.name,
-                   t.title, t.description, t.created_at as topic_created_at, t.updated_at as topic_updated_at
-            FROM topic_content tc
-            JOIN topics t ON tc.topic_id = t.id
-            WHERE tc.content_type = 'table'
-            ORDER BY t.updated_at DESC
+            SELECT id, content, content_type, created_at, name, 
+                   description, updated_at
+            FROM topic_content
+            WHERE content_type = 'table'
+            ORDER BY updated_at DESC
         """)
         tables = cur.fetchall()
         
-        # แปลงข้อมูล JSON เป็น dictionary
+        # Convert JSON content to dictionary
         for table in tables:
             if table['content']:
                 try:
@@ -242,7 +241,7 @@ def data():
         tables = []
         print(f"Error fetching table data: {str(e)}")
     
-    return render_template("data_with_chart_clean.html", theme=theme, tables=tables)
+    return render_template("data_simple.html", theme=theme, tables=tables)
 
 @app.route("/data/edit-table/<int:content_id>", methods=["GET", "POST"])  # route สำหรับแก้ไขข้อมูลตาราง
 def edit_table_data(content_id):

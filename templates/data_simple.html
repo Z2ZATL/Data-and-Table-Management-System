@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+
+{% block title %}Manage Data{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 mx-auto text-center text-white">
+                <h1 class="display-4 fw-bold mb-4">Table Data Management</h1>
+                <p class="lead mb-4">All table data in the system</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">All Table Data</h5>
+                    <div>
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-plus-circle me-1"></i> Add Table Data
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                                <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> Upload Data from File</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if tables and tables|length > 0 %}
+                        <div class="row">
+                            {% for table in tables %}
+                                {% if table.table_data %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-header">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h5 class="mb-0">{{ table.name }}</h5>
+                                                    <div class="btn-group">
+                                                        <a href="/data/edit-table/{{ table.id }}" class="btn btn-sm btn-outline-secondary">
+                                                            <i class="fas fa-edit me-1"></i> Edit
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                {% if table.description %}
+                                                    <p class="small text-muted">{{ table.description }}</p>
+                                                {% endif %}
+                                                
+                                                <div class="text-center py-3">
+                                                    <i class="fas fa-table fa-3x text-primary mb-3"></i>
+                                                    <p>{{ table.table_data.headers|length }} columns, {{ table.table_data.rows|length }} rows</p>
+                                                    
+                                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tableModal{{ table.id }}">
+                                                        <i class="fas fa-eye me-1"></i> View Data
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Modal to show table data -->
+                                                <div class="modal fade" id="tableModal{{ table.id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">{{ table.name }}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-striped table-hover">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                {% for header in table.table_data.headers %}
+                                                                                    <th>{{ header }}</th>
+                                                                                {% endfor %}
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {% for row in table.table_data.rows %}
+                                                                                <tr>
+                                                                                    {% for cell in row %}
+                                                                                        <td>{{ cell }}</td>
+                                                                                    {% endfor %}
+                                                                                </tr>
+                                                                            {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                <small class="text-muted">
+                                                    Created: {{ table.created_at.strftime('%Y-%m-%d %H:%M') if table.created_at else '-' }}
+                                                    {% if table.updated_at and table.created_at != table.updated_at %}
+                                                    | Updated: {{ table.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <i class="fas fa-table fa-4x text-muted"></i>
+                            </div>
+                            <h4>No Table Data Yet</h4>
+                            <p class="text-muted mb-4">You don't have any table data in the system</p>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-plus-circle me-1"></i> Add Table Data
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                    <li><a class="dropdown-item" href="/data/add-table"><i class="fas fa-edit me-1"></i> Create New Table</a></li>
+                                    <li><a class="dropdown-item" href="/upload-data"><i class="fas fa-file-upload me-1"></i> Upload Data from File</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
