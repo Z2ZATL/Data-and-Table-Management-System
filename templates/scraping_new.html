@@ -567,15 +567,15 @@
             
             // Create dataset for each numeric column
             const datasets = dataColumns.map((colIndex, index) => {
-                // ดึงข้อมูลตัวเลขจากคอลัมน์นี้
+                // Extract numeric data from this column
                 const data = tableData.rows.map(row => {
                     const value = row[colIndex];
-                    // แปลงข้อความเป็นตัวเลข (ลบเครื่องหมาย + - % และ คอมม่า)
+                    // Convert text to number (remove +, -, %, and commas)
                     return parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, '')) || 0;
                 });
                 
-                // กำหนดสีแบบสุ่ม
-                const hue = (index * 137) % 360; // ใช้ golden angle เพื่อให้สีกระจายตัว
+                // Set random color
+                const hue = (index * 137) % 360; // Use golden angle for better color distribution
                 
                 return {
                     label: tableData.headers[colIndex],
@@ -586,15 +586,15 @@
                 };
             });
             
-            // ทำความสะอาดกราฟเดิม (ถ้ามี)
+            // Clean up previous chart (if exists)
             if (window.dataChart) {
                 window.dataChart.destroy();
             }
             
-            // สร้างกราฟ
+            // Create chart
             const ctx = chartCanvas.getContext('2d');
             window.dataChart = new Chart(ctx, {
-                type: 'bar', // หรือเลือกประเภทกราฟอื่น เช่น 'line'
+                type: 'bar', // or choose other chart type like 'line'
                 data: {
                     labels: labels,
                     datasets: datasets
@@ -629,16 +629,16 @@
         function findNumericColumns(tableData) {
             const numericColumns = [];
             
-            // ตรวจสอบแต่ละคอลัมน์ (ยกเว้นคอลัมน์แรกที่เป็นชื่อ)
+            // Check each column (except first column which is used for labels)
             for (let colIndex = 1; colIndex < tableData.headers.length; colIndex++) {
                 let numericCount = 0;
                 
-                // ตรวจสอบแต่ละแถวในคอลัมน์นี้
+                // Check each row in this column
                 for (let rowIndex = 0; rowIndex < tableData.rows.length; rowIndex++) {
                     if (tableData.rows[rowIndex][colIndex]) {
                         const value = tableData.rows[rowIndex][colIndex];
                         
-                        // ทดสอบว่าเป็นตัวเลขหรือไม่ (หลังจากลบเครื่องหมายพิเศษและคอมม่า)
+                        // Test if value is a number (after removing special characters and commas)
                         const numericValue = parseFloat(value.replace(/[+,%]/g, '').replace(/,/g, ''));
                         if (!isNaN(numericValue)) {
                             numericCount++;
@@ -646,7 +646,7 @@
                     }
                 }
                 
-                // ถ้ามีค่าตัวเลขมากกว่า 60% ของข้อมูลทั้งหมดในคอลัมน์ ถือว่าเป็นคอลัมน์ตัวเลข
+                // If more than 60% of values in the column are numbers, consider it a numeric column
                 if (numericCount / tableData.rows.length > 0.6) {
                     numericColumns.push(colIndex);
                 }
