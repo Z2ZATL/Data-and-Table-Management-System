@@ -203,7 +203,7 @@
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-table me-2"></i>ข้อมูลตัวเลขที่พบในเนื้อหา
+                        <i class="fas fa-table me-2"></i>Numerical Data Found in Content
                     </h5>
                 </div>
                 <div class="card-body">
@@ -212,8 +212,8 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">ข้อความ</th>
-                                    <th scope="col" class="text-center">ตัวเลข</th>
+                                    <th scope="col">Text</th>
+                                    <th scope="col" class="text-center">Number</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -231,7 +231,7 @@
                 <div class="card-footer">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-info-circle text-primary me-2"></i>
-                        <small class="text-muted">ข้อมูลตัวเลขที่พบถูกวิเคราะห์จากเนื้อหาของบทความ</small>
+                        <small class="text-muted">Numerical data found was analyzed from the article content</small>
                     </div>
                 </div>
             </div>
@@ -241,13 +241,13 @@
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>ผลการวิเคราะห์ข้อมูล
+                        <i class="fas fa-info-circle me-2"></i>Data Analysis Result
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info mb-0">
                         <i class="fas fa-table me-2"></i>
-                        ไม่พบข้อมูลตัวเลขที่สำคัญในเนื้อหานี้ ไม่สามารถสร้างตารางข้อมูลได้
+                        No significant numerical data found in this content. Cannot create a data table
                     </div>
                 </div>
             </div>
@@ -260,17 +260,17 @@
             </div>
             {% endif %}
             
-            <!-- เว็บไซต์ที่แนะนำ -->
+            <!-- Recommended Websites -->
             {% if (content is not defined or not content) and (headlines is not defined or not headlines) and (error is not defined or not error) %}
             <div class="card shadow-lg mb-4">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>เว็บไซต์ที่แนะนำ</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-star me-2"></i>Recommended Websites</h5>
                 </div>
                 <div class="card-body">
-                    <h6 class="mb-3">ข้อมูลหุ้นและการลงทุน</h6>
+                    <h6 class="mb-3">Stock Information</h6>
                     <div class="d-flex flex-wrap gap-2 mb-4">
                         <button type="button" class="btn btn-outline-success btn-sm website-shortcut table-site" data-url="https://www.set.or.th/th/market/index/set/overview">
-                            <i class="fas fa-chart-line me-1"></i> SET (ตลาดหุ้นไทย)
+                            <i class="fas fa-chart-line me-1"></i> SET (Thai Stock Exchange)
                         </button>
                         <button type="button" class="btn btn-outline-success btn-sm website-shortcut table-site" data-url="https://marketdata.set.or.th/mkt/sectorquotation.do?sector=SET100&language=th&country=TH">
                             <i class="fas fa-chart-line me-1"></i> SET100
@@ -279,64 +279,64 @@
                             <i class="fas fa-chart-line me-1"></i> SET50
                         </button>
                         <button type="button" class="btn btn-outline-success btn-sm website-shortcut table-site" data-url="https://marketdata.set.or.th/mkt/sectorialindices.do?language=th&country=TH">
-                            <i class="fas fa-chart-line me-1"></i> ดัชนีกลุ่มอุตสาหกรรม
+                            <i class="fas fa-chart-line me-1"></i> Industry Indices
                         </button>
                     </div>
                     
-                    <h6 class="mb-3">ราคาทองและโลหะมีค่า</h6>
+                    <h6 class="mb-3">Gold Prices</h6>
                     <div class="d-flex flex-wrap gap-2 mb-4">
                         <button type="button" class="btn btn-outline-warning btn-sm website-shortcut table-site" data-url="https://www.goldtraders.or.th">
-                            <i class="fas fa-coins me-1"></i> สมาคมค้าทองคำ
+                            <i class="fas fa-coins me-1"></i> Gold Traders Association
                         </button>
                         <button type="button" class="btn btn-outline-warning btn-sm website-shortcut table-site" data-url="https://xn--42cah7d0cxcvbbb9x.com">
-                            <i class="fas fa-coins me-1"></i> ราคาทองวันนี้
+                            <i class="fas fa-coins me-1"></i> Today's Gold Price
                         </button>
                         <button type="button" class="btn btn-outline-warning btn-sm website-shortcut table-site" data-url="https://www.hua-seng-heng.com/gold-price">
-                            <i class="fas fa-coins me-1"></i> ห้างทองฮั่วเซ่งเฮง
+                            <i class="fas fa-coins me-1"></i> Hua Seng Heng Gold
                         </button>
                     </div>
                     
-                    <h6 class="mb-3">อัตราแลกเปลี่ยนและสกุลเงิน</h6>
+                    <h6 class="mb-3">Exchange Rates</h6>
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.bot.or.th/thai/statistics/financialmarkets/exchangerate/_layouts/application/exchangerate/exchangerate.aspx">
-                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (ธปท.)
+                            <i class="fas fa-dollar-sign me-1"></i> Bank of Thailand Rates
                         </button>
                         <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.kasikornbank.com/th/rate/pages/forex.aspx">
-                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (กสิกร)
+                            <i class="fas fa-dollar-sign me-1"></i> Kasikorn Bank Rates
                         </button>
                         <button type="button" class="btn btn-outline-info btn-sm website-shortcut table-site" data-url="https://www.bangkokbank.com/th-TH/Personal/Other-Services/View-Rates/Foreign-Exchange-Rates">
-                            <i class="fas fa-dollar-sign me-1"></i> อัตราแลกเปลี่ยน (กรุงเทพ)
+                            <i class="fas fa-dollar-sign me-1"></i> Bangkok Bank Rates
                         </button>
                     </div>
                 </div>
             </div>
             
-            <!-- คำแนะนำ -->
+            <!-- Tips -->
             <div class="card shadow-lg mt-4">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>คำแนะนำ</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Tips</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="text-center mb-3 mb-md-0">
                                 <i class="fas fa-table fa-3x mb-3 text-success"></i>
-                                <h5>ดึงตารางราคา</h5>
-                                <p class="text-muted">ดึงตารางราคาหุ้น ทอง และอัตราแลกเปลี่ยนโดยตรงจากเว็บไซต์แหล่งข้อมูล</p>
+                                <h5>Extract Price Tables</h5>
+                                <p class="text-muted">Extract stock prices, gold prices, and exchange rates directly from source websites</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center mb-3 mb-md-0">
                                 <i class="fas fa-robot fa-3x mb-3 text-primary"></i>
-                                <h5>วิเคราะห์ด้วย AI</h5>
-                                <p class="text-muted">ใช้ Gemini AI วิเคราะห์และสรุปข้อมูลการเงินจากเนื้อหาเว็บไซต์</p>
+                                <h5>Analyze with AI</h5>
+                                <p class="text-muted">Use Gemini AI to analyze and summarize financial data from website content</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center">
                                 <i class="fas fa-chart-bar fa-3x mb-3 text-warning"></i>
-                                <h5>สร้างกราฟข้อมูล</h5>
-                                <p class="text-muted">สร้างกราฟแสดงราคาและข้อมูลตัวเลขเพื่อการวิเคราะห์ที่สะดวก</p>
+                                <h5>Create Data Charts</h5>
+                                <p class="text-muted">Generate charts showing prices and numerical data for convenient analysis</p>
                             </div>
                         </div>
                     </div>
@@ -497,7 +497,7 @@
                 
                 // ตรวจสอบว่ามีข้อมูลหรือไม่
                 if (!tableData || !tableData.rows || tableData.rows.length === 0) {
-                    alert('ไม่พบข้อมูลในตารางที่จะสร้างกราฟ');
+                    alert('No data found in the table to create a chart');
                     return;
                 }
                 
@@ -555,7 +555,7 @@
             const dataColumns = findNumericColumns(tableData);
             
             if (dataColumns.length === 0) {
-                alert('ไม่พบข้อมูลตัวเลขในตารางที่เหมาะสำหรับการสร้างกราฟ');
+                alert('No numerical data found in the table suitable for creating a chart');
                 return;
             }
             
