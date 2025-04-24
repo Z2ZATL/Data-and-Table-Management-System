@@ -458,7 +458,7 @@
             tableBtn.addEventListener('click', function() {
                 const url = document.getElementById('url').value;
                 if (url) {
-                    // ส่ง URL ไปยังฟอร์ม
+                    // Send URL to form
                     document.getElementById('content-url').value = url;
                     
                     // กำหนดโหมดการดึงข้อมูลเป็นแบบตาราง
@@ -679,7 +679,7 @@
                     const useAi = document.getElementById('use-ai').checked;
                     document.getElementById('use-ai-input').value = useAi ? 'on' : 'off';
                     
-                    // กำหนดโหมดการดึงข้อมูลเป็นแบบทั่วไป
+                    // Set extraction mode to general
                     document.getElementById('extract-mode-input').value = "general";
                     
                     document.getElementById('content-form').submit();
