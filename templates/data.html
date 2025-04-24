@@ -27,84 +27,82 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {% if topics and topics|length > 0 %}
-                        {% for topic in topics %}
-                            {% if topic.table_contents and topic.table_contents|length > 0 %}
-                                <div class="topic-container mb-4">
+                    {% if tables and tables|length > 0 %}
+                        {% for table in tables %}
+                            {% if table.table_data %}
+                                <div class="table-container mb-4">
                                     <h3 class="h5 mb-3">
                                         <i class="fas fa-table me-2 text-primary"></i>
-                                        {{ topic.title }}
+                                        {{ table.name }}
                                     </h3>
                                     
-                                    {% if topic.description %}
-                                        <p class="text-muted mb-3">{{ topic.description }}</p>
+                                    {% if table.description %}
+                                        <p class="text-muted mb-3">{{ table.description }}</p>
                                     {% endif %}
                                     
-                                    {% for table_content in topic.table_contents %}
-                                        <div class="table-content mb-4">
-                                            <div class="card shadow-sm">
-                                                <div class="card-header py-3">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div>
-                                                            <h6 class="mb-1">ตารางข้อมูล #{{ loop.index }}</h6>
-                                                            <div class="small text-muted">
-                                                                สร้างเมื่อ {{ table_content.created_at.strftime('%d/%m/%Y %H:%M') if table_content.created_at else '-' }}
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-group">
-                                                                <button 
-                                                                    class="btn btn-sm btn-outline-primary show-chart-btn"
-                                                                    data-table-id="table-{{ topic.id }}-{{ table_content.id }}"
-                                                                    data-chart-id="chart-{{ topic.id }}-{{ table_content.id }}"
-                                                                >
-                                                                    <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
-                                                                </button>
-                                                                <a href="/data/edit-table/{{ table_content.id }}" class="btn btn-sm btn-outline-secondary">
-                                                                    <i class="fas fa-edit me-1"></i> แก้ไข
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="card-body">
-                                                    <div class="table-responsive mb-3">
-                                                        {% set table_data = table_content.content|fromjson %}
-                                                        {% if table_data and table_data.headers and table_data.rows %}
-                                                            <table class="table table-bordered table-hover" id="table-{{ topic.id }}-{{ table_content.id }}">
-                                                                <thead class="table-light">
-                                                                    <tr>
-                                                                        {% for header in table_data.headers %}
-                                                                            <th>{{ header }}</th>
-                                                                        {% endfor %}
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    {% for row in table_data.rows %}
-                                                                        <tr>
-                                                                            {% for cell in row %}
-                                                                                <td>{{ cell }}</td>
-                                                                            {% endfor %}
-                                                                        </tr>
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                            </table>
-                                                        {% else %}
-                                                            <div class="alert alert-info">
-                                                                ไม่สามารถแสดงตารางได้ เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง
-                                                            </div>
+                                <div class="table-content mb-4">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header py-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <div class="small text-muted">
+                                                        สร้างเมื่อ {{ table.created_at.strftime('%d/%m/%Y %H:%M') if table.created_at else '-' }}
+                                                        {% if table.updated_at and table.created_at != table.updated_at %}
+                                                        | อัพเดทล่าสุด {{ table.updated_at.strftime('%d/%m/%Y %H:%M') }}
                                                         {% endif %}
                                                     </div>
-                                                    
-                                                    <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
-                                                    <div class="chart-container" id="chart-{{ topic.id }}-{{ table_content.id }}" style="display: none; height: 400px;">
-                                                        <canvas></canvas>
+                                                </div>
+                                                <div>
+                                                    <div class="btn-group">
+                                                        <button 
+                                                            class="btn btn-sm btn-outline-primary show-chart-btn"
+                                                            data-table-id="table-{{ table.id }}"
+                                                            data-chart-id="chart-{{ table.id }}"
+                                                        >
+                                                            <i class="fas fa-chart-bar me-1"></i> แสดงกราฟ
+                                                        </button>
+                                                        <a href="/data/edit-table/{{ table.id }}" class="btn btn-sm btn-outline-secondary">
+                                                            <i class="fas fa-edit me-1"></i> แก้ไข
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    {% endfor %}
+                                        
+                                        <div class="card-body">
+                                            <div class="table-responsive mb-3">
+                                                {% if table.table_data and table.table_data.headers and table.table_data.rows %}
+                                                    <table class="table table-bordered table-hover" id="table-{{ table.id }}">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                {% for header in table.table_data.headers %}
+                                                                    <th>{{ header }}</th>
+                                                                {% endfor %}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for row in table.table_data.rows %}
+                                                                <tr>
+                                                                    {% for cell in row %}
+                                                                        <td>{{ cell }}</td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                {% else %}
+                                                    <div class="alert alert-info">
+                                                        ไม่สามารถแสดงตารางได้ เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
+                                            <div class="chart-container" id="chart-{{ table.id }}" style="display: none; height: 400px;">
+                                                <canvas></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 {% if not loop.last %}

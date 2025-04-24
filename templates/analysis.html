@@ -108,10 +108,10 @@
             {% endfor %}
         };
         
-        // สร้างกราฟสำหรับทุกหัวข้อ
-        for (const [topicId, data] of Object.entries(topicData)) {
+        // สร้างกราฟสำหรับทุกตาราง
+        for (const [tableId, data] of Object.entries(tableData)) {
             if (data && data.headers && data.rows && data.headers.length >= 2) {
-                const chartId = `chart-${topicId}`;
+                const chartId = `chart-${tableId}`;
                 const chartContainer = document.getElementById(chartId);
                 
                 if (chartContainer) {
@@ -151,13 +151,13 @@
         // จัดการกับปุ่ม "ดูข้อมูล"
         document.querySelectorAll('.view-data-btn').forEach(button => {
             button.addEventListener('click', function() {
-                const topicId = this.getAttribute('data-topic-id');
-                const topicTitle = this.getAttribute('data-topic-title');
-                const data = topicData[topicId];
+                const tableId = this.getAttribute('data-table-id');
+                const tableName = this.getAttribute('data-table-name');
+                const data = tableData[tableId];
                 
                 if (data && data.headers && data.rows) {
                     // กำหนดชื่อ Modal
-                    document.getElementById('dataModalLabel').textContent = `ข้อมูลตาราง: ${topicTitle}`;
+                    document.getElementById('dataModalLabel').textContent = `ข้อมูลตาราง: ${tableName}`;
                     
                     // สร้างตาราง
                     const tableContainer = document.getElementById('modalTableContainer');
