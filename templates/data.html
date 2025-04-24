@@ -91,57 +91,55 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
+                                                <div class="chart-container" id="chart-{{ table.id }}" style="display: none; height: 400px;">
+                                                    <canvas></canvas>
+                                                </div>
                                             {% else %}
                                                 <div class="alert alert-info">
                                                     ไม่สามารถแสดงตารางได้ เนื่องจากรูปแบบข้อมูลไม่ถูกต้อง
                                                 </div>
                                             {% endif %}
-                                            
-                                            <!-- Modal สำหรับแสดงตาราง -->
-                                            <div class="modal fade" id="tableModal{{ table.id }}" tabindex="-1" aria-labelledby="tableModalLabel{{ table.id }}" aria-hidden="true">
-                                                <div class="modal-dialog modal-xl">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="tableModalLabel{{ table.id }}">ตารางข้อมูล: {{ table.name }}</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="table-responsive">
-                                                                <table class="table table-bordered table-hover" id="table-{{ table.id }}">
-                                                                    <thead class="table-light">
-                                                                        <tr>
-                                                                            {% for header in table.table_data.headers %}
-                                                                                <th>{{ header }}</th>
-                                                                            {% endfor %}
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                        {% for row in table.table_data.rows %}
-                                                                            <tr>
-                                                                                {% for cell in row %}
-                                                                                    <td>{{ cell }}</td>
-                                                                                {% endfor %}
-                                                                            </tr>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal สำหรับแสดงตาราง -->
+                                    <div class="modal fade" id="tableModal{{ table.id }}" tabindex="-1" aria-labelledby="tableModalLabel{{ table.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="tableModalLabel{{ table.id }}">ตารางข้อมูล: {{ table.name }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-hover" id="table-{{ table.id }}">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    {% for header in table.table_data.headers %}
+                                                                        <th>{{ header }}</th>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for row in table.table_data.rows %}
+                                                                    <tr>
+                                                                        {% for cell in row %}
+                                                                            <td>{{ cell }}</td>
                                                                         {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                                        </div>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            
-                                            <!-- ส่วนแสดงกราฟ (ซ่อนไว้) -->
-                                            <div class="chart-container" id="chart-{{ table.id }}" style="display: none; height: 400px;">
-                                                <canvas></canvas>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                
                                 {% if not loop.last %}
                                     <hr class="my-4">
                                 {% endif %}
